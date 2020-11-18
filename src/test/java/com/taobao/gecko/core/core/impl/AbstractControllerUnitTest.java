@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,12 +26,8 @@ import com.taobao.gecko.core.nio.TCPController;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-25 …œŒÁ11:04:49
+ * @since 1.0, 2009-12-25 ‰∏äÂçà11:04:49
  */
 
 public abstract class AbstractControllerUnitTest {
@@ -60,46 +56,40 @@ public abstract class AbstractControllerUnitTest {
         try {
             this.controller.setReadThreadCount(-1);
             Assert.fail();
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
 
         }
         try {
             this.controller.setWriteThreadCount(-1);
             Assert.fail();
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
 
         }
         try {
             this.controller.setDispatchMessageThreadCount(-1);
             Assert.fail();
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
 
         }
         this.controller.start();
         try {
             this.controller.setReadThreadCount(1);
             Assert.fail();
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
 
         }
 
         try {
             this.controller.setWriteThreadCount(1);
             Assert.fail();
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
 
         }
 
         try {
             this.controller.setDispatchMessageThreadCount(1);
             Assert.fail();
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
 
         }
 
@@ -118,15 +108,13 @@ public abstract class AbstractControllerUnitTest {
         try {
             this.controller.setSocketOption(null, 3);
             Assert.fail();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             Assert.assertEquals("Null socketOption", e.getMessage());
         }
         try {
             this.controller.setSocketOption(StandardSocketOption.SO_RCVBUF, null);
             Assert.fail();
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             Assert.assertEquals("Null value", e.getMessage());
         }
     }
@@ -139,8 +127,7 @@ public abstract class AbstractControllerUnitTest {
         try {
             this.controller.start();
             Assert.fail();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Assert.assertEquals("The handler is null", e.getMessage());
         }
     }

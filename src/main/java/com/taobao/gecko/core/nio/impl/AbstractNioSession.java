@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,13 +39,10 @@ import com.taobao.gecko.core.util.SelectorFactory;
 
 
 /**
- * NioÁ¬½Ó³éÏó»ùÀà
- * 
- * 
- * 
+ * Nioè¿æ¥æŠ½è±¡åŸºç±»
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç06:06:25
+ * @since 1.0, 2009-12-16 ä¸‹åˆ06:06:25
  */
 public abstract class AbstractNioSession extends AbstractSession implements NioSession {
 
@@ -65,28 +62,25 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
 
 
     /**
-     * ×¢²áOP_READ
+     * æ³¨å†ŒOP_READ
      */
     public final void enableRead(final Selector selector) {
         final SelectionKey key = this.selectableChannel.keyFor(selector);
         if (key != null && key.isValid()) {
             this.interestRead(key);
-        }
-        else {
+        } else {
             try {
                 this.selectableChannel.register(selector, SelectionKey.OP_READ, this);
-            }
-            catch (final ClosedChannelException e) {
+            } catch (final ClosedChannelException e) {
                 // ignore
-            }
-            catch (final CancelledKeyException e) {
+            } catch (final CancelledKeyException e) {
                 // ignore
             }
         }
     }
 
 
-    // ÎªÁËÈÃNioController¿É¼û
+    // ä¸ºäº†è®©NioControllerå¯è§
     @Override
     protected final void close0() {
         super.close0();
@@ -113,7 +107,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
 
 
     /**
-     * ÍùÁ¬½ÓĞ´ÈëÏûÏ¢£¬¿É±»ÖĞ¶Ï£¬ÖĞ¶Ï¿ÉÄÜÒıÆğÁ¬½Ó¶Ï¿ª£¬ÇëÉ÷ÖØÊ¹ÓÃ
+     * å¾€è¿æ¥å†™å…¥æ¶ˆæ¯ï¼Œå¯è¢«ä¸­æ–­ï¼Œä¸­æ–­å¯èƒ½å¼•èµ·è¿æ¥æ–­å¼€ï¼Œè¯·æ…é‡ä½¿ç”¨
      */
     public void writeInterruptibly(final Object packet) {
         if (packet == null) {
@@ -129,7 +123,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
 
 
     /**
-     * ÍùÁ¬½ÓÒì²½Ğ´ÈëÏûÏ¢£¬¿É±»ÖĞ¶Ï£¬ÖĞ¶Ï¿ÉÄÜÒıÆğÁ¬½Ó¶Ï¿ª£¬ÇëÉ÷ÖØÊ¹ÓÃ
+     * å¾€è¿æ¥å¼‚æ­¥å†™å…¥æ¶ˆæ¯ï¼Œå¯è¢«ä¸­æ–­ï¼Œä¸­æ–­å¯èƒ½å¼•èµ·è¿æ¥æ–­å¼€ï¼Œè¯·æ…é‡ä½¿ç”¨
      */
     public Future<Boolean> asyncWriteInterruptibly(final Object packet) {
         if (packet == null) {
@@ -137,7 +131,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
         if (this.isClosed()) {
             final FutureImpl<Boolean> writeFuture = new FutureImpl<Boolean>();
-            writeFuture.failure(new IOException("Á¬½ÓÒÑ¾­±»¹Ø±Õ"));
+            writeFuture.failure(new IOException("è¿æ¥å·²ç»è¢«å…³é—­"));
             return writeFuture;
         }
         final FutureImpl<Boolean> writeFuture = new FutureImpl<Boolean>();
@@ -152,8 +146,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         if (msg instanceof PoisonWriteMessage) {
             this.close0();
             return msg;
-        }
-        else {
+        } else {
             return this.writeToChannel0(msg);
         }
     }
@@ -177,25 +170,23 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
     protected void onWrite(final SelectionKey key) {
         boolean isLockedByMe = false;
         if (this.currentMessage.get() == null) {
-            // »ñÈ¡ÏÂÒ»¸ö´ıĞ´ÏûÏ¢
+            // è·å–ä¸‹ä¸€ä¸ªå¾…å†™æ¶ˆæ¯
             final WriteMessage nextMessage = this.writeQueue.peek();
             if (nextMessage != null && this.writeLock.tryLock()) {
                 if (!this.writeQueue.isEmpty() && this.currentMessage.compareAndSet(null, nextMessage)) {
                     this.writeQueue.remove();
                 }
-            }
-            else {
+            } else {
                 return;
             }
-        }
-        else if (!this.writeLock.tryLock()) {
+        } else if (!this.writeLock.tryLock()) {
             return;
         }
         this.updateTimeStamp();
-        // ¼ÓËø³É¹¦
+        // åŠ é”æˆåŠŸ
         isLockedByMe = true;
         WriteMessage currentMessage = null;
-        // ¾­ÑéÖµ£¬Ğ´ÈëµÄ×î´óÊıÁ¿ÎªreadBufferSize*3/2ÄÜ´ïµ½×î¼ÑĞÔÄÜ£¬²¢ÇÒ²»»áÌ«Ó°Ïì¶ÁĞ´µÄ¹«Æ½ĞÔ
+        // ç»éªŒå€¼ï¼Œå†™å…¥çš„æœ€å¤§æ•°é‡ä¸ºreadBufferSize*3/2èƒ½è¾¾åˆ°æœ€ä½³æ€§èƒ½ï¼Œå¹¶ä¸”ä¸ä¼šå¤ªå½±å“è¯»å†™çš„å…¬å¹³æ€§
         final long maxWritten = this.readBuffer.capacity() + this.readBuffer.capacity() >>> 1;
         try {
             long written = 0;
@@ -205,27 +196,26 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
                 this.currentMessage.set(currentMessage);
                 final long before = this.currentMessage.get().remaining();
                 Object writeResult = null;
-                // Èç¹ûĞ´ÈëµÄÊıÁ¿Ğ¡ÓÚ×î´óÖµ£¬¼ÌĞøĞ´£¬·ñÔòÖĞ¶Ïwrite£¬¼ÌĞø×¢²áOP_WRITE
+                // å¦‚æœå†™å…¥çš„æ•°é‡å°äºæœ€å¤§å€¼ï¼Œç»§ç»­å†™ï¼Œå¦åˆ™ä¸­æ–­writeï¼Œç»§ç»­æ³¨å†ŒOP_WRITE
                 if (written < maxWritten) {
                     writeResult = this.writeToChannel(currentMessage);
                     written += before - this.currentMessage.get().remaining();
+                } else {
+                    // ä¸å†™å…¥,ç»§ç»­æ³¨å†ŒOP_WRITE
                 }
-                else {
-                    // ²»Ğ´Èë,¼ÌĞø×¢²áOP_WRITE
-                }
-                // ·¢ËÍ³É¹¦
+                // å‘é€æˆåŠŸ
                 if (writeResult != null) {
                     this.currentMessage.set(this.writeQueue.poll());
                     if (currentMessage.isWriting()) {
                         this.onMessageSent(currentMessage);
                     }
-                    // È¡ÏÂÒ»¸öÏûÏ¢´¦Àí
+                    // å–ä¸‹ä¸€ä¸ªæ¶ˆæ¯å¤„ç†
                     if (this.currentMessage.get() == null) {
                         if (isLockedByMe) {
                             isLockedByMe = false;
                             this.writeLock.unlock();
                         }
-                        // ÔÙ³¢ÊÔÒ»´Î
+                        // å†å°è¯•ä¸€æ¬¡
                         final WriteMessage nextMessage = this.writeQueue.peek();
                         if (nextMessage != null && this.writeLock.tryLock()) {
                             isLockedByMe = true;
@@ -233,40 +223,35 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
                                 this.writeQueue.remove();
                             }
                             continue;
-                        }
-                        else {
+                        } else {
                             break;
                         }
                     }
-                }
-                else { // ²»ÍêÈ«Ğ´Èë
+                } else { // ä¸å®Œå…¨å†™å…¥
                     if (isLockedByMe) {
                         isLockedByMe = false;
                         this.writeLock.unlock();
                     }
-                    // ¼ÌĞø×¢²áOP_WRITE£¬µÈ´ıĞ´
+                    // ç»§ç»­æ³¨å†ŒOP_WRITEï¼Œç­‰å¾…å†™
                     this.selectorManager.registerSession(this, EventType.ENABLE_WRITE);
                     break;
                 }
             }
-        }
-        catch (final ClosedChannelException e) {
+        } catch (final ClosedChannelException e) {
             this.close0();
-            // ignore£¬²»Í¨ÖªÓÃ»§
+            // ignoreï¼Œä¸é€šçŸ¥ç”¨æˆ·
             if (currentMessage != null && currentMessage.getWriteFuture() != null) {
                 currentMessage.getWriteFuture().failure(e);
             }
 
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             this.close0();
             this.handler.onExceptionCaught(this, e);
             if (currentMessage != null && currentMessage.getWriteFuture() != null) {
                 currentMessage.getWriteFuture().failure(e);
             }
 
-        }
-        finally {
+        } finally {
             if (isLockedByMe) {
                 this.writeLock.unlock();
             }
@@ -275,21 +260,18 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
 
 
     /**
-     * ×¢²áOP_WRITE
+     * æ³¨å†ŒOP_WRITE
      */
     public final void enableWrite(final Selector selector) {
         final SelectionKey key = this.selectableChannel.keyFor(selector);
         if (key != null && key.isValid()) {
             this.interestWrite(key);
-        }
-        else {
+        } else {
             try {
                 this.selectableChannel.register(selector, SelectionKey.OP_WRITE, this);
-            }
-            catch (final ClosedChannelException e) {
+            } catch (final ClosedChannelException e) {
                 // ignore
-            }
-            catch (final CancelledKeyException e) {
+            } catch (final CancelledKeyException e) {
                 // ignore
             }
         }
@@ -328,7 +310,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         if (this.schduleWriteMessage(message)) {
             return;
         }
-        // µ½ÕâÀï£¬µ±Ç°Ïß³ÌÒ»¶¨ÊÇIOÏß³Ì
+        // åˆ°è¿™é‡Œï¼Œå½“å‰çº¿ç¨‹ä¸€å®šæ˜¯IOçº¿ç¨‹
         this.onWrite(null);
     }
 
@@ -344,62 +326,56 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
                     this.currentMessage.set(message);
                     try {
                         writeResult = this.writeToChannel(message);
-                    }
-                    catch (final ClosedChannelException e) {
+                    } catch (final ClosedChannelException e) {
                         this.close0();
                         if (message.getWriteFuture() != null) {
                             message.getWriteFuture().failure(e);
                         }
-                    }
-                    catch (final Throwable e) {
+                    } catch (final Throwable e) {
                         this.close0();
                         if (message.getWriteFuture() != null) {
                             message.getWriteFuture().failure(e);
                         }
                         this.onException(e);
                     }
-                }
-                else {
+                } else {
                     isLockedByMe = false;
                     this.writeLock.unlock();
                 }
             }
-            // Ğ´Èë³É¹¦
+            // å†™å…¥æˆåŠŸ
             if (isLockedByMe && writeResult != null) {
                 if (message.isWriting()) {
                     this.onMessageSent(message);
                 }
-                // »ñÈ¡ÏÂÒ»¸öÔªËØ
+                // è·å–ä¸‹ä¸€ä¸ªå…ƒç´ 
                 final WriteMessage nextElement = this.writeQueue.poll();
                 if (nextElement != null) {
                     this.currentMessage.set(nextElement);
                     isLockedByMe = false;
                     this.writeLock.unlock();
-                    // ×¢²áOP_WRITE
+                    // æ³¨å†ŒOP_WRITE
                     this.selectorManager.registerSession(this, EventType.ENABLE_WRITE);
-                }
-                else {
+                } else {
                     this.currentMessage.set(null);
                     isLockedByMe = false;
                     this.writeLock.unlock();
-                    // ÔÙ´Îcheck
+                    // å†æ¬¡check
                     if (this.writeQueue.peek() != null) {
                         this.selectorManager.registerSession(this, EventType.ENABLE_WRITE);
                     }
                 }
-            }
-            else {
-                // Ğ´ÈëÊ§°Ü
+            } else {
+                // å†™å…¥å¤±è´¥
                 boolean isRegisterForWriting = false;
                 if (this.currentMessage.get() != message) {
-                    // ¼ÓÈë¶ÓÁĞ
+                    // åŠ å…¥é˜Ÿåˆ—
                     this.writeQueue.offer(message);
-                    // ÅĞ¶ÏÊÇ·ñÕıÔÚĞ´£¬Ã»ÓĞµÄ»°£¬ĞèÒª×¢²áOP_WRITE
+                    // åˆ¤æ–­æ˜¯å¦æ­£åœ¨å†™ï¼Œæ²¡æœ‰çš„è¯ï¼Œéœ€è¦æ³¨å†ŒOP_WRITE
                     if (!this.writeLock.isLocked()) {
                         isRegisterForWriting = true;
                     }
-                }
-                else {
+                } else {
                     isRegisterForWriting = true;
                     if (isLockedByMe) {
                         isLockedByMe = false;
@@ -410,9 +386,8 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
                     this.selectorManager.registerSession(this, EventType.ENABLE_WRITE);
                 }
             }
-        }
-        finally {
-            // È·±£ÊÍ·ÅËø
+        } finally {
+            // ç¡®ä¿é‡Šæ”¾é”
             if (isLockedByMe) {
                 this.writeLock.unlock();
             }
@@ -450,27 +425,23 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
                 }
                 if (writeSelector.select(1000) == 0) {
                     attempts++;
-                    if (attempts > 2) // ×î¶à³¢ÊÔ3´Î
+                    if (attempts > 2) // æœ€å¤šå°è¯•3æ¬¡
                     {
                         return;
                     }
-                }
-                else {
+                } else {
                     break;
                 }
             }
             this.onWrite(this.selectableChannel.keyFor(writeSelector));
-        }
-        catch (final ClosedChannelException cce) {
+        } catch (final ClosedChannelException cce) {
             // ignore
             this.close0();
-        }
-        catch (final Throwable t) {
+        } catch (final Throwable t) {
             this.close0();
             this.onException(t);
             log.error("Flush error", t);
-        }
-        finally {
+        } finally {
             if (tmpKey != null) {
                 // Cancel the key.
                 tmpKey.cancel();
@@ -479,8 +450,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
             if (writeSelector != null) {
                 try {
                     writeSelector.selectNow();
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     log.error("Temp selector selectNow error", e);
                 }
                 // return selector
@@ -491,37 +461,37 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
 
 
     /**
-     * ÅÉ·¢IOÊÂ¼ş
+     * æ´¾å‘IOäº‹ä»¶
      */
     public final void onEvent(final EventType event, final Selector selector) {
 
         final SelectionKey key = this.selectableChannel.keyFor(selector);
 
         switch (event) {
-        case EXPIRED:
-            this.onExpired();
-            break;
-        case WRITEABLE:
-            this.onWrite(key);
-            break;
-        case READABLE:
-            this.onRead(key);
-            break;
-        case ENABLE_WRITE:
-            this.enableWrite(selector);
-            break;
-        case ENABLE_READ:
-            this.enableRead(selector);
-            break;
-        case IDLE:
-            this.onIdle();
-            break;
-        case CONNECTED:
-            this.onConnected();
-            break;
-        default:
-            log.error("Unknown event:" + event.name());
-            break;
+            case EXPIRED:
+                this.onExpired();
+                break;
+            case WRITEABLE:
+                this.onWrite(key);
+                break;
+            case READABLE:
+                this.onRead(key);
+                break;
+            case ENABLE_WRITE:
+                this.enableWrite(selector);
+                break;
+            case ENABLE_READ:
+                this.enableRead(selector);
+                break;
+            case IDLE:
+                this.onIdle();
+                break;
+            case CONNECTED:
+                this.onConnected();
+                break;
+            default:
+                log.error("Unknown event:" + event.name());
+                break;
         }
     }
 
@@ -535,7 +505,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
 
 
     public Future<Boolean> asyncTransferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src,
-            final long position, long size) {
+                                             final long position, long size) {
         this.checkParams(src, position);
         size = this.normalSize(src, position, size);
         final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
@@ -554,15 +524,14 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
             if (position < 0 || position > src.size()) {
                 throw new ArrayIndexOutOfBoundsException("Could not write position out of bounds of file channel");
             }
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
 
     public Future<Boolean> transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src,
-            final long position, long size) {
+                                        final long position, long size) {
         this.checkParams(src, position);
         size = this.normalSize(src, position, size);
         final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
@@ -577,8 +546,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         try {
             size = Math.min(src.size() - position, size);
             return size;
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }

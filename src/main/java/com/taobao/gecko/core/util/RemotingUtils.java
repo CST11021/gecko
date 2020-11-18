@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,13 +31,10 @@ import com.taobao.gecko.service.config.WireFormatType;
 
 
 /**
- * Remoting¹¤¾ßÀà
- * 
- * 
- * 
+ * Remotingå·¥å…·ç±»
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç06:21:51
+ * @since 1.0, 2009-12-16 ä¸‹åˆ06:21:51
  */
 public class RemotingUtils {
 
@@ -55,7 +52,7 @@ public class RemotingUtils {
     }
 
 
-    // ±éÀúÍø¿¨£¬²éÕÒÒ»¸ö·Ç»ØÂ·ipµØÖ·²¢·µ»Ø£¬Èç¹ûÃ»ÓĞÕÒµ½£¬Ôò·µ»ØInetAddress.getLocalHost()
+    // éå†ç½‘å¡ï¼ŒæŸ¥æ‰¾ä¸€ä¸ªéå›è·¯ipåœ°å€å¹¶è¿”å›ï¼Œå¦‚æœæ²¡æœ‰æ‰¾åˆ°ï¼Œåˆ™è¿”å›InetAddress.getLocalHost()
     public static InetAddress getLocalHostAddress() throws UnknownHostException, SocketException {
         final Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
         InetAddress ipv6Address = null;
@@ -67,16 +64,15 @@ public class RemotingUtils {
                 if (!address.isLoopbackAddress()) {
                     if (address instanceof Inet6Address) {
                         ipv6Address = address;
-                    }
-                    else {
-                        // ÓÅÏÈÊ¹ÓÃipv4
+                    } else {
+                        // ä¼˜å…ˆä½¿ç”¨ipv4
                         return address;
                     }
                 }
             }
 
         }
-        // Ã»ÓĞipv4£¬ÔòÊ¹ÓÃipv6
+        // æ²¡æœ‰ipv4ï¼Œåˆ™ä½¿ç”¨ipv6
         if (ipv6Address != null) {
             return ipv6Address;
         }
@@ -91,8 +87,7 @@ public class RemotingUtils {
         try {
             final URI uri = new URI(uriStr);
             return new InetSocketAddress(uri.getHost(), uri.getPort());
-        }
-        catch (final URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             // ignore
             return null;
         }
@@ -100,7 +95,7 @@ public class RemotingUtils {
 
 
     public static final String formatServerUrl(final WireFormatType wireFormatType,
-            final InetSocketAddress socketAddress) {
+                                               final InetSocketAddress socketAddress) {
         if (socketAddress == null) {
             throw new IllegalArgumentException("Null socketAddress");
         }
@@ -112,7 +107,7 @@ public class RemotingUtils {
 
 
     public static final String formatServerUrl(final WireFormatType wireFormatType, final String hostNmae,
-            final int port) {
+                                               final int port) {
         if (StringUtils.isEmpty(hostNmae)) {
             throw new IllegalArgumentException("Blank hostName");
         }
@@ -137,7 +132,7 @@ public class RemotingUtils {
 
 
     public static void byte2hex(final byte b, final StringBuilder buf) {
-        final char[] hexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        final char[] hexChars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
         final int high = (b & 0xf0) >> 4;
         final int low = b & 0x0f;
         buf.append(hexChars[high]);

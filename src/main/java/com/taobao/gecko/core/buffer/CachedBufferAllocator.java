@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,10 +70,10 @@ import com.taobao.gecko.core.util.CircularQueue;
  * {@link CachedBufferAllocator} uses {@link ThreadLocal} to store the cached
  * buffer, allocates buffers whose capacity is power of 2 only and provides
  * performance advantage if {@link IoBuffer#free()} is called properly.
- * 
+ *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 671827 $, $Date: 2008-06-26 10:49:48 +0200 (Thu, 26 Jun 2008)
- *          $
+ * $
  */
 public class CachedBufferAllocator implements IoBufferAllocator {
 
@@ -99,14 +99,12 @@ public class CachedBufferAllocator implements IoBufferAllocator {
 
     /**
      * Creates a new instance.
-     * 
-     * @param maxPoolSize
-     *            the maximum number of buffers with the same capacity per
-     *            thread. <tt>0</tt> disables this limitation.
-     * @param maxCachedBufferSize
-     *            the maximum capacity of a cached buffer. A buffer whose
-     *            capacity is bigger than this value is not pooled. <tt>0</tt>
-     *            disables this limitation.
+     *
+     * @param maxPoolSize         the maximum number of buffers with the same capacity per
+     *                            thread. <tt>0</tt> disables this limitation.
+     * @param maxCachedBufferSize the maximum capacity of a cached buffer. A buffer whose
+     *                            capacity is bigger than this value is not pooled. <tt>0</tt>
+     *                            disables this limitation.
      */
     public CachedBufferAllocator(final int maxPoolSize, final int maxCachedBufferSize) {
         if (maxPoolSize < 0) {
@@ -171,17 +169,14 @@ public class CachedBufferAllocator implements IoBufferAllocator {
         if (this.maxCachedBufferSize != 0 && actualCapacity > this.maxCachedBufferSize) {
             if (direct) {
                 buf = this.wrap(ByteBuffer.allocateDirect(actualCapacity));
-            }
-            else {
+            } else {
                 buf = this.wrap(ByteBuffer.allocate(actualCapacity));
             }
-        }
-        else {
+        } else {
             Queue<CachedBuffer> pool;
             if (direct) {
                 pool = this.directBuffers.get().get(actualCapacity);
-            }
-            else {
+            } else {
                 pool = this.heapBuffers.get().get(actualCapacity);
             }
 
@@ -191,12 +186,10 @@ public class CachedBufferAllocator implements IoBufferAllocator {
                 buf.clear();
                 buf.setAutoExpand(false);
                 buf.order(ByteOrder.BIG_ENDIAN);
-            }
-            else {
+            } else {
                 if (direct) {
                     buf = this.wrap(ByteBuffer.allocateDirect(actualCapacity));
-                }
-                else {
+                } else {
                     buf = this.wrap(ByteBuffer.allocate(actualCapacity));
                 }
             }
@@ -310,8 +303,7 @@ public class CachedBufferAllocator implements IoBufferAllocator {
             Queue<CachedBuffer> pool;
             if (oldBuf.isDirect()) {
                 pool = CachedBufferAllocator.this.directBuffers.get().get(oldBuf.capacity());
-            }
-            else {
+            } else {
                 pool = CachedBufferAllocator.this.heapBuffers.get().get(oldBuf.capacity());
             }
 

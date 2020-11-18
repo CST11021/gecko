@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@
  * http://creativecommons.org/licenses/publicdomain
  */
 package com.taobao.gecko.core.util;
+
 import java.util.concurrent.*;
 
 /**
@@ -45,9 +46,9 @@ import java.util.concurrent.*;
  * <a href="{@docRoot}/../technotes/guides/collections/index.html">
  * Java Collections Framework</a>.
  *
- * @since 1.7
- * @author Doug Lea
  * @param <E> the type of elements held in this collection
+ * @author Doug Lea
+ * @since 1.7
  */
 public interface TransferQueue<E> extends BlockingQueue<E> {
     /**
@@ -57,12 +58,12 @@ public interface TransferQueue<E> extends BlockingQueue<E> {
      *
      * @param e the element to transfer
      * @return {@code true} if the element was transferred, else
-     *         {@code false}
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this queue
-     * @throws NullPointerException if the specified element is null
+     * {@code false}
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this queue
+     * @throws NullPointerException     if the specified element is null
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this queue
+     *                                  element prevents it from being added to this queue
      */
     boolean tryTransfer(E e);
 
@@ -72,13 +73,13 @@ public interface TransferQueue<E> extends BlockingQueue<E> {
      * dequeued by a consumer invoking {@code take} or {@code poll}.
      *
      * @param e the element to transfer
-     * @throws InterruptedException if interrupted while waiting,
-     *         in which case the element is not enqueued.
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this queue
-     * @throws NullPointerException if the specified element is null
+     * @throws InterruptedException     if interrupted while waiting,
+     *                                  in which case the element is not enqueued.
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this queue
+     * @throws NullPointerException     if the specified element is null
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this queue
+     *                                  element prevents it from being added to this queue
      */
     void transfer(E e) throws InterruptedException;
 
@@ -88,24 +89,24 @@ public interface TransferQueue<E> extends BlockingQueue<E> {
      * available and the element to be dequeued by a consumer invoking
      * {@code take} or {@code poll}.
      *
-     * @param e the element to transfer
+     * @param e       the element to transfer
      * @param timeout how long to wait before giving up, in units of
-     *        {@code unit}
-     * @param unit a {@code TimeUnit} determining how to interpret the
-     *        {@code timeout} parameter
+     *                {@code unit}
+     * @param unit    a {@code TimeUnit} determining how to interpret the
+     *                {@code timeout} parameter
      * @return {@code true} if successful, or {@code false} if
-     *         the specified waiting time elapses before completion,
-     *         in which case the element is not enqueued.
-     * @throws InterruptedException if interrupted while waiting,
-     *         in which case the element is not enqueued.
-     * @throws ClassCastException if the class of the specified element
-     *         prevents it from being added to this queue
-     * @throws NullPointerException if the specified element is null
+     * the specified waiting time elapses before completion,
+     * in which case the element is not enqueued.
+     * @throws InterruptedException     if interrupted while waiting,
+     *                                  in which case the element is not enqueued.
+     * @throws ClassCastException       if the class of the specified element
+     *                                  prevents it from being added to this queue
+     * @throws NullPointerException     if the specified element is null
      * @throws IllegalArgumentException if some property of the specified
-     *         element prevents it from being added to this queue
+     *                                  element prevents it from being added to this queue
      */
     boolean tryTransfer(E e, long timeout, TimeUnit unit)
-        throws InterruptedException;
+            throws InterruptedException;
 
     /**
      * Returns {@code true} if there is at least one consumer waiting

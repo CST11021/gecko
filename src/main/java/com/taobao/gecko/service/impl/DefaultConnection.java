@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,30 +49,25 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
- * 
- * Á¬½ÓµÄ·â×°
- * 
+ * è¿æ¥çš„å°è£…
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç02:47:00
+ * @since 1.0, 2009-12-15 ä¸‹åˆ02:47:00
  */
 
 public class DefaultConnection implements Connection {
     static final Log log = LogFactory.getLog(DefaultConnection.class);
 
     /**
-     * ÊÇ·ñÆôÓÃ¿ÉÖĞ¶ÏĞ´¡£Èç¹ûÆôÓÃ£¬ÄÇÃ´¾Í¿ÉÄÜÔÚÓÃ»§Ïß³Ì×öIOĞ´Èë²Ù×÷£¬µ«ÊÇÓÃ»§Ïß³ÌµÄÖĞ¶Ï»áÒıÆğÁ¬½Ó¶Ï¿ª£¬ÇëÉ÷ÖØÊ¹ÓÃ¡£Ä¬ÈÏ²»ÆôÓÃ¡£
+     * æ˜¯å¦å¯ç”¨å¯ä¸­æ–­å†™ã€‚å¦‚æœå¯ç”¨ï¼Œé‚£ä¹ˆå°±å¯èƒ½åœ¨ç”¨æˆ·çº¿ç¨‹åšIOå†™å…¥æ“ä½œï¼Œä½†æ˜¯ç”¨æˆ·çº¿ç¨‹çš„ä¸­æ–­ä¼šå¼•èµ·è¿æ¥æ–­å¼€ï¼Œè¯·æ…é‡ä½¿ç”¨ã€‚é»˜è®¤ä¸å¯ç”¨ã€‚
      */
     private boolean writeInterruptibly = false;
 
     /**
-     * µ¥Á¬½ÓÇëÇóµÄ³¬Ê±ÈÎÎñ
-     * 
-     * 
-     * 
+     * å•è¿æ¥è¯·æ±‚çš„è¶…æ—¶ä»»åŠ¡
+     *
      * @author boyan
-     * 
-     * @since 1.0, 2009-12-18 ÏÂÎç03:00:55
+     * @since 1.0, 2009-12-18 ä¸‹åˆ03:00:55
      */
     private static final class SingleRequestCallBackRunner implements Runnable {
         final SingleRequestCallBack requestCallBack;
@@ -87,12 +82,12 @@ public class DefaultConnection implements Connection {
 
 
         public void run() {
-            // Í¨Öªtimeout
+            // é€šçŸ¥timeout
             final DefaultConnection defaultConnection = (DefaultConnection) SingleRequestCallBackRunner.this.connection;
             final BooleanAckCommand timeoutCommand =
                     defaultConnection.createTimeoutCommand(
-                        SingleRequestCallBackRunner.this.requestCallBack.getRequestCommandHeader(),
-                        SingleRequestCallBackRunner.this.connection.getRemoteSocketAddress());
+                            SingleRequestCallBackRunner.this.requestCallBack.getRequestCommandHeader(),
+                            SingleRequestCallBackRunner.this.connection.getRemoteSocketAddress());
             this.requestCallBack.cancelWrite(this.connection);
             this.requestCallBack.onResponse(null, timeoutCommand, this.connection);
         }
@@ -102,7 +97,7 @@ public class DefaultConnection implements Connection {
     private BooleanAckCommand createTimeoutCommand(final CommandHeader header, final InetSocketAddress address) {
         final BooleanAckCommand value =
                 this.remotingContext.getCommandFactory().createBooleanAckCommand(header, ResponseStatus.TIMEOUT,
-                    "µÈ´ıÏìÓ¦³¬Ê±");
+                        "ç­‰å¾…å“åº”è¶…æ—¶");
         value.setResponseStatus(ResponseStatus.TIMEOUT);
         value.setResponseTime(System.currentTimeMillis());
         value.setResponseHost(address);
@@ -121,22 +116,22 @@ public class DefaultConnection implements Connection {
     }
 
     /**
-     * ÊÇ·ñÔÊĞíÖØÁ¬
+     * æ˜¯å¦å…è®¸é‡è¿
      */
     private volatile boolean allowReconnect = true;
 
     /**
-     * ÓÃÀ´¸ø¿Í»§¶ËÅĞ¶ÏÁ¬½ÓÊÇ·ñ¼ÌĞø£¬Á¬½Ó¾ÍĞ÷µÄº¬ÒåÊÇÖ¸RemotingClient.connectµ÷ÓÃºó£¬Á¬½Ó³É¹¦½¨Á¢²¢ÇÒ¼ÓÈëÁËÖ¸¶¨µÄ·Ö×é
+     * ç”¨æ¥ç»™å®¢æˆ·ç«¯åˆ¤æ–­è¿æ¥æ˜¯å¦ç»§ç»­ï¼Œè¿æ¥å°±ç»ªçš„å«ä¹‰æ˜¯æŒ‡RemotingClient.connectè°ƒç”¨åï¼Œè¿æ¥æˆåŠŸå»ºç«‹å¹¶ä¸”åŠ å…¥äº†æŒ‡å®šçš„åˆ†ç»„
      */
     private volatile boolean ready;
 
     /**
-     * ±¾Á¬½ÓËùÊôµÄ·Ö×é¼¯ºÏ
+     * æœ¬è¿æ¥æ‰€å±çš„åˆ†ç»„é›†åˆ
      */
     private final ConcurrentHashSet<String> groupSet = new ConcurrentHashSet<String>();
 
     /**
-     * Opaqueµ½groupµÄÓ³Éä,½öÓÃÓÚ¶à·Ö×é·¢ËÍ£¬±ê¼ÇÓ¦´ğÊôÓÚÄÄ¸ö·Ö×é
+     * Opaqueåˆ°groupçš„æ˜ å°„,ä»…ç”¨äºå¤šåˆ†ç»„å‘é€ï¼Œæ ‡è®°åº”ç­”å±äºå“ªä¸ªåˆ†ç»„
      */
     private final ConcurrentHashMap<Integer/* opaque */, String/* group */> opaque2group =
             new ConcurrentHashMap<Integer, String>(128);
@@ -165,18 +160,18 @@ public class DefaultConnection implements Connection {
     }
 
 
-    // ÊÍ·Å×ÊÔ´£¬ÈÃcallback³¬Ê±
+    // é‡Šæ”¾èµ„æºï¼Œè®©callbackè¶…æ—¶
     void dispose() {
         for (final Integer opaque : this.requestCallBackMap.keySet()) {
             final RequestCallBack requestCallBack = this.requestCallBackMap.get(opaque);
-            // ÈÃcallBack³¬Ê±
+            // è®©callBackè¶…æ—¶
             if (requestCallBack != null) {
                 requestCallBack.onResponse(this.removeOpaqueToGroupMapping(opaque),
-                    this.createTimeoutCommand(new CommandHeader() {
-                        public Integer getOpaque() {
-                            return opaque;
-                        }
-                    }, this.getRemoteSocketAddress()), this);
+                        this.createTimeoutCommand(new CommandHeader() {
+                            public Integer getOpaque() {
+                                return opaque;
+                            }
+                        }, this.getRemoteSocketAddress()), this);
             }
 
         }
@@ -194,7 +189,7 @@ public class DefaultConnection implements Connection {
 
 
     /**
-     * ÒÆ³ıËùÓĞÎŞĞ§µÄÇëÇó»Øµ÷
+     * ç§»é™¤æ‰€æœ‰æ— æ•ˆçš„è¯·æ±‚å›è°ƒ
      */
     void removeAllInvalidRequestCallBack() {
         final Set<Integer> removedOpaqueSet = new HashSet<Integer>();
@@ -206,21 +201,21 @@ public class DefaultConnection implements Connection {
         }
         int count = 0;
         for (final Integer opaque : removedOpaqueSet) {
-            // ÔÙ´ÎÈ·ÈÏ
+            // å†æ¬¡ç¡®è®¤
             final RequestCallBack requestCallBack = this.requestCallBackMap.get(opaque);
             if (requestCallBack != null && requestCallBack.isInvalid(now)) {
-                // ÈÃcallBack³¬Ê±
+                // è®©callBackè¶…æ—¶
                 requestCallBack.onResponse(this.removeOpaqueToGroupMapping(opaque),
-                    this.createTimeoutCommand(new CommandHeader() {
-                        public Integer getOpaque() {
-                            return opaque;
-                        }
-                    }, this.getRemoteSocketAddress()), this);
+                        this.createTimeoutCommand(new CommandHeader() {
+                            public Integer getOpaque() {
+                                return opaque;
+                            }
+                        }, this.getRemoteSocketAddress()), this);
                 count++;
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("ÒÆ³ı" + count + "¸öÎŞĞ§»Øµ÷");
+            log.debug("ç§»é™¤" + count + "ä¸ªæ— æ•ˆå›è°ƒ");
         }
 
     }
@@ -248,8 +243,8 @@ public class DefaultConnection implements Connection {
 
     private void checkFlow() throws NotifyRemotingException {
         if (this.session.getScheduleWritenBytes() > this.remotingContext.getConfig().getMaxScheduleWrittenBytes()) {
-            throw new NotifyRemotingException("·¢ËÍÏûÏ¢Ê§°Ü£¬³¬¹ıÁ÷Á¿ÏŞÖÆ["
-                    + this.remotingContext.getConfig().getMaxScheduleWrittenBytes() + "×Ö½Ú]");
+            throw new NotifyRemotingException("å‘é€æ¶ˆæ¯å¤±è´¥ï¼Œè¶…è¿‡æµé‡é™åˆ¶["
+                    + this.remotingContext.getConfig().getMaxScheduleWrittenBytes() + "å­—èŠ‚]");
         }
     }
 
@@ -262,12 +257,11 @@ public class DefaultConnection implements Connection {
         this.checkFlow();
         final SingleRequestCallBack requestCallBack =
                 new SingleRequestCallBack(requestCommand.getRequestHeader(), TimeUnit.MILLISECONDS.convert(time,
-                    timeUnit));
+                        timeUnit));
         this.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
         try {
             requestCallBack.addWriteFuture(this, this.asyncWriteToSession(requestCommand));
-        }
-        catch (final Throwable t) {
+        } catch (final Throwable t) {
             this.removeRequestCallBack(requestCommand.getOpaque());
             throw new NotifyRemotingException(t);
         }
@@ -280,12 +274,12 @@ public class DefaultConnection implements Connection {
 
     void addRequestCallBack(final Integer opaque, final RequestCallBack requestCallBack) throws NotifyRemotingException {
         if (!this.remotingContext.aquire()) {
-            throw new NotifyRemotingException("³¬¹ıÔÊĞíµÄ×î´óCallBack¸öÊı["
+            throw new NotifyRemotingException("è¶…è¿‡å…è®¸çš„æœ€å¤§CallBackä¸ªæ•°["
                     + this.remotingContext.getConfig().getMaxCallBackCount() + "]");
         }
         if (this.requestCallBackMap.containsKey(opaque)) {
             this.remotingContext.release();
-            throw new NotifyRemotingException("Çë²»ÒªÖØ¸´·¢ËÍÍ¬Ò»¸öÃüÁîµ½Í¬Ò»¸öÁ¬½Ó");
+            throw new NotifyRemotingException("è¯·ä¸è¦é‡å¤å‘é€åŒä¸€ä¸ªå‘½ä»¤åˆ°åŒä¸€ä¸ªè¿æ¥");
         }
         this.requestCallBackMap.put(opaque, requestCallBack);
     }
@@ -306,8 +300,8 @@ public class DefaultConnection implements Connection {
 
 
     /**
-     * ÒÆ³ıopaqueµ½groupµÄÓ³Éä£¬½öÓÃÓÚ¶à·Ö×é·¢ËÍ
-     * 
+     * ç§»é™¤opaqueåˆ°groupçš„æ˜ å°„ï¼Œä»…ç”¨äºå¤šåˆ†ç»„å‘é€
+     *
      * @param opaque
      * @return
      */
@@ -317,8 +311,8 @@ public class DefaultConnection implements Connection {
 
 
     /**
-     * Ìí¼Óopaqueµ½groupµÄÓ³Éä£¬½öÓÃÓÚ¶à·Ö×é·¢ËÍ
-     * 
+     * æ·»åŠ opaqueåˆ°groupçš„æ˜ å°„ï¼Œä»…ç”¨äºå¤šåˆ†ç»„å‘é€
+     *
      * @param opaque
      * @return
      */
@@ -340,7 +334,7 @@ public class DefaultConnection implements Connection {
 
 
     public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener,
-            final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
+                     final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
         if (requestCommand == null) {
             throw new NotifyRemotingException("Null message");
         }
@@ -360,9 +354,8 @@ public class DefaultConnection implements Connection {
         try {
             requestCallBack.addWriteFuture(this, this.asyncWriteToSession(requestCommand));
             this.session.insertTimer(timerRef);
-        }
-        catch (final Throwable t) {
-            // ÇĞ¼ÇÒÆ³ıcallBack
+        } catch (final Throwable t) {
+            // åˆ‡è®°ç§»é™¤callBack
             this.removeRequestCallBack(requestCommand.getOpaque());
             throw new NotifyRemotingException(t);
         }
@@ -390,8 +383,7 @@ public class DefaultConnection implements Connection {
     private Future<Boolean> asyncWriteToSession(final Object packet) {
         if (this.writeInterruptibly) {
             return this.session.asyncWriteInterruptibly(packet);
-        }
-        else {
+        } else {
             return this.session.asyncWrite(packet);
         }
     }
@@ -400,7 +392,7 @@ public class DefaultConnection implements Connection {
     public DefaultConnection(final NioSession ioSession, final DefaultRemotingContext remotingContext) {
         this.session = ioSession;
         this.remotingContext = remotingContext;
-        // ÉèÖÃsessionµÄÁ¬½ÓÊôĞÔ
+        // è®¾ç½®sessionçš„è¿æ¥å±æ€§
         this.session.setAttribute(Constants.CONNECTION_ATTR, this);
     }
 
@@ -422,8 +414,7 @@ public class DefaultConnection implements Connection {
         this.setAllowReconnect(allowReconnect);
         try {
             this.session.close();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new NotifyRemotingException(e);
         }
     }
@@ -479,12 +470,10 @@ public class DefaultConnection implements Connection {
         try {
             if (this.writeInterruptibly) {
                 this.session.writeInterruptibly(packet);
-            }
-            else {
+            } else {
                 this.session.write(packet);
             }
-        }
-        catch (final Throwable t) {
+        } catch (final Throwable t) {
             throw new NotifyRemotingException(t);
         }
     }
@@ -496,14 +485,14 @@ public class DefaultConnection implements Connection {
 
 
     public void transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position,
-            final long size) {
+                             final long size) {
         this.session.transferFrom(head, tail, channel, position, size);
     }
 
 
     public void transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position,
-            final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time,
-            final TimeUnit unit) throws NotifyRemotingException {
+                             final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time,
+                             final TimeUnit unit) throws NotifyRemotingException {
         if (channel == null) {
             throw new NotifyRemotingException("Null source channel");
         }
@@ -526,9 +515,8 @@ public class DefaultConnection implements Connection {
         try {
             requestCallBack.addWriteFuture(this, this.session.transferFrom(head, tail, channel, position, size));
             this.session.insertTimer(timerRef);
-        }
-        catch (final Throwable t) {
-            // ÇĞ¼ÇÒÆ³ıcallBack
+        } catch (final Throwable t) {
+            // åˆ‡è®°ç§»é™¤callBack
             this.removeRequestCallBack(opaque);
             throw new NotifyRemotingException(t);
         }

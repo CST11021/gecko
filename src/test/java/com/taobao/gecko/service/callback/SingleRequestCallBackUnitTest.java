@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,12 +27,8 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-21 下午05:23:04
+ * @since 1.0, 2009-12-21 涓嬪崍05:23:04
  */
 
 public class SingleRequestCallBackUnitTest {
@@ -48,8 +44,7 @@ public class SingleRequestCallBackUnitTest {
         try {
             this.requestCallBack.getResult(1000, TimeUnit.MILLISECONDS, null);
             Assert.fail();
-        }
-        catch (final TimeoutException e) {
+        } catch (final TimeoutException e) {
             Assert.assertEquals("Operation timeout", e.getMessage());
         }
 
@@ -68,9 +63,8 @@ public class SingleRequestCallBackUnitTest {
         try {
             this.requestCallBack.getResult();
             Assert.fail();
-        }
-        catch (final NotifyRemotingException e) {
-            Assert.assertEquals("同步调用失败", e.getMessage());
+        } catch (final NotifyRemotingException e) {
+            Assert.assertEquals("鍚屾璋冪敤澶辫触", e.getMessage());
             Assert.assertEquals("test", e.getCause().getMessage());
         }
     }

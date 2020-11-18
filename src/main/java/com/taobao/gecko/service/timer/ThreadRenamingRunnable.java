@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,14 +38,11 @@ import org.apache.commons.logging.LogFactory;
  * A {@link Runnable} that changes the current thread name and reverts it back
  * when its execution ends. To change the default thread names set by Netty, use
  * {@link #setThreadNameDeterminer(ThreadNameDeterminer)}.
- * 
+ *
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
- * 
- * 
  * @apiviz.landmark
  * @apiviz.has org.jboss.netty.util.ThreadNameDeterminer oneway - -
- * 
  */
 public class ThreadRenamingRunnable implements Runnable {
 
@@ -83,8 +80,7 @@ public class ThreadRenamingRunnable implements Runnable {
             try {
                 currentThread.setName(newThreadName);
                 renamed = true;
-            }
-            catch (SecurityException e) {
+            } catch (SecurityException e) {
                 logger.debug("Failed to rename a thread " + "due to security restriction.", e);
             }
         }
@@ -92,8 +88,7 @@ public class ThreadRenamingRunnable implements Runnable {
         // Run the actual runnable and revert the name back when it ends.
         try {
             this.runnable.run();
-        }
-        finally {
+        } finally {
             if (renamed) {
                 // Revert the name back if the current thread was renamed.
                 // We do not check the exception here because we know it works.

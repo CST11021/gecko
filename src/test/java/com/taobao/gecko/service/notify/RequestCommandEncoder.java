@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,13 +23,8 @@ import com.taobao.gecko.service.notify.request.NotifyRequestCommand;
 
 
 /**
- * 
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午05:54:09
+ * @since 1.0, 2009-12-16 涓嬪崍05:54:09
  */
 public class RequestCommandEncoder implements CodecFactory.Encoder {
     static final IoBuffer EMPTY = IoBuffer.allocate(0);
@@ -47,22 +42,20 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
                 this.putContent(message, requestCommand, buffer);
                 buffer.flip();
                 return buffer;
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 session.getHandler().onExceptionCaught(session, e);
-                // 捕捉mashall异常，返回给用户
+                // 鎹曟崏mashall寮傚父锛岃繑鍥炵粰鐢ㄦ埛
                 final DefaultConnection conn =
                         (DefaultConnection) session
-                            .getAttribute(com.taobao.gecko.core.command.Constants.CONNECTION_ATTR);
+                                .getAttribute(com.taobao.gecko.core.command.Constants.CONNECTION_ATTR);
                 if (conn != null) {
                     conn.notifyClientException(requestCommand, e);
                 }
-                // 最后返回一个空buffer
+                // 鏈�鍚庤繑鍥炰竴涓┖buffer
                 return EMPTY.slice();
             }
 
-        }
-        else {
+        } else {
             throw new RuntimeException("Illegal request message," + message);
         }
     }

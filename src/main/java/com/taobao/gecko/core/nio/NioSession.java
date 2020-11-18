@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 /**
- *Copyright [2009-2010] [dennis zhuang]
- *Licensed under the Apache License, Version 2.0 (the "License");
- *you may not use this file except in compliance with the License.
- *You may obtain a copy of the License at
- *             http://www.apache.org/licenses/LICENSE-2.0
- *Unless required by applicable law or agreed to in writing,
- *software distributed under the License is distributed on an "AS IS" BASIS,
- *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- *either express or implied. See the License for the specific language governing permissions and limitations under the License
+ * Copyright [2009-2010] [dennis zhuang]
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
 package com.taobao.gecko.core.nio;
 
@@ -38,41 +38,41 @@ import com.taobao.gecko.core.nio.impl.TimerRef;
 
 
 /**
- * NioµÄÁ¬½Ó½Ó¿Ú
- * 
+ * Nioçš„è¿æ¥æ¥å£
+ *
  * @author boyan
- * 
+ *
  */
 public interface NioSession extends Session {
     /*
-     * ÅÉ·¢ÊÂ¼ş
-     * 
+     * æ´¾å‘äº‹ä»¶
+     *
      * @param event
-     * 
+     *
      * @param selector
      */
     public void onEvent(EventType event, Selector selector);
 
 
     /**
-     * ×¢²á¶Á
-     * 
+     * æ³¨å†Œè¯»
+     *
      * @param selector
      */
     public void enableRead(Selector selector);
 
 
     /**
-     * ×¢²áĞ´
-     * 
+     * æ³¨å†Œå†™
+     *
      * @param selector
      */
     public void enableWrite(Selector selector);
 
 
     /**
-     * Ìí¼ÓÒ»¸ö¶¨Ê±Æ÷
-     * 
+     * æ·»åŠ ä¸€ä¸ªå®šæ—¶å™¨
+     *
      * @param timeout
      * @param runnable
      * @return TODO
@@ -81,33 +81,33 @@ public interface NioSession extends Session {
 
 
     /**
-     * Íù¸ÃÁ¬½ÓĞ´ÈëÏûÏ¢£¬¿É±»ÖĞ¶Ï£¬ÖĞ¶Ï¿ÉÄÜÒıÆğÁ¬½ÓµÄ¹Ø±Õ£¬É÷ÖØÊ¹ÓÃ
-     * 
+     * å¾€è¯¥è¿æ¥å†™å…¥æ¶ˆæ¯ï¼Œå¯è¢«ä¸­æ–­ï¼Œä¸­æ–­å¯èƒ½å¼•èµ·è¿æ¥çš„å…³é—­ï¼Œæ…é‡ä½¿ç”¨
+     *
      * @param message
      */
     public void writeInterruptibly(Object message);
 
 
     /**
-     * Íù¸ÃÁ¬½ÓĞ´ÈëÏûÏ¢£¬¿É±»ÖĞ¶Ï£¬ÖĞ¶Ï¿ÉÄÜÒıÆğÁ¬½ÓµÄ¹Ø±Õ£¬É÷ÖØÊ¹ÓÃ
-     * 
+     * å¾€è¯¥è¿æ¥å†™å…¥æ¶ˆæ¯ï¼Œå¯è¢«ä¸­æ–­ï¼Œä¸­æ–­å¯èƒ½å¼•èµ·è¿æ¥çš„å…³é—­ï¼Œæ…é‡ä½¿ç”¨
+     *
      * @param message
      */
     public Future<Boolean> asyncWriteInterruptibly(Object message);
 
 
     /**
-     * »ñµÃÁ¬½Ó¶ÔÓ¦µÄchannel
-     * 
+     * è·å¾—è¿æ¥å¯¹åº”çš„channel
+     *
      * @return
      */
     public SelectableChannel channel();
 
 
     /**
-     * ´ÓÖ¸¶¨FileChannelµÄpositionÎ»ÖÃ¿ªÊ¼´«Êäsize¸ö×Ö½Úµ½socket£¬·µ»Øfuture¶ÔÏó²éÑ¯×´Ì¬,
-     * ÆäÖĞheadºÍtailÊÇÔÚ´«ÊäÎÄ¼şÇ°ºóĞ´ÈëµÄÊı¾İ£¬¿ÉÒÔÎªnull
-     * 
+     * ä»æŒ‡å®šFileChannelçš„positionä½ç½®å¼€å§‹ä¼ è¾“sizeä¸ªå­—èŠ‚åˆ°socketï¼Œè¿”å›futureå¯¹è±¡æŸ¥è¯¢çŠ¶æ€,
+     * å…¶ä¸­headå’Œtailæ˜¯åœ¨ä¼ è¾“æ–‡ä»¶å‰åå†™å…¥çš„æ•°æ®ï¼Œå¯ä»¥ä¸ºnull
+     *
      * @param src
      * @param position
      * @param size
@@ -117,9 +117,9 @@ public interface NioSession extends Session {
 
 
     /**
-     * ´ÓÖ¸¶¨FileChannelµÄpositionÎ»ÖÃ¿ªÊ¼´«Êäsize¸ö×Ö½Úµ½socket£¬ÆäÖĞheadºÍtailÊÇÔÚ´«ÊäÎÄ¼şÇ°ºóĞ´ÈëµÄÊı¾İ£¬
-     * ¿ÉÒÔÎªnull
-     * 
+     * ä»æŒ‡å®šFileChannelçš„positionä½ç½®å¼€å§‹ä¼ è¾“sizeä¸ªå­—èŠ‚åˆ°socketï¼Œå…¶ä¸­headå’Œtailæ˜¯åœ¨ä¼ è¾“æ–‡ä»¶å‰åå†™å…¥çš„æ•°æ®ï¼Œ
+     * å¯ä»¥ä¸ºnull
+     *
      * @param src
      * @param position
      * @param size

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,24 +26,21 @@ import com.taobao.gecko.service.GroupAllConnectionCallBackListener;
 
 
 /**
- * 
- * 
- * 单个分组所有连接的请求回调
- * 
+ * 鍗曚釜鍒嗙粍鎵�鏈夎繛鎺ョ殑璇锋眰鍥炶皟
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午03:29:41
+ * @since 1.0, 2009-12-16 涓嬪崍03:29:41
  */
 
 public class GroupAllConnectionRequestCallBack extends AbstractRequestCallBack {
-    private final ConcurrentHashMap<Connection, ResponseCommand> resultMap; // 应答结果集合
+    private final ConcurrentHashMap<Connection, ResponseCommand> resultMap; // 搴旂瓟缁撴灉闆嗗悎
     private final GroupAllConnectionCallBackListener listener;
     private boolean responsed;
 
 
     public GroupAllConnectionRequestCallBack(final GroupAllConnectionCallBackListener listener,
-            final CountDownLatch countDownLatch, final long timeout, final long timestamp,
-            final ConcurrentHashMap<Connection, ResponseCommand> resultMap) {
+                                             final CountDownLatch countDownLatch, final long timeout, final long timestamp,
+                                             final ConcurrentHashMap<Connection, ResponseCommand> resultMap) {
         super(countDownLatch, timeout, timestamp);
         this.listener = listener;
         this.resultMap = resultMap;
@@ -59,7 +56,7 @@ public class GroupAllConnectionRequestCallBack extends AbstractRequestCallBack {
     @Override
     public void setException0(final Exception e, final Connection conn, final RequestCommand requestCommand) {
         if (this.resultMap.putIfAbsent(conn,
-            createComunicationErrorResponseCommand(conn, e, requestCommand, conn.getRemoteSocketAddress())) == null) {
+                createComunicationErrorResponseCommand(conn, e, requestCommand, conn.getRemoteSocketAddress())) == null) {
             this.countDownLatch();
         }
         this.tryNotifyListener();
@@ -94,11 +91,10 @@ public class GroupAllConnectionRequestCallBack extends AbstractRequestCallBack {
                     this.listener.getExecutor().execute(new Runnable() {
                         public void run() {
                             GroupAllConnectionRequestCallBack.this.listener
-                                .onResponse(GroupAllConnectionRequestCallBack.this.resultMap);
+                                    .onResponse(GroupAllConnectionRequestCallBack.this.resultMap);
                         }
                     });
-                }
-                else {
+                } else {
                     this.listener.onResponse(this.resultMap);
                 }
             }

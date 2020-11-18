@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,17 @@
 package com.taobao.gecko.core.nio.impl;
 
 /**
- *Copyright [2008-2009] [dennis zhuang]
- *Licensed under the Apache License, Version 2.0 (the "License");
- *you may not use this file except in compliance with the License.
- *You may obtain a copy of the License at
- *             http://www.apache.org/licenses/LICENSE-2.0
- *Unless required by applicable law or agreed to in writing,
- *software distributed under the License is distributed on an "AS IS" BASIS,
- *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- *either express or implied. See the License for the specific language governing permissions and limitations under the License
+ * Copyright [2008-2009] [dennis zhuang]
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -52,13 +53,13 @@ import com.taobao.gecko.core.util.SelectorFactory;
 
 
 /**
- * Nio tcpÁ¬½Ó
- * 
- * 
- * 
+ * Nio tcpè¿æ¥
+ *
+ *
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç06:09:15
+ *
+ * @since 1.0, 2009-12-16 ä¸‹åˆ06:09:15
  */
 public class NioTCPSession extends AbstractNioSession {
     private InetSocketAddress remoteAddress;
@@ -87,8 +88,7 @@ public class NioTCPSession extends AbstractNioSession {
         this.onCreated();
         try {
             this.recvBufferSize = ((SocketChannel) this.selectableChannel).socket().getReceiveBufferSize();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             log.error("Get socket receive buffer size failed", e);
         }
     }
@@ -99,7 +99,7 @@ public class NioTCPSession extends AbstractNioSession {
     }
 
     /**
-     * Èç¹ûĞ´Èë·µ»ØÎª0£¬Ç¿ÖÆÑ­»·¶à´Î£¬Ìá¸ß·¢ËÍĞ§ÂÊ
+     * å¦‚æœå†™å…¥è¿”å›ä¸º0ï¼Œå¼ºåˆ¶å¾ªç¯å¤šæ¬¡ï¼Œæé«˜å‘é€æ•ˆç‡
      */
     static final int WRITE_SPIN_COUNT = Integer.parseInt(System.getProperty("notify.remoting.write_spin_count", "16"));
 
@@ -120,8 +120,7 @@ public class NioTCPSession extends AbstractNioSession {
         message.writing();
         if (this.useBlockingWrite) {
             return this.blockingWrite(this.selectableChannel, message, message);
-        }
-        else {
+        } else {
             for (int i = 0; i < WRITE_SPIN_COUNT; i++) {
                 final long n = this.doRealWrite(this.selectableChannel, message);
                 if (n > 0) {
@@ -156,8 +155,8 @@ public class NioTCPSession extends AbstractNioSession {
 
 
     /**
-     * ×èÈûĞ´£¬²ÉÓÃtemp selectorÇ¿ÖÆĞ´Èë
-     * 
+     * é˜»å¡å†™ï¼Œé‡‡ç”¨temp selectorå¼ºåˆ¶å†™å…¥
+     *
      * @param channel
      * @param message
      * @param writeBuffer
@@ -166,7 +165,7 @@ public class NioTCPSession extends AbstractNioSession {
      * @throws ClosedChannelException
      */
     protected final Object blockingWrite(final SelectableChannel channel, final WriteMessage message,
-            final WriteMessage writeBuffer) throws IOException, ClosedChannelException {
+                                         final WriteMessage writeBuffer) throws IOException, ClosedChannelException {
         SelectionKey tmpKey = null;
         Selector writeSelector = null;
         int attempts = 0;
@@ -178,8 +177,7 @@ public class NioTCPSession extends AbstractNioSession {
                     attempts = 0;
                     bytesProduced += len;
                     this.statistics.statisticsWrite(len);
-                }
-                else {
+                } else {
                     attempts++;
                     if (writeSelector == null) {
                         writeSelector = SelectorFactory.getSelector();
@@ -199,8 +197,7 @@ public class NioTCPSession extends AbstractNioSession {
             if (!writeBuffer.hasRemaining() && message.getWriteFuture() != null) {
                 message.getWriteFuture().setResult(Boolean.TRUE);
             }
-        }
-        finally {
+        } finally {
             if (tmpKey != null) {
                 tmpKey.cancel();
                 tmpKey = null;
@@ -237,7 +234,7 @@ public class NioTCPSession extends AbstractNioSession {
         try {
             while ((n = ((ReadableByteChannel) this.selectableChannel).read(this.readBuffer.buf())) > 0) {
                 readCount += n;
-                // readBufferÃ»ÓĞ¿Õ¼ä£¬Ìø³öÑ­»·
+                // readBufferæ²¡æœ‰ç©ºé—´ï¼Œè·³å‡ºå¾ªç¯
                 if (!this.readBuffer.hasRemaining()) {
                     break;
                 }
@@ -246,8 +243,7 @@ public class NioTCPSession extends AbstractNioSession {
                 this.readBuffer.flip();
                 this.decode();
                 this.readBuffer.compact();
-            }
-            else if (readCount == 0 && this.useBlockingRead) {
+            } else if (readCount == 0 && this.useBlockingRead) {
                 if (this.selectableChannel instanceof SocketChannel
                         && !((SocketChannel) this.selectableChannel).socket().isInputShutdown()) {
                     n = this.blockingRead();
@@ -258,19 +254,16 @@ public class NioTCPSession extends AbstractNioSession {
             }
             if (n < 0) { // Connection closed
                 this.close0();
-            }
-            else {
+            } else {
                 this.selectorManager.registerSession(this, EventType.ENABLE_READ);
             }
             if (log.isDebugEnabled()) {
                 log.debug("read " + readCount + " bytes from channel");
             }
-        }
-        catch (final ClosedChannelException e) {
-            // ignore£¬²»ĞèÒªÓÃ»§ÖªµÀ
+        } catch (final ClosedChannelException e) {
+            // ignoreï¼Œä¸éœ€è¦ç”¨æˆ·çŸ¥é“
             this.close0();
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             this.close0();
             this.onException(e);
 
@@ -300,8 +293,7 @@ public class NioTCPSession extends AbstractNioSession {
                     this.readBuffer.compact();
                 }
             }
-        }
-        finally {
+        } finally {
             if (tmpKey != null) {
                 tmpKey.cancel();
                 tmpKey = null;
@@ -317,7 +309,7 @@ public class NioTCPSession extends AbstractNioSession {
 
 
     /**
-     * ½âÂë²¢ÅÉ·¢ÏûÏ¢
+     * è§£ç å¹¶æ´¾å‘æ¶ˆæ¯
      */
     @Override
     public void decode() {
@@ -328,16 +320,14 @@ public class NioTCPSession extends AbstractNioSession {
                 message = this.decoder.decode(this.readBuffer, this);
                 if (message == null) {
                     break;
-                }
-                else {
+                } else {
                     if (this.statistics.isStatistics()) {
                         this.statistics.statisticsRead(size - this.readBuffer.remaining());
                         size = this.readBuffer.remaining();
                     }
                 }
                 this.dispatchReceivedMessage(message);
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 this.onException(e);
                 log.error("Decode error", e);
                 super.close();
@@ -355,10 +345,9 @@ public class NioTCPSession extends AbstractNioSession {
     public ChannelInputStream getInputStream(final Object msg) throws IOException {
         if (this.decoder instanceof ByteBufferCodecFactory.ByteBufferDecoder) {
             return new ChannelInputStream(((IoBuffer) msg).buf());
-        }
-        else {
+        } else {
             throw new IOException(
-                "If you want to use ChannelInputStream,please set CodecFactory to ByteBufferCodecFactory");
+                    "If you want to use ChannelInputStream,please set CodecFactory to ByteBufferCodecFactory");
         }
     }
 
@@ -366,10 +355,9 @@ public class NioTCPSession extends AbstractNioSession {
     public ChannelOutputStream getOutputStream() throws IOException {
         if (this.encoder instanceof ByteBufferCodecFactory.ByteBufferEncoder) {
             return new ChannelOutputStream(this, 0, false);
-        }
-        else {
+        } else {
             throw new IOException(
-                "If you want to use ChannelOutputStream,please set CodecFactory to ByteBufferCodecFactory");
+                    "If you want to use ChannelOutputStream,please set CodecFactory to ByteBufferCodecFactory");
         }
     }
 
@@ -380,17 +368,16 @@ public class NioTCPSession extends AbstractNioSession {
         }
         if (this.encoder instanceof ByteBufferCodecFactory.ByteBufferEncoder) {
             return new ChannelOutputStream(this, capacity, direct);
-        }
-        else {
+        } else {
             throw new IOException(
-                "If you want to use ChannelOutputStream,please set CodecFactory to ByteBufferCodecFactory");
+                    "If you want to use ChannelOutputStream,please set CodecFactory to ByteBufferCodecFactory");
         }
     }
 
 
     @Override
     protected final void closeChannel() throws IOException {
-        // ÓÅÏÈ¹Ø±ÕÊä³öÁ÷
+        // ä¼˜å…ˆå…³é—­è¾“å‡ºæµ
         try {
             if (this.selectableChannel instanceof SocketChannel) {
                 final Socket socket = ((SocketChannel) this.selectableChannel).socket();
@@ -401,19 +388,16 @@ public class NioTCPSession extends AbstractNioSession {
                     if (!socket.isClosed() && !socket.isInputShutdown()) {
                         socket.shutdownInput();
                     }
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     // ignore
                 }
                 try {
                     socket.close();
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     // ignore
                 }
             }
-        }
-        finally {
+        } finally {
             this.unregisterSession();
         }
     }
@@ -424,7 +408,7 @@ public class NioTCPSession extends AbstractNioSession {
         if (this.initialReadBufferSize > 0 && this.readBuffer.capacity() > this.initialReadBufferSize) {
             this.readBuffer =
                     IoBuffer.wrap(ByteBufferUtils.decreaseBufferCapatity(this.readBuffer.buf(), this.recvBufferSize,
-                        this.initialReadBufferSize));
+                            this.initialReadBufferSize));
 
         }
     }

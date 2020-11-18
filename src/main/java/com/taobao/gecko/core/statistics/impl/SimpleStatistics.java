@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,10 @@ import com.taobao.gecko.core.statistics.Statistics;
 
 
 /**
- * 简单统计类
- * 
- * 
- * 
+ * 绠�鍗曠粺璁＄被
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午06:19:09
+ * @since 1.0, 2009-12-16 涓嬪崍06:19:09
  */
 public class SimpleStatistics implements Statistics {
     private boolean started = false;
@@ -63,7 +60,7 @@ public class SimpleStatistics implements Statistics {
 
     /**
      * Check session if receive bytes per second is over flow controll
-     * 
+     *
      * @return
      */
     public boolean isReceiveOverFlow() {
@@ -76,7 +73,7 @@ public class SimpleStatistics implements Statistics {
 
     /**
      * Check session if receive bytes per second is over flow controll
-     * 
+     *
      * @return
      */
     public boolean isSendOverFlow() {

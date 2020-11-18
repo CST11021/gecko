@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,19 +32,16 @@ import com.taobao.gecko.service.RemotingClient;
 
 
 /**
- * GeckoµÄÁ¬½Ó¹ÜÀíÆ÷£¬À©Õ¹SocketChannelController£¬Ìá¹©µ¥¸öController¹ÜÀí¶à¸ö¿Í»§¶ËÁ¬½Ó¹¦ÄÜ
- * 
- * 
- * 
+ * Geckoçš„è¿æ¥ç®¡ç†å™¨ï¼Œæ‰©å±•SocketChannelControllerï¼Œæä¾›å•ä¸ªControllerç®¡ç†å¤šä¸ªå®¢æˆ·ç«¯è¿æ¥åŠŸèƒ½
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç05:56:50
+ * @since 1.0, 2009-12-16 ä¸‹åˆ05:56:50
  */
 
 public class GeckoTCPConnectorController extends SocketChannelController {
 
     /**
-     * Á¬½ÓÊ§°Ü¼àÌıÆ÷
+     * è¿æ¥å¤±è´¥ç›‘å¬å™¨
      */
     private ConnectFailListener connectFailListener;
 
@@ -73,14 +70,12 @@ public class GeckoTCPConnectorController extends SocketChannelController {
             final FutureImpl<NioSession> resultFuture = new FutureImpl<NioSession>(args);
             if (!socketChannel.connect(remoteAddress)) {
                 this.selectorManager.registerChannel(socketChannel, SelectionKey.OP_CONNECT, resultFuture);
-            }
-            else {
+            } else {
                 final NioSession session = this.createSession(socketChannel, args);
                 resultFuture.setResult(session);
             }
             return resultFuture;
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             if (socketChannel != null) {
                 socketChannel.close();
             }
@@ -100,12 +95,11 @@ public class GeckoTCPConnectorController extends SocketChannelController {
                 throw new IOException("Connect Fail");
             }
             future.setResult(this.createSession((SocketChannel) key.channel(), future.getArgs()));
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             this.cancelKey(key);
             future.failure(e);
             log.error(e, e);
-            // Í¨ÖªÁ¬½ÓÊ§°Ü
+            // é€šçŸ¥è¿æ¥å¤±è´¥
             if (this.connectFailListener != null) {
                 this.connectFailListener.onConnectFail(future.getArgs());
             }
@@ -118,8 +112,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
             if (key.channel() != null) {
                 key.channel().close();
             }
-        }
-        finally {
+        } finally {
             key.cancel();
         }
     }
@@ -141,7 +134,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
 
 
     public GeckoTCPConnectorController(final Configuration configuration, final Handler handler,
-            final CodecFactory codecFactory) {
+                                       final CodecFactory codecFactory) {
         super(configuration, handler, codecFactory);
     }
 

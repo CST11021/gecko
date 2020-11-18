@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,19 +29,16 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
 
 
 /**
- * 
- * 
- * Ğ­ÒéÃüÁî¹¤³§Àà£¬ÈÎºÎÊµÏÖµÄĞ­Òé¶¼ĞèÒªÔÚ´Ë¹¤³§×¢²á£¬Ìá¹©¸ø±à½âÂëÆ÷Ê¹ÓÃ
- * 
+ * åè®®å‘½ä»¤å·¥å‚ç±»ï¼Œä»»ä½•å®ç°çš„åè®®éƒ½éœ€è¦åœ¨æ­¤å·¥å‚æ³¨å†Œï¼Œæä¾›ç»™ç¼–è§£ç å™¨ä½¿ç”¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-18 ÉÏÎç11:13:33
+ * @since 1.0, 2009-12-18 ä¸Šåˆ11:13:33
  */
 
 public final class NotifyCommandFactory implements CommandFactory {
 
     public BooleanAckCommand createBooleanAckCommand(final CommandHeader request,
-            final ResponseStatus responseStatus, final String errorMsg) {
+                                                     final ResponseStatus responseStatus, final String errorMsg) {
         return new NotifyBooleanAckCommand(request, responseStatus, errorMsg);
     }
 
@@ -55,14 +52,14 @@ public final class NotifyCommandFactory implements CommandFactory {
         ResponseCommand responseCommand = null;
         switch (opCode) {
 
-        case HEARTBEAT:
-            responseCommand = new NotifyBooleanAckCommand(opCode);
-            break;
-        case DUMMY:
-            responseCommand = new NotifyDummyAckCommand(opCode);
-            break;
-        default:
-            throw new RuntimeException("Unknow response command for " + opCode.name());
+            case HEARTBEAT:
+                responseCommand = new NotifyBooleanAckCommand(opCode);
+                break;
+            case DUMMY:
+                responseCommand = new NotifyDummyAckCommand(opCode);
+                break;
+            default:
+                throw new RuntimeException("Unknow response command for " + opCode.name());
         }
         return responseCommand;
     }
@@ -72,15 +69,15 @@ public final class NotifyCommandFactory implements CommandFactory {
         RequestCommand requestCommand = null;
         switch (opCode) {
 
-        case HEARTBEAT:
-            requestCommand = new NotifyHeartBeatCommand(opCode);
-            break;
-        case DUMMY:
-            requestCommand = new NotifyDummyRequestCommand(opCode);
-            break;
+            case HEARTBEAT:
+                requestCommand = new NotifyHeartBeatCommand(opCode);
+                break;
+            case DUMMY:
+                requestCommand = new NotifyDummyRequestCommand(opCode);
+                break;
 
-        default:
-            throw new RuntimeException("Could not new request command by opCode,opCode=" + opCode);
+            default:
+                throw new RuntimeException("Could not new request command by opCode,opCode=" + opCode);
         }
         return requestCommand;
     }

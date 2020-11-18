@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,22 +21,19 @@ import com.taobao.gecko.service.impl.DefaultRemotingContext;
 
 
 /**
- * ³£Á¿Öµ
- * 
- * 
- * 
+ * å¸¸é‡å€¼
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç05:54:39
+ * @since 1.0, 2009-12-16 ä¸‹åˆ05:54:39
  */
 public class Constants {
 
     /**
-     * Ä¬ÈÏ·Ö×éÃû
+     * é»˜è®¤åˆ†ç»„å
      */
     public static final String DEFAULT_GROUP = DefaultRemotingContext.class.getSimpleName()
             + "_Notify_Default_Group_Name";
-    // Á¬½ÓÊıÊôĞÔ
+    // è¿æ¥æ•°å±æ€§
     public static final String CONNECTION_COUNT_ATTR = DefaultRemotingClient.class.getName()
             + "_Notify_Remoting_ConnCount";
 

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,12 +39,8 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-21 ÏÂÎç02:25:29
+ * @since 1.0, 2009-12-21 ä¸‹åˆ02:25:29
  */
 
 public class DefaultConnectionUnitTest {
@@ -137,7 +133,7 @@ public class DefaultConnectionUnitTest {
 
             public void onResponse(final ResponseCommand responseCommand, final Connection conn) {
                 Assert.assertNotSame(response, responseCommand);
-                Assert.assertEquals("µÈ´ıÏìÓ¦³¬Ê±", ((NotifyBooleanAckCommand) responseCommand).getErrorMsg());
+                Assert.assertEquals("ç­‰å¾…å“åº”è¶…æ—¶", ((NotifyBooleanAckCommand) responseCommand).getErrorMsg());
                 Assert.assertEquals(ResponseStatus.TIMEOUT, responseCommand.getResponseStatus());
                 Assert.assertSame(DefaultConnectionUnitTest.this.connection, conn);
                 synchronized (DefaultConnectionUnitTest.this.connection) {
@@ -179,8 +175,7 @@ public class DefaultConnectionUnitTest {
                 final RequestCallBack requestCallBack =
                         DefaultConnectionUnitTest.this.connection.getRequestCallBack(this.request.getOpaque());
                 requestCallBack.onResponse("test", this.response, DefaultConnectionUnitTest.this.connection);
-            }
-            catch (final InterruptedException e) {
+            } catch (final InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -205,9 +200,8 @@ public class DefaultConnectionUnitTest {
         this.connection.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
         try {
             this.connection.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
-        }
-        catch (final NotifyRemotingException e) {
-            Assert.assertEquals("Çë²»ÒªÖØ¸´·¢ËÍÍ¬Ò»¸öÃüÁîµ½Í¬Ò»¸öÁ¬½Ó", e.getMessage());
+        } catch (final NotifyRemotingException e) {
+            Assert.assertEquals("è¯·ä¸è¦é‡å¤å‘é€åŒä¸€ä¸ªå‘½ä»¤åˆ°åŒä¸€ä¸ªè¿æ¥", e.getMessage());
         }
 
         Assert.assertSame(requestCallBack, this.connection.getRequestCallBack(requestCommand.getOpaque()));
@@ -229,8 +223,7 @@ public class DefaultConnectionUnitTest {
         try {
             this.connection.invoke(requestCommand);
             Assert.fail();
-        }
-        catch (final java.util.concurrent.TimeoutException e) {
+        } catch (final java.util.concurrent.TimeoutException e) {
             Assert.assertEquals("Operation timeout", e.getMessage());
         }
 

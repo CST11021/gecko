@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,12 +35,8 @@ import com.taobao.gecko.service.impl.RequestCallBack;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-23 œ¬ŒÁ01:37:39
+ * @since 1.0, 2009-12-23 ‰∏ãÂçà01:37:39
  */
 
 public class MockConnection implements Connection {
@@ -78,7 +74,7 @@ public class MockConnection implements Connection {
 
 
     public void transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position,
-            final long size) {
+                             final long size) {
         // TODO Auto-generated method stub
 
     }
@@ -170,7 +166,7 @@ public class MockConnection implements Connection {
 
 
     public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener,
-            final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
+                     final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
         // TODO Auto-generated method stub
 
     }
@@ -202,8 +198,8 @@ public class MockConnection implements Connection {
 
 
     public void transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position,
-            final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time,
-            final TimeUnit unit) throws NotifyRemotingException {
+                             final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time,
+                             final TimeUnit unit) throws NotifyRemotingException {
         // TODO Auto-generated method stub
 
     }

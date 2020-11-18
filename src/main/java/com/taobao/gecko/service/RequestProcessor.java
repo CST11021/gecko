@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,30 +21,25 @@ import com.taobao.gecko.core.command.RequestCommand;
 
 
 /**
- * 
- * 
- * ÇëÇó´¦ÀíÆ÷
- * 
+ * è¯·æ±‚å¤„ç†å™¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç02:45:43
+ * @since 1.0, 2009-12-15 ä¸‹åˆ02:45:43
  */
 
 public interface RequestProcessor<T extends RequestCommand> {
     /**
-     * ´¦ÀíÇëÇó
-     * 
-     * @param request
-     *            ÇëÇóÃüÁî
-     * @param conn
-     *            ÇëÇóÀ´Ô´µÄÁ¬½Ó
+     * å¤„ç†è¯·æ±‚
+     *
+     * @param request è¯·æ±‚å‘½ä»¤
+     * @param conn    è¯·æ±‚æ¥æºçš„è¿æ¥
      */
     public void handleRequest(T request, Connection conn);
 
 
     /**
-     * ÓÃ»§×Ô¶¨ÒåµÄÏß³Ì³Ø£¬Èç¹ûÌá¹©£¬ÄÇÃ´ÇëÇóµÄ´¦Àí¶¼½«ÔÚ¸ÃÏß³Ì³ØÄÚÖ´ĞĞ
-     * 
+     * ç”¨æˆ·è‡ªå®šä¹‰çš„çº¿ç¨‹æ± ï¼Œå¦‚æœæä¾›ï¼Œé‚£ä¹ˆè¯·æ±‚çš„å¤„ç†éƒ½å°†åœ¨è¯¥çº¿ç¨‹æ± å†…æ‰§è¡Œ
+     *
      * @return
      */
     public ThreadPoolExecutor getExecutor();

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -91,12 +91,10 @@ import java.util.concurrent.locks.LockSupport;
  * actions subsequent to the access or removal of that element from
  * the {@code LinkedTransferQueue} in another thread.
  *
+ * @param <E> the type of elements held in this collection
  * @author Doug Lea
  * @author The Netty Project (netty-dev@lists.jboss.org)
  * @author Trustin Lee (tlee@redhat.com)
- *
- * @param <E> the type of elements held in this collection
- *
  */
 public class LinkedTransferQueue<E> extends AbstractQueue<E> implements BlockingQueue<E> {
 
@@ -117,11 +115,13 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      */
 
     // Wait modes for xfer method
-    private static final int NOWAIT  = 0;
+    private static final int NOWAIT = 0;
     private static final int TIMEOUT = 1;
-    private static final int WAIT    = 2;
+    private static final int WAIT = 2;
 
-    /** The number of CPUs, for spin control */
+    /**
+     * The number of CPUs, for spin control
+     */
     private static final int NCPUS = Runtime.getRuntime().availableProcessors();
 
     /**
@@ -131,7 +131,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      * seems not to vary with number of CPUs (beyond 2) so is just
      * a constant.
      */
-    private static final int maxTimedSpins = NCPUS < 2? 0 : 32;
+    private static final int maxTimedSpins = NCPUS < 2 ? 0 : 32;
 
     /**
      * The number of times to spin before blocking in untimed waits.
@@ -159,12 +159,14 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
         transient volatile QNode next;
         transient volatile Thread waiter;       // to control park/unpark
         final boolean isData;
+
         QNode(Object item, boolean isData) {
             super(item);
             this.isData = isData;
         }
 
         private static final AtomicReferenceFieldUpdater<QNode, QNode> nextUpdater;
+
         static {
             AtomicReferenceFieldUpdater<QNode, QNode> tmp = null;
             try {
@@ -214,13 +216,20 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
         // enough padding for 64bytes with 4byte refs
         @SuppressWarnings("unused")
         Object p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe;
-        PaddedAtomicReference(T r) { super(r); }
+
+        PaddedAtomicReference(T r) {
+            super(r);
+        }
     }
 
 
-    /** head of the queue */
+    /**
+     * head of the queue
+     */
     private final PaddedAtomicReference<QNode> head;
-    /** tail of the queue */
+    /**
+     * tail of the queue
+     */
     private final PaddedAtomicReference<QNode> tail;
 
     /**
@@ -246,8 +255,9 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      * Puts or takes an item. Used for most queue operations (except
      * poll() and tryTransfer()). See the similar code in
      * SynchronousQueue for detailed explanation.
-     * @param e the item or if null, signifies that this is a take
-     * @param mode the wait mode: NOWAIT, TIMEOUT, WAIT
+     *
+     * @param e     the item or if null, signifies that this is a take
+     * @param mode  the wait mode: NOWAIT, TIMEOUT, WAIT
      * @param nanos timeout in nanosecs, used only if mode is TIMEOUT
      * @return an item, or null on failure
      */
@@ -257,7 +267,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
         final PaddedAtomicReference<QNode> head = this.head;
         final PaddedAtomicReference<QNode> tail = this.tail;
 
-        for (;;) {
+        for (; ; ) {
             QNode t = tail.get();
             QNode h = head.get();
 
@@ -270,21 +280,18 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
                     if (t == tail.get()) {
                         tail.compareAndSet(t, last);
                     }
-                }
-                else if (t.casNext(null, s)) {
+                } else if (t.casNext(null, s)) {
                     tail.compareAndSet(t, s);
                     return awaitFulfill(t, s, e, mode, nanos);
                 }
-            }
-
-            else if (h != null) {
+            } else if (h != null) {
                 QNode first = h.next;
                 if (t == tail.get() && first != null &&
-                    advanceHead(h, first)) {
+                        advanceHead(h, first)) {
                     Object x = first.get();
                     if (x != first && first.compareAndSet(x, e)) {
                         LockSupport.unpark(first.waiter);
-                        return isData? e : x;
+                        return isData ? e : x;
                     }
                 }
             }
@@ -301,7 +308,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
         final PaddedAtomicReference<QNode> head = this.head;
         final PaddedAtomicReference<QNode> tail = this.tail;
 
-        for (;;) {
+        for (; ; ) {
             QNode t = tail.get();
             QNode h = head.get();
 
@@ -314,16 +321,15 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
                         return null;
                     }
                 }
-            }
-            else if (h != null) {
+            } else if (h != null) {
                 QNode first = h.next;
                 if (t == tail.get() &&
-                    first != null &&
-                    advanceHead(h, first)) {
+                        first != null &&
+                        advanceHead(h, first)) {
                     Object x = first.get();
                     if (x != first && first.compareAndSet(x, e)) {
                         LockSupport.unpark(first.waiter);
-                        return isData? e : x;
+                        return isData ? e : x;
                     }
                 }
             }
@@ -334,10 +340,10 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      * Spins/blocks until node s is fulfilled or caller gives up,
      * depending on wait mode.
      *
-     * @param pred the predecessor of waiting node
-     * @param s the waiting node
-     * @param e the comparison value for checking match
-     * @param mode mode
+     * @param pred  the predecessor of waiting node
+     * @param s     the waiting node
+     * @param e     the comparison value for checking match
+     * @param mode  mode
      * @param nanos timeout value
      * @return matched item, or s if cancelled
      */
@@ -347,10 +353,10 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
             return null;
         }
 
-        long lastTime = mode == TIMEOUT? System.nanoTime() : 0;
+        long lastTime = mode == TIMEOUT ? System.nanoTime() : 0;
         Thread w = Thread.currentThread();
         int spins = -1; // set to desired spin count below
-        for (;;) {
+        for (; ; ) {
             if (w.isInterrupted()) {
                 s.compareAndSet(e, s);
             }
@@ -360,8 +366,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
                 if (x == s) {              // was cancelled
                     clean(pred, s);
                     return null;
-                }
-                else if (x != null) {
+                } else if (x != null) {
                     s.set(s);             // avoid garbage retention
                     return x;
                 } else {
@@ -380,8 +385,8 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
             if (spins < 0) {
                 QNode h = this.head.get(); // only spin if at head
                 spins = h != null && h.next == s ?
-                         (mode == TIMEOUT?
-                          maxTimedSpins : maxUntimedSpins) : 0;
+                        (mode == TIMEOUT ?
+                                maxTimedSpins : maxUntimedSpins) : 0;
             }
             if (spins > 0) {
                 --spins;
@@ -392,8 +397,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
                 LockSupport.park(); // allows run on java5
                 s.waiter = null;
                 spins = -1;
-            }
-            else if (nanos > spinForTimeoutThreshold) {
+            } else if (nanos > spinForTimeoutThreshold) {
                 //                LockSupport.parkNanos(this, nanos);
                 LockSupport.parkNanos(nanos);
                 s.waiter = null;
@@ -406,7 +410,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      * Returns validated tail for use in cleaning methods
      */
     private QNode getValidatedTail() {
-        for (;;) {
+        for (; ; ) {
             QNode h = this.head.get();
             QNode first = h.next;
             if (first != null && first.next == first) { // help advance
@@ -427,8 +431,9 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
 
     /**
      * Gets rid of cancelled node s with original predecessor pred.
+     *
      * @param pred predecessor of cancelled node
-     * @param s the cancelled node
+     * @param s    the cancelled node
      */
     void clean(QNode pred, QNode s) {
         Thread w = s.waiter;
@@ -454,9 +459,8 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
                 if (sn == s || pred.casNext(s, sn)) {
                     break;
                 }
-            }
-            else if (oldpred == pred || // Already saved
-                     oldpred == null && this.cleanMe.compareAndSet(null, pred)) {
+            } else if (oldpred == pred || // Already saved
+                    oldpred == null && this.cleanMe.compareAndSet(null, pred)) {
                 break;                  // Postpone cleaning
             }
         }
@@ -465,6 +469,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
     /**
      * Tries to unsplice the cancelled node held in cleanMe that was
      * previously uncleanable because it was at tail.
+     *
      * @return current cleanMe node (or null)
      */
     private QNode reclean() {
@@ -486,7 +491,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
             if (s != t) {
                 QNode sn;
                 if (s == null || s == pred || s.get() != s ||
-                    (sn = s.next) == s || pred.casNext(s, sn)) {
+                        (sn = s.next) == s || pred.casNext(s, sn)) {
                     this.cleanMe.compareAndSet(pred, null);
                 }
             } else {
@@ -498,7 +503,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
 
     @SuppressWarnings("unchecked")
     E cast(Object e) {
-        return (E)e;
+        return (E) e;
     }
 
     /**
@@ -515,9 +520,10 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      * Creates a <tt>LinkedTransferQueue</tt>
      * initially containing the elements of the given collection,
      * added in traversal order of the collection's iterator.
+     *
      * @param c the collection of elements to initially contain
      * @throws NullPointerException if the specified collection or any
-     *         of its elements are null
+     *                              of its elements are null
      */
     public LinkedTransferQueue(Collection<? extends E> c) {
         this();
@@ -535,7 +541,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
     }
 
     public boolean offer(E e, long timeout, TimeUnit unit)
-        throws InterruptedException {
+            throws InterruptedException {
         if (e == null) {
             throw new NullPointerException();
         }
@@ -565,7 +571,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
     }
 
     public boolean tryTransfer(E e, long timeout, TimeUnit unit)
-        throws InterruptedException {
+            throws InterruptedException {
         if (e == null) {
             throw new NullPointerException();
         }
@@ -615,7 +621,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
         }
         int n = 0;
         E e;
-        while ( (e = poll()) != null) {
+        while ((e = poll()) != null) {
             c.add(e);
             ++n;
         }
@@ -644,7 +650,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
      * Return head after performing any outstanding helping steps
      */
     QNode traversalHead() {
-        for (;;) {
+        for (; ; ) {
             QNode t = this.tail.get();
             QNode h = this.head.get();
             if (h != null && t != null) {
@@ -697,7 +703,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
             E x = this.nextItem;
 
             QNode p = this.nextNode.next;
-            for (;;) {
+            for (; ; ) {
                 if (p == null || !p.isData) {
                     this.nextNode = null;
                     this.nextItem = null;
@@ -739,7 +745,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
     }
 
     public E peek() {
-        for (;;) {
+        for (; ; ) {
             QNode h = traversalHead();
             QNode p = h.next;
             if (p == null) {
@@ -759,7 +765,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
 
     @Override
     public boolean isEmpty() {
-        for (;;) {
+        for (; ; ) {
             QNode h = traversalHead();
             QNode p = h.next;
             if (p == null) {
@@ -778,7 +784,7 @@ public class LinkedTransferQueue<E> extends AbstractQueue<E> implements Blocking
     }
 
     public boolean hasWaitingConsumer() {
-        for (;;) {
+        for (; ; ) {
             QNode h = traversalHead();
             QNode p = h.next;
             if (p == null) {

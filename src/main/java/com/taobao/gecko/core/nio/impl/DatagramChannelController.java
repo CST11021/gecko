@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 /**
- *Copyright [2009-2010] [dennis zhuang]
- *Licensed under the Apache License, Version 2.0 (the "License");
- *you may not use this file except in compliance with the License.
- *You may obtain a copy of the License at
- *             http://www.apache.org/licenses/LICENSE-2.0
- *Unless required by applicable law or agreed to in writing,
- *software distributed under the License is distributed on an "AS IS" BASIS,
- *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- *either express or implied. See the License for the specific language governing permissions and limitations under the License
+ * Copyright [2009-2010] [dennis zhuang]
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
 package com.taobao.gecko.core.nio.impl;
 
@@ -46,13 +46,13 @@ import com.taobao.gecko.core.util.SystemUtils;
 
 
 /**
- * Nio的UDP实现
- * 
- * 
- * 
+ * Nio鐨刄DP瀹炵幇
+ *
+ *
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午06:08:54
+ *
+ * @since 1.0, 2009-12-16 涓嬪崍06:08:54
  */
 public abstract class DatagramChannelController extends NioController {
 
@@ -78,22 +78,22 @@ public abstract class DatagramChannelController extends NioController {
     public DatagramChannelController(final Configuration configuration) {
         super(configuration, null, null);
         this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
-            .getSessionReadBufferSize());
+                .getSessionReadBufferSize());
     }
 
 
     public DatagramChannelController(final Configuration configuration, final CodecFactory codecFactory) {
         super(configuration, null, codecFactory);
         this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
-            .getSessionReadBufferSize());
+                .getSessionReadBufferSize());
     }
 
 
     public DatagramChannelController(final Configuration configuration, final Handler handler,
-            final CodecFactory codecFactory) {
+                                     final CodecFactory codecFactory) {
         super(configuration, handler, codecFactory);
         this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
-            .getSessionReadBufferSize());
+                .getSessionReadBufferSize());
     }
 
 
@@ -117,9 +117,8 @@ public abstract class DatagramChannelController extends NioController {
         }
         if (SystemUtils.isLinuxPlatform() && maxDatagramPacketLength > 9216) {
             throw new IllegalArgumentException(
-                "The maxDatagramPacketLength could not be larger than 9216 bytes on linux");
-        }
-        else if (maxDatagramPacketLength > 65507) {
+                    "The maxDatagramPacketLength could not be larger than 9216 bytes on linux");
+        } else if (maxDatagramPacketLength > 65507) {
             throw new IllegalArgumentException("The maxDatagramPacketLength could not be larger than 65507 bytes");
         }
         this.maxDatagramPacketLength = maxDatagramPacketLength;
@@ -165,23 +164,22 @@ public abstract class DatagramChannelController extends NioController {
 
         if (this.socketOptions.get(StandardSocketOption.SO_REUSEADDR) != null) {
             this.channel.socket().setReuseAddress(
-                StandardSocketOption.SO_REUSEADDR.type()
-                    .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
+                    StandardSocketOption.SO_REUSEADDR.type()
+                            .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
         }
         if (this.socketOptions.get(StandardSocketOption.SO_RCVBUF) != null) {
             this.channel.socket().setReceiveBufferSize(
-                StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
+                    StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
 
         }
         if (this.socketOptions.get(StandardSocketOption.SO_SNDBUF) != null) {
             this.channel.socket().setSendBufferSize(
-                StandardSocketOption.SO_SNDBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_SNDBUF)));
+                    StandardSocketOption.SO_SNDBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_SNDBUF)));
         }
         this.channel.configureBlocking(false);
         if (this.localSocketAddress != null) {
             this.channel.socket().bind(this.localSocketAddress);
-        }
-        else {
+        } else {
             this.channel.socket().bind(new InetSocketAddress("localhost", 0));
         }
         this.setLocalSocketAddress((InetSocketAddress) this.channel.socket().getLocalSocketAddress());
@@ -193,8 +191,7 @@ public abstract class DatagramChannelController extends NioController {
     protected void dispatchReadEvent(final SelectionKey key) {
         if (this.udpSession != null) {
             this.udpSession.onEvent(EventType.READABLE, key.selector());
-        }
-        else {
+        } else {
             log.warn("NO session to dispatch read event");
         }
 
@@ -205,8 +202,7 @@ public abstract class DatagramChannelController extends NioController {
     protected void dispatchWriteEvent(final SelectionKey key) {
         if (this.udpSession != null) {
             this.udpSession.onEvent(EventType.WRITEABLE, key.selector());
-        }
-        else {
+        } else {
             log.warn("NO session to dispatch write event");
         }
 

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,19 +23,17 @@ import com.taobao.gecko.service.config.BaseConfig;
 
 
 /**
- * 
- * RemotingµÄÈ«¾ÖÉÏÏÂÎÄ
- * 
+ * Remotingçš„å…¨å±€ä¸Šä¸‹æ–‡
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç03:54:01
+ * @since 1.0, 2009-12-15 ä¸‹åˆ03:54:01
  */
 
 public interface RemotingContext {
 
     /**
-     * Ìí¼ÓÁ¬½Óµ½Ö¸¶¨·Ö×é
-     * 
+     * æ·»åŠ è¿æ¥åˆ°æŒ‡å®šåˆ†ç»„
+     *
      * @param group
      * @param connection
      * @return
@@ -44,32 +42,32 @@ public interface RemotingContext {
 
 
     /**
-     * »ñÈ¡µ±Ç°µÄÍøÂç²ãÅäÖÃ¶ÔÏó
-     * 
+     * è·å–å½“å‰çš„ç½‘ç»œå±‚é…ç½®å¯¹è±¡
+     *
      * @return
      */
     public abstract BaseConfig getConfig();
 
 
     /**
-     * Ìí¼Óµ½Ä¬ÈÏ·Ö×é
-     * 
+     * æ·»åŠ åˆ°é»˜è®¤åˆ†ç»„
+     *
      * @param connection
      */
     public abstract void addConnection(Connection connection);
 
 
     /**
-     * ´ÓÄ¬ÈÏ·Ö×éÒÆ³ı
-     * 
+     * ä»é»˜è®¤åˆ†ç»„ç§»é™¤
+     *
      * @param connection
      */
     public abstract void removeConnection(Connection connection);
 
 
     /**
-     * ¸ù¾İGroupµÃµ½connection¼¯ºÏ
-     * 
+     * æ ¹æ®Groupå¾—åˆ°connectioné›†åˆ
+     *
      * @param group
      * @return
      */
@@ -77,8 +75,8 @@ public interface RemotingContext {
 
 
     /**
-     * ÒÆ³ıÁ¬½Ó
-     * 
+     * ç§»é™¤è¿æ¥
+     *
      * @param group
      * @param connection
      * @return
@@ -105,16 +103,16 @@ public interface RemotingContext {
 
 
     /**
-     * »ñÈ¡µ±Ç°¿Í»§¶Ë»òÕß·şÎñÆ÷µÄËùÓĞ·Ö×éÃû³Æ
-     * 
+     * è·å–å½“å‰å®¢æˆ·ç«¯æˆ–è€…æœåŠ¡å™¨çš„æ‰€æœ‰åˆ†ç»„åç§°
+     *
      * @return
      */
     public Set<String> getGroupSet();
 
 
     /**
-     * »ñÈ¡µ±Ç°Ê¹ÓÃµÄĞ­Òé¹¤³§
-     * 
+     * è·å–å½“å‰ä½¿ç”¨çš„åè®®å·¥å‚
+     *
      * @return
      */
     public CommandFactory getCommandFactory();

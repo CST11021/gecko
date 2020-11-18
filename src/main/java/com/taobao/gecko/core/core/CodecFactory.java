@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,10 @@ import com.taobao.gecko.core.buffer.IoBuffer;
 
 
 /**
- * 编解码工厂类
- * 
- * 
- * 
+ * 缂栬В鐮佸伐鍘傜被
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午05:57:19
+ * @since 1.0, 2009-12-16 涓嬪崍05:57:19
  */
 public interface CodecFactory {
 

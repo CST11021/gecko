@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,10 +25,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Simple {@link Future} implementation, which uses synchronization
  * {@link Object} to synchronize during the lifecycle.
- * 
- * @see Future
- * 
+ *
  * @author Alexey Stashok
+ * @see Future
  */
 public class FutureImpl<R> implements Future<R> {
 
@@ -67,7 +66,7 @@ public class FutureImpl<R> implements Future<R> {
 
     /**
      * Get current result value without any blocking.
-     * 
+     *
      * @return current result value without any blocking.
      */
     public R getResult() {
@@ -79,9 +78,8 @@ public class FutureImpl<R> implements Future<R> {
 
     /**
      * Set the result value and notify about operation completion.
-     * 
-     * @param result
-     *            the result value
+     *
+     * @param result the result value
      */
     public void setResult(R result) {
         synchronized (this.sync) {
@@ -128,15 +126,13 @@ public class FutureImpl<R> implements Future<R> {
      */
     public R get() throws InterruptedException, ExecutionException {
         synchronized (this.sync) {
-            for (;;) {
+            for (; ; ) {
                 if (this.isDone) {
                     if (this.isCancelled) {
                         throw new CancellationException();
-                    }
-                    else if (this.failure != null) {
+                    } else if (this.failure != null) {
                         throw new ExecutionException(this.failure);
-                    }
-                    else if (this.result != null) {
+                    } else if (this.result != null) {
                         return this.result;
                     }
                 }
@@ -154,19 +150,16 @@ public class FutureImpl<R> implements Future<R> {
         long startTime = System.currentTimeMillis();
         long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);
         synchronized (this.sync) {
-            for (;;) {
+            for (; ; ) {
                 if (this.isDone) {
                     if (this.isCancelled) {
                         throw new CancellationException();
-                    }
-                    else if (this.failure != null) {
+                    } else if (this.failure != null) {
                         throw new ExecutionException(this.failure);
-                    }
-                    else if (this.result != null) {
+                    } else if (this.result != null) {
                         return this.result;
                     }
-                }
-                else if (System.currentTimeMillis() - startTime > timeoutMillis) {
+                } else if (System.currentTimeMillis() - startTime > timeoutMillis) {
                     throw new TimeoutException();
                 }
 
@@ -179,7 +172,7 @@ public class FutureImpl<R> implements Future<R> {
     /**
      * Notify about the failure, occured during asynchronous operation
      * execution.
-     * 
+     *
      * @param failure
      */
     public void failure(Throwable failure) {

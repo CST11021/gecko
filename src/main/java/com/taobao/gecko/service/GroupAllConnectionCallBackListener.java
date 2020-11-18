@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,19 +22,17 @@ import com.taobao.gecko.core.command.ResponseCommand;
 
 
 /**
- * 
- * µ¥·Ö×éËùÓĞÁ¬½ÓµÄ»Øµ÷¼àÌıÆ÷
- * 
+ * å•åˆ†ç»„æ‰€æœ‰è¿æ¥çš„å›è°ƒç›‘å¬å™¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç03:26:36
+ * @since 1.0, 2009-12-16 ä¸‹åˆ03:26:36
  */
 
 public interface GroupAllConnectionCallBackListener {
 
     /**
-     * ´¦ÀíÓ¦´ğ
-     * 
+     * å¤„ç†åº”ç­”
+     *
      * @param resultMap
      */
     public void onResponse(Map<Connection, ResponseCommand> resultMap);

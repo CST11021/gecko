@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,37 +66,37 @@ import java.util.Set;
  * <li>It is difficult to write variable-length data due to its fixed capacity</li>
  * </ul>
  * </p>
- * 
+ *
  * <h2>Allocation</h2>
  * <p>
  * You can allocate a new heap buffer.
- * 
+ *
  * <pre>
  * IoBuffer buf = IoBuffer.allocate(1024, false);
  * </pre>
- * 
+ * <p>
  * you can also allocate a new direct buffer:
- * 
+ *
  * <pre>
  * IoBuffer buf = IoBuffer.allocate(1024, true);
  * </pre>
- * 
+ * <p>
  * or you can set the default buffer type.
- * 
+ *
  * <pre>
  * // Allocate heap buffer by default.
  * IoBuffer.setUseDirectBuffer(false);
  * // A new heap buffer is returned.
  * IoBuffer buf = IoBuffer.allocate(1024);
  * </pre>
- * 
+ *
  * </p>
- * 
+ *
  * <h2>Wrapping existing NIO buffers and arrays</h2>
  * <p>
  * This class provides a few <tt>wrap(...)</tt> methods that wraps any NIO
  * buffers and byte arrays.
- * 
+ *
  * <h2>AutoExpand</h2>
  * <p>
  * Writing variable-length data using NIO <tt>ByteBuffers</tt> is not really
@@ -105,7 +105,7 @@ import java.util.Set;
  * never get {@link BufferOverflowException} or
  * {@link IndexOutOfBoundsException} (except when index is negative). It
  * automatically expands its capacity and limit value. For example:
- * 
+ *
  * <pre>
  * String greeting = messageBundle.getMessage(&quot;hello&quot;);
  * IoBuffer buf = IoBuffer.allocate(16);
@@ -113,13 +113,13 @@ import java.util.Set;
  * buf.setAutoExpand(true);
  * buf.putString(greeting, utf8encoder);
  * </pre>
- * 
+ * <p>
  * The underlying {@link ByteBuffer} is reallocated by {@link IoBuffer} behind
  * the scene if the encoded data is larger than 16 bytes in the example above.
  * Its capacity will double, and its limit will increase to the last position
  * the string is written.
  * </p>
- * 
+ *
  * <h2>AutoShrink</h2>
  * <p>
  * You might also want to decrease the capacity of the buffer when most of the
@@ -137,7 +137,7 @@ import java.util.Set;
  * {@link ByteBuffer} instance once capacity changes. Please also note
  * {@link #compact()} or {@link #shrink()} will not decrease the capacity if the
  * new capacity is less than the {@link #minimumCapacity()} of the buffer.
- * 
+ *
  * <h2>Derived Buffers</h2>
  * <p>
  * Derived buffers are the buffers which were created by {@link #duplicate()},
@@ -148,7 +148,7 @@ import java.util.Set;
  * {@link #setAutoExpand(boolean)} or {@link #setAutoShrink(boolean)} with
  * <tt>true</tt> parameter will raise an {@link IllegalStateException}.
  * </p>
- * 
+ *
  * <h2>Changing Buffer Allocation Policy</h2>
  * <p>
  * {@link IoBufferAllocator} interface lets you override the default buffer
@@ -160,16 +160,20 @@ import java.util.Set;
  * You can implement your own allocator and use it by calling
  * {@link #setAllocator(IoBufferAllocator)}.
  * </p>
- * 
+ *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 748525 $, $Date: 2009-02-27 14:45:31 +0100 (Fri, 27 Feb 2009)
- *          $
+ * $
  */
 public abstract class IoBuffer implements Comparable<IoBuffer> {
-    /** The allocator used to create new buffers */
+    /**
+     * The allocator used to create new buffers
+     */
     private static IoBufferAllocator allocator = new SimpleBufferAllocator();
 
-    /** A flag indicating which type of buffer we are using : heap or direct */
+    /**
+     * A flag indicating which type of buffer we are using : heap or direct
+     */
     private static boolean useDirectBuffer = false;
 
 
@@ -221,10 +225,8 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Returns the direct or heap buffer which is capable to store the specified
      * amount of bytes.
-     * 
-     * @param capacity
-     *            the capacity of the buffer
-     * 
+     *
+     * @param capacity the capacity of the buffer
      * @see #setUseDirectBuffer(boolean)
      */
     public static IoBuffer allocate(int capacity) {
@@ -234,12 +236,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Returns the buffer which is capable of the specified size.
-     * 
-     * @param capacity
-     *            the capacity of the buffer
-     * @param direct
-     *            <tt>true</tt> to get a direct buffer, <tt>false</tt> to get a
-     *            heap buffer.
+     *
+     * @param capacity the capacity of the buffer
+     * @param direct   <tt>true</tt> to get a direct buffer, <tt>false</tt> to get a
+     *                 heap buffer.
      */
     public static IoBuffer allocate(int capacity, boolean direct) {
         if (capacity < 0) {
@@ -282,39 +282,39 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     protected static int normalizeCapacity(int requestedCapacity) {
         switch (requestedCapacity) {
-        case 0:
-        case 1 << 0:
-        case 1 << 1:
-        case 1 << 2:
-        case 1 << 3:
-        case 1 << 4:
-        case 1 << 5:
-        case 1 << 6:
-        case 1 << 7:
-        case 1 << 8:
-        case 1 << 9:
-        case 1 << 10:
-        case 1 << 11:
-        case 1 << 12:
-        case 1 << 13:
-        case 1 << 14:
-        case 1 << 15:
-        case 1 << 16:
-        case 1 << 17:
-        case 1 << 18:
-        case 1 << 19:
-        case 1 << 21:
-        case 1 << 22:
-        case 1 << 23:
-        case 1 << 24:
-        case 1 << 25:
-        case 1 << 26:
-        case 1 << 27:
-        case 1 << 28:
-        case 1 << 29:
-        case 1 << 30:
-        case Integer.MAX_VALUE:
-            return requestedCapacity;
+            case 0:
+            case 1 << 0:
+            case 1 << 1:
+            case 1 << 2:
+            case 1 << 3:
+            case 1 << 4:
+            case 1 << 5:
+            case 1 << 6:
+            case 1 << 7:
+            case 1 << 8:
+            case 1 << 9:
+            case 1 << 10:
+            case 1 << 11:
+            case 1 << 12:
+            case 1 << 13:
+            case 1 << 14:
+            case 1 << 15:
+            case 1 << 16:
+            case 1 << 17:
+            case 1 << 18:
+            case 1 << 19:
+            case 1 << 21:
+            case 1 << 22:
+            case 1 << 23:
+            case 1 << 24:
+            case 1 << 25:
+            case 1 << 26:
+            case 1 << 27:
+            case 1 << 28:
+            case 1 << 29:
+            case 1 << 30:
+            case Integer.MAX_VALUE:
+                return requestedCapacity;
         }
 
         int newCapacity = 1;
@@ -768,13 +768,13 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Relative <i>get</i> method for reading a medium int value.
-     * 
+     *
      * <p>
      * Reads the next three bytes at this buffer's current position, composing
      * them into an int value according to the current byte order, and then
      * increments the position by three.
      * </p>
-     * 
+     *
      * @return The medium int value at the buffer's current position
      */
     public abstract int getMediumInt();
@@ -782,13 +782,13 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Relative <i>get</i> method for reading an unsigned medium int value.
-     * 
+     *
      * <p>
      * Reads the next three bytes at this buffer's current position, composing
      * them into an int value according to the current byte order, and then
      * increments the position by three.
      * </p>
-     * 
+     *
      * @return The unsigned medium int value at the buffer's current position
      */
     public abstract int getUnsignedMediumInt();
@@ -796,87 +796,67 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Absolute <i>get</i> method for reading a medium int value.
-     * 
+     *
      * <p>
      * Reads the next three bytes at this buffer's current position, composing
      * them into an int value according to the current byte order.
      * </p>
-     * 
-     * @param index
-     *            The index from which the medium int will be read
+     *
+     * @param index The index from which the medium int will be read
      * @return The medium int value at the given index
-     * 
-     * @throws IndexOutOfBoundsException
-     *             If <tt>index</tt> is negative or not smaller than the
-     *             buffer's limit
+     * @throws IndexOutOfBoundsException If <tt>index</tt> is negative or not smaller than the
+     *                                   buffer's limit
      */
     public abstract int getMediumInt(int index);
 
 
     /**
      * Absolute <i>get</i> method for reading an unsigned medium int value.
-     * 
+     *
      * <p>
      * Reads the next three bytes at this buffer's current position, composing
      * them into an int value according to the current byte order.
      * </p>
-     * 
-     * @param index
-     *            The index from which the unsigned medium int will be read
+     *
+     * @param index The index from which the unsigned medium int will be read
      * @return The unsigned medium int value at the given index
-     * 
-     * @throws IndexOutOfBoundsException
-     *             If <tt>index</tt> is negative or not smaller than the
-     *             buffer's limit
+     * @throws IndexOutOfBoundsException If <tt>index</tt> is negative or not smaller than the
+     *                                   buffer's limit
      */
     public abstract int getUnsignedMediumInt(int index);
 
 
     /**
      * Relative <i>put</i> method for writing a medium int value.
-     * 
+     *
      * <p>
      * Writes three bytes containing the given int value, in the current byte
      * order, into this buffer at the current position, and then increments the
      * position by three.
      * </p>
-     * 
-     * @param value
-     *            The medium int value to be written
-     * 
+     *
+     * @param value The medium int value to be written
      * @return This buffer
-     * 
-     * @throws BufferOverflowException
-     *             If there are fewer than three bytes remaining in this buffer
-     * 
-     * @throws ReadOnlyBufferException
-     *             If this buffer is read-only
+     * @throws BufferOverflowException If there are fewer than three bytes remaining in this buffer
+     * @throws ReadOnlyBufferException If this buffer is read-only
      */
     public abstract IoBuffer putMediumInt(int value);
 
 
     /**
      * Absolute <i>put</i> method for writing a medium int value.
-     * 
+     *
      * <p>
      * Writes three bytes containing the given int value, in the current byte
      * order, into this buffer at the given index.
      * </p>
-     * 
-     * @param index
-     *            The index at which the bytes will be written
-     * 
-     * @param value
-     *            The medium int value to be written
-     * 
+     *
+     * @param index The index at which the bytes will be written
+     * @param value The medium int value to be written
      * @return This buffer
-     * 
-     * @throws IndexOutOfBoundsException
-     *             If <tt>index</tt> is negative or not smaller than the
-     *             buffer's limit, minus three
-     * 
-     * @throws ReadOnlyBufferException
-     *             If this buffer is read-only
+     * @throws IndexOutOfBoundsException If <tt>index</tt> is negative or not smaller than the
+     *                                   buffer's limit, minus three
+     * @throws ReadOnlyBufferException   If this buffer is read-only
      */
     public abstract IoBuffer putMediumInt(int index, int value);
 
@@ -1023,7 +1003,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Returns hexdump of this buffer. The data and pointer are not changed as a
      * result of this method call.
-     * 
+     *
      * @return hexidecimal representation of this buffer
      */
     public abstract String getHexDump();
@@ -1031,10 +1011,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Return hexdump of this buffer with limited length.
-     * 
-     * @param lengthLimit
-     *            The maximum number of bytes to dump from the current buffer
-     *            position.
+     *
+     * @param lengthLimit The maximum number of bytes to dump from the current buffer
+     *                    position.
      * @return hexidecimal representation of this buffer
      */
     public abstract String getHexDump(int lengthLimit);
@@ -1055,9 +1034,8 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads a <code>NUL</code>-terminated string from this buffer using the
      * specified <code>decoder</code> and returns it.
-     * 
-     * @param fieldSize
-     *            the maximum number of bytes to read
+     *
+     * @param fieldSize the maximum number of bytes to read
      */
     public abstract String getString(int fieldSize, CharsetDecoder decoder) throws CharacterCodingException;
 
@@ -1066,9 +1044,8 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * Writes the content of <code>in</code> into this buffer using the
      * specified <code>encoder</code>. This method doesn't terminate string with
      * <tt>NUL</tt>. You have to do it by yourself.
-     * 
-     * @throws BufferOverflowException
-     *             if the specified string doesn't fit
+     *
+     * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putString(CharSequence val, CharsetEncoder encoder) throws CharacterCodingException;
 
@@ -1084,9 +1061,8 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * <p>
      * Please note that this method doesn't terminate with <code>NUL</code> if
      * the input string is longer than <tt>fieldSize</tt>.
-     * 
-     * @param fieldSize
-     *            the maximum number of bytes to write
+     *
+     * @param fieldSize the maximum number of bytes to write
      */
     public abstract IoBuffer putString(CharSequence val, int fieldSize, CharsetEncoder encoder)
             throws CharacterCodingException;
@@ -1103,9 +1079,8 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads a string which has a length field before the actual encoded string,
      * using the specified <code>decoder</code> and returns it.
-     * 
-     * @param prefixLength
-     *            the length of the length field (1, 2, or 4)
+     *
+     * @param prefixLength the length of the length field (1, 2, or 4)
      */
     public abstract String getPrefixedString(int prefixLength, CharsetDecoder decoder) throws CharacterCodingException;
 
@@ -1115,9 +1090,8 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * has a 16-bit length field before the actual encoded string, using the
      * specified <code>encoder</code>. This method is a shortcut for
      * <tt>putPrefixedString(in, 2, 0, encoder)</tt>.
-     * 
-     * @throws BufferOverflowException
-     *             if the specified string doesn't fit
+     *
+     * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putPrefixedString(CharSequence in, CharsetEncoder encoder) throws CharacterCodingException;
 
@@ -1127,12 +1101,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * has a 16-bit length field before the actual encoded string, using the
      * specified <code>encoder</code>. This method is a shortcut for
      * <tt>putPrefixedString(in, prefixLength, 0, encoder)</tt>.
-     * 
-     * @param prefixLength
-     *            the length of the length field (1, 2, or 4)
-     * 
-     * @throws BufferOverflowException
-     *             if the specified string doesn't fit
+     *
+     * @param prefixLength the length of the length field (1, 2, or 4)
+     * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putPrefixedString(CharSequence in, int prefixLength, CharsetEncoder encoder)
             throws CharacterCodingException;
@@ -1144,14 +1115,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * specified <code>encoder</code>. This method is a shortcut for
      * <tt>putPrefixedString(in, prefixLength, padding, ( byte ) 0, encoder)</tt>
      * .
-     * 
-     * @param prefixLength
-     *            the length of the length field (1, 2, or 4)
-     * @param padding
-     *            the number of padded <tt>NUL</tt>s (1 (or 0), 2, or 4)
-     * 
-     * @throws BufferOverflowException
-     *             if the specified string doesn't fit
+     *
+     * @param prefixLength the length of the length field (1, 2, or 4)
+     * @param padding      the number of padded <tt>NUL</tt>s (1 (or 0), 2, or 4)
+     * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putPrefixedString(CharSequence in, int prefixLength, int padding, CharsetEncoder encoder)
             throws CharacterCodingException;
@@ -1161,19 +1128,14 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * Writes the content of <code>in</code> into this buffer as a string which
      * has a 16-bit length field before the actual encoded string, using the
      * specified <code>encoder</code>.
-     * 
-     * @param prefixLength
-     *            the length of the length field (1, 2, or 4)
-     * @param padding
-     *            the number of padded bytes (1 (or 0), 2, or 4)
-     * @param padValue
-     *            the value of padded bytes
-     * 
-     * @throws BufferOverflowException
-     *             if the specified string doesn't fit
+     *
+     * @param prefixLength the length of the length field (1, 2, or 4)
+     * @param padding      the number of padded bytes (1 (or 0), 2, or 4)
+     * @param padValue     the value of padded bytes
+     * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putPrefixedString(CharSequence val, int prefixLength, int padding, byte padValue,
-            CharsetEncoder encoder) throws CharacterCodingException;
+                                               CharsetEncoder encoder) throws CharacterCodingException;
 
 
     /**
@@ -1204,14 +1166,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * not that using this method can allow DoS (Denial of Service) attack in
      * case the remote peer sends too big data length value. It is recommended
      * to use {@link #prefixedDataAvailable(int, int)} instead.
-     * 
-     * @param prefixLength
-     *            the length of the prefix field (1, 2, or 4)
-     * 
-     * @throws IllegalArgumentException
-     *             if prefixLength is wrong
-     * @throws BufferDataException
-     *             if data length is negative
+     *
+     * @param prefixLength the length of the prefix field (1, 2, or 4)
+     * @throws IllegalArgumentException if prefixLength is wrong
+     * @throws BufferDataException      if data length is negative
      */
     public abstract boolean prefixedDataAvailable(int prefixLength);
 
@@ -1220,17 +1178,12 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * Returns <tt>true</tt> if this buffer contains a data which has a data
      * length as a prefix and the buffer has remaining data as enough as
      * specified in the data length field.
-     * 
-     * @param prefixLength
-     *            the length of the prefix field (1, 2, or 4)
-     * @param maxDataLength
-     *            the allowed maximum of the read data length
-     * 
-     * @throws IllegalArgumentException
-     *             if prefixLength is wrong
-     * @throws BufferDataException
-     *             if data length is negative or greater then
-     *             <tt>maxDataLength</tt>
+     *
+     * @param prefixLength  the length of the prefix field (1, 2, or 4)
+     * @param maxDataLength the allowed maximum of the read data length
+     * @throws IllegalArgumentException if prefixLength is wrong
+     * @throws BufferDataException      if data length is negative or greater then
+     *                                  <tt>maxDataLength</tt>
      */
     public abstract boolean prefixedDataAvailable(int prefixLength, int maxDataLength);
 
@@ -1242,7 +1195,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Returns the first occurence position of the specified byte from the
      * current position to the current limit.
-     * 
+     *
      * @return <tt>-1</tt> if the specified byte is not found
      */
     public abstract int indexOf(byte b);
@@ -1294,11 +1247,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads a byte from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
-     * 
-     * @param <E>
-     *            The enum type to return
-     * @param enumClass
-     *            The enum's class object
+     *
+     * @param <E>       The enum type to return
+     * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnum(Class<E> enumClass);
 
@@ -1306,13 +1257,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads a byte from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
-     * 
-     * @param <E>
-     *            The enum type to return
-     * @param index
-     *            the index from which the byte will be read
-     * @param enumClass
-     *            The enum's class object
+     *
+     * @param <E>       The enum type to return
+     * @param index     the index from which the byte will be read
+     * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnum(int index, Class<E> enumClass);
 
@@ -1320,11 +1268,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads a short from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
-     * 
-     * @param <E>
-     *            The enum type to return
-     * @param enumClass
-     *            The enum's class object
+     *
+     * @param <E>       The enum type to return
+     * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumShort(Class<E> enumClass);
 
@@ -1332,13 +1278,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads a short from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
-     * 
-     * @param <E>
-     *            The enum type to return
-     * @param index
-     *            the index from which the bytes will be read
-     * @param enumClass
-     *            The enum's class object
+     *
+     * @param <E>       The enum type to return
+     * @param index     the index from which the bytes will be read
+     * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumShort(int index, Class<E> enumClass);
 
@@ -1346,11 +1289,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads an int from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
-     * 
-     * @param <E>
-     *            The enum type to return
-     * @param enumClass
-     *            The enum's class object
+     *
+     * @param <E>       The enum type to return
+     * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumInt(Class<E> enumClass);
 
@@ -1358,73 +1299,61 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Reads an int from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
-     * 
-     * @param <E>
-     *            The enum type to return
-     * @param index
-     *            the index from which the bytes will be read
-     * @param enumClass
-     *            The enum's class object
+     *
+     * @param <E>       The enum type to return
+     * @param index     the index from which the bytes will be read
+     * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumInt(int index, Class<E> enumClass);
 
 
     /**
      * Writes an enum's ordinal value to the buffer as a byte.
-     * 
-     * @param e
-     *            The enum to write to the buffer
+     *
+     * @param e The enum to write to the buffer
      */
     public abstract IoBuffer putEnum(Enum<?> e);
 
 
     /**
      * Writes an enum's ordinal value to the buffer as a byte.
-     * 
-     * @param index
-     *            The index at which the byte will be written
-     * @param e
-     *            The enum to write to the buffer
+     *
+     * @param index The index at which the byte will be written
+     * @param e     The enum to write to the buffer
      */
     public abstract IoBuffer putEnum(int index, Enum<?> e);
 
 
     /**
      * Writes an enum's ordinal value to the buffer as a short.
-     * 
-     * @param e
-     *            The enum to write to the buffer
+     *
+     * @param e The enum to write to the buffer
      */
     public abstract IoBuffer putEnumShort(Enum<?> e);
 
 
     /**
      * Writes an enum's ordinal value to the buffer as a short.
-     * 
-     * @param index
-     *            The index at which the bytes will be written
-     * @param e
-     *            The enum to write to the buffer
+     *
+     * @param index The index at which the bytes will be written
+     * @param e     The enum to write to the buffer
      */
     public abstract IoBuffer putEnumShort(int index, Enum<?> e);
 
 
     /**
      * Writes an enum's ordinal value to the buffer as an integer.
-     * 
-     * @param e
-     *            The enum to write to the buffer
+     *
+     * @param e The enum to write to the buffer
      */
     public abstract IoBuffer putEnumInt(Enum<?> e);
 
 
     /**
      * Writes an enum's ordinal value to the buffer as an integer.
-     * 
-     * @param index
-     *            The index at which the bytes will be written
-     * @param e
-     *            The enum to write to the buffer
+     *
+     * @param index The index at which the bytes will be written
+     * @param e     The enum to write to the buffer
      */
     public abstract IoBuffer putEnumInt(int index, Enum<?> e);
 
@@ -1435,18 +1364,16 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Reads a byte sized bit vector and converts it to an {@link EnumSet}.
-     * 
+     *
      * <p>
      * Each bit is mapped to a value in the specified enum. The least
      * significant bit maps to the first entry in the specified enum and each
      * subsequent bit maps to each subsequent bit as mapped to the subsequent
      * enum value.
      * </p>
-     * 
-     * @param <E>
-     *            the enum type
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSet(Class<E> enumClass);
@@ -1454,99 +1381,81 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
 
     /**
      * Reads a byte sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param index
-     *            the index from which the byte will be read
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param index     the index from which the byte will be read
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSet(int index, Class<E> enumClass);
 
 
     /**
      * Reads a short sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetShort(Class<E> enumClass);
 
 
     /**
      * Reads a short sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param index
-     *            the index from which the bytes will be read
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param index     the index from which the bytes will be read
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetShort(int index, Class<E> enumClass);
 
 
     /**
      * Reads an int sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetInt(Class<E> enumClass);
 
 
     /**
      * Reads an int sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param index
-     *            the index from which the bytes will be read
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param index     the index from which the bytes will be read
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetInt(int index, Class<E> enumClass);
 
 
     /**
      * Reads a long sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetLong(Class<E> enumClass);
 
 
     /**
      * Reads a long sized bit vector and converts it to an {@link EnumSet}.
-     * 
-     * @see #getEnumSet(Class)
-     * @param <E>
-     *            the enum type
-     * @param index
-     *            the index from which the bytes will be read
-     * @param enumClass
-     *            the enum class used to create the EnumSet
+     *
+     * @param <E>       the enum type
+     * @param index     the index from which the bytes will be read
+     * @param enumClass the enum class used to create the EnumSet
      * @return the EnumSet representation of the bit vector
+     * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetLong(int index, Class<E> enumClass);
 
@@ -1554,11 +1463,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as a byte sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E> the enum type of the Set
+     * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSet(Set<E> set);
 
@@ -1566,13 +1473,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as a byte sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param index
-     *            the index at which the byte will be written
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E>   the enum type of the Set
+     * @param index the index at which the byte will be written
+     * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSet(int index, Set<E> set);
 
@@ -1580,11 +1484,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as a short sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E> the enum type of the Set
+     * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetShort(Set<E> set);
 
@@ -1592,13 +1494,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as a short sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param index
-     *            the index at which the bytes will be written
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E>   the enum type of the Set
+     * @param index the index at which the bytes will be written
+     * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetShort(int index, Set<E> set);
 
@@ -1606,11 +1505,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as an int sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E> the enum type of the Set
+     * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetInt(Set<E> set);
 
@@ -1618,13 +1515,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as an int sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param index
-     *            the index at which the bytes will be written
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E>   the enum type of the Set
+     * @param index the index at which the bytes will be written
+     * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetInt(int index, Set<E> set);
 
@@ -1632,11 +1526,9 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as a long sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E> the enum type of the Set
+     * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetLong(Set<E> set);
 
@@ -1644,13 +1536,10 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     /**
      * Writes the specified {@link Set} to the buffer as a long sized bit
      * vector.
-     * 
-     * @param <E>
-     *            the enum type of the Set
-     * @param index
-     *            the index at which the bytes will be written
-     * @param set
-     *            the enum set to write to the buffer
+     *
+     * @param <E>   the enum type of the Set
+     * @param index the index at which the bytes will be written
+     * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetLong(int index, Set<E> set);
 }

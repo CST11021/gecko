@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,12 +31,8 @@ import com.taobao.gecko.service.notify.NotifyCommandFactory;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-22 下午03:59:52
+ * @since 1.0, 2009-12-22 涓嬪崍03:59:52
  */
 
 public class GroupManagerUnitTest {
@@ -68,18 +64,18 @@ public class GroupManagerUnitTest {
         this.groupManager.addConnection(group1, conn);
         Assert.assertEquals(1, this.groupManager.getGroupConnectionCount(group1));
         Assert.assertEquals(1, conn.getGroupSet().size());
-        // 重复添加
+        // 閲嶅娣诲姞
         this.groupManager.addConnection(group1, conn);
         Assert.assertEquals(1, this.groupManager.getGroupConnectionCount(group1));
         Assert.assertEquals(1, conn.getGroupSet().size());
 
-        // 添加到其他组
+        // 娣诲姞鍒板叾浠栫粍
         this.groupManager.addConnection(group2, conn);
         Assert.assertEquals(1, this.groupManager.getGroupConnectionCount(group1));
         Assert.assertEquals(2, conn.getGroupSet().size());
         Assert.assertEquals(1, this.groupManager.getGroupConnectionCount(group2));
 
-        // 添加更多
+        // 娣诲姞鏇村
         for (int i = 0; i < 10; i++) {
             conn = this.createConn();
             this.groupManager.addConnection(group1, conn);

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,34 +16,32 @@
 package com.taobao.gecko.service;
 
 /**
- * 
- * Á¬½ÓÉúÃüÖÜÆÚ¼àÌıÆ÷
- * 
+ * è¿æ¥ç”Ÿå‘½å‘¨æœŸç›‘å¬å™¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç03:01:44
+ * @since 1.0, 2009-12-16 ä¸‹åˆ03:01:44
  */
 
 public interface ConnectionLifeCycleListener {
     /**
-     * µ±Á¬½Ó½¨Á¢Ê±»Øµ÷£¬»¹Î´¼ÓÈëËùÔÚ·Ö×é
-     * 
+     * å½“è¿æ¥å»ºç«‹æ—¶å›è°ƒï¼Œè¿˜æœªåŠ å…¥æ‰€åœ¨åˆ†ç»„
+     *
      * @param conn
      */
     public void onConnectionCreated(Connection conn);
 
 
     /**
-     * Á¬½Ó¾ÍĞ÷£¬ÒÑ¾­¼ÓÈëËùÔÚ·Ö×é£¬Ö»¶Ô¿Í»§¶ËÓĞÒâÒå
-     * 
+     * è¿æ¥å°±ç»ªï¼Œå·²ç»åŠ å…¥æ‰€åœ¨åˆ†ç»„ï¼Œåªå¯¹å®¢æˆ·ç«¯æœ‰æ„ä¹‰
+     *
      * @param conn
      */
     public void onConnectionReady(Connection conn);
 
 
     /**
-     * µ±Á¬½Ó¹Ø±ÕÊ±»Øµ÷
-     * 
+     * å½“è¿æ¥å…³é—­æ—¶å›è°ƒ
+     *
      * @param conn
      */
     public void onConnectionClosed(Connection conn);

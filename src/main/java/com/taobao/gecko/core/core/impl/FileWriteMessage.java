@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,11 +24,10 @@ import com.taobao.gecko.core.core.WriteMessage;
 
 
 /**
- * Ğ´ÎÄ¼şÏûÏ¢
- * 
+ * å†™æ–‡ä»¶æ¶ˆæ¯
+ *
  * @author boyan
  * @Date 2011-4-20
- * 
  */
 public class FileWriteMessage implements WriteMessage {
     private long writeOffset;
@@ -40,7 +39,7 @@ public class FileWriteMessage implements WriteMessage {
 
 
     public FileWriteMessage(final long writeOffset, final long writeSize, final FutureImpl<Boolean> writeFuture,
-            final FileChannel fileChannel, final IoBuffer head, final IoBuffer tail) {
+                            final FileChannel fileChannel, final IoBuffer head, final IoBuffer tail) {
         super();
         this.writeOffset = writeOffset;
         this.writeSize = writeSize;
@@ -103,7 +102,7 @@ public class FileWriteMessage implements WriteMessage {
     }
 
     /**
-     * Èç¹ûĞ´Èë·µ»ØÎª0£¬Ç¿ÖÆÑ­»·¶à´Î£¬Ìá¸ß·¢ËÍĞ§ÂÊ
+     * å¦‚æœå†™å…¥è¿”å›ä¸º0ï¼Œå¼ºåˆ¶å¾ªç¯å¤šæ¬¡ï¼Œæé«˜å‘é€æ•ˆç‡
      */
     static final int WRITE_SPIN_COUNT = Integer.parseInt(System.getProperty("notify.remoting.write_spin_count", "16"));
 
@@ -120,7 +119,7 @@ public class FileWriteMessage implements WriteMessage {
                     break;
                 }
             }
-            // Í·Ã»ÓĞÍêÈ«Ğ´Èë£¬Ö±½Ó·µ»Ø
+            // å¤´æ²¡æœ‰å®Œå…¨å†™å…¥ï¼Œç›´æ¥è¿”å›
             if (this.hasHeadRemaining()) {
                 return transfered;
             }
@@ -136,7 +135,7 @@ public class FileWriteMessage implements WriteMessage {
                     break;
                 }
             }
-            // ÎÄ¼şÃ»ÓĞ´«ÊäÍê±Ï£¬Ö±½Ó·µ»Ø
+            // æ–‡ä»¶æ²¡æœ‰ä¼ è¾“å®Œæ¯•ï¼Œç›´æ¥è¿”å›
             if (this.hasFileRemaining()) {
                 return transfered;
             }
@@ -158,8 +157,7 @@ public class FileWriteMessage implements WriteMessage {
     private long transferTo(final WritableByteChannel channel) throws IOException {
         try {
             return this.fileChannel.transferTo(this.writeOffset, this.writeSize, channel);
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             // Check to see if the IOException is being thrown due to
             // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103988
             final String message = e.getMessage();

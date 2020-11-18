@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,12 +35,8 @@ import com.taobao.gecko.service.notify.response.NotifyResponseCommand;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-21 œ¬ŒÁ05:39:48
+ * @since 1.0, 2009-12-21 ‰∏ãÂçà05:39:48
  */
 
 public class HeartBeatCommandProcessorUnitTest {
@@ -59,8 +55,8 @@ public class HeartBeatCommandProcessorUnitTest {
         EasyMock.expect(conn.getRemotingContext()).andReturn(context).once();
         EasyMock.expect(context.getCommandFactory()).andReturn(commandFactory).once();
         EasyMock
-            .expect(commandFactory.createBooleanAckCommand(request.getRequestHeader(), ResponseStatus.NO_ERROR, null))
-            .andReturn(response).once();
+                .expect(commandFactory.createBooleanAckCommand(request.getRequestHeader(), ResponseStatus.NO_ERROR, null))
+                .andReturn(response).once();
         conn.response(response);
 
         EasyMock.expectLastCall().andAnswer(new IAnswer<Object>() {

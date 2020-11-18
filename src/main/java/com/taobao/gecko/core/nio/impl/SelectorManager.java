@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,13 +29,10 @@ import com.taobao.gecko.core.util.PositiveAtomicCounter;
 
 
 /**
- * Selector¹ÜÀíÆ÷£¬¹ÜÀí¶à¸öreactor
- * 
- * 
- * 
+ * Selectorç®¡ç†å™¨ï¼Œç®¡ç†å¤šä¸ªreactor
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç06:10:59
+ * @since 1.0, 2009-12-16 ä¸‹åˆ06:10:59
  */
 public class SelectorManager {
     private final Reactor[] reactorSet;
@@ -44,7 +41,7 @@ public class SelectorManager {
     private final int dividend;
 
     /**
-     * Reactor×¼±¸¾ÍĞ÷µÄ¸öÊı
+     * Reactorå‡†å¤‡å°±ç»ªçš„ä¸ªæ•°
      */
     private int reactorReadyCount;
 
@@ -57,7 +54,7 @@ public class SelectorManager {
         log.info("Creating " + selectorPoolSize + " rectors...");
         this.reactorSet = new Reactor[selectorPoolSize];
         this.controller = controller;
-        // ´´½¨selectorPoolSize¸öselector
+        // åˆ›å»ºselectorPoolSizeä¸ªselector
         for (int i = 0; i < selectorPoolSize; i++) {
             this.reactorSet[i] = new Reactor(this, conf, i);
         }
@@ -84,8 +81,8 @@ public class SelectorManager {
 
 
     /**
-     * ½öÓÃÓÚ²âÊÔ
-     * 
+     * ä»…ç”¨äºæµ‹è¯•
+     *
      * @param index
      * @return
      */
@@ -111,8 +108,8 @@ public class SelectorManager {
 
 
     /**
-     * ×¢²áchannel
-     * 
+     * æ³¨å†Œchannel
+     *
      * @param channel
      * @param ops
      * @param attachment
@@ -121,15 +118,13 @@ public class SelectorManager {
     public final Reactor registerChannel(final SelectableChannel channel, final int ops, final Object attachment) {
         this.awaitReady();
         int index = 0;
-        // Acceptµ¥¶ÀÒ»¸öReactor
+        // Acceptå•ç‹¬ä¸€ä¸ªReactor
         if (ops == SelectionKey.OP_ACCEPT || ops == SelectionKey.OP_CONNECT) {
             index = 0;
-        }
-        else {
+        } else {
             if (this.dividend > 0) {
                 index = this.sets.incrementAndGet() % this.dividend + 1;
-            }
-            else {
+            } else {
                 index = 0;
             }
         }
@@ -145,8 +140,7 @@ public class SelectorManager {
             while (!this.started || this.reactorReadyCount != this.reactorSet.length) {
                 try {
                     this.wait(1000);
-                }
-                catch (final InterruptedException e) {
+                } catch (final InterruptedException e) {
                     Thread.currentThread().interrupt();// reset interrupt status
                 }
             }
@@ -155,23 +149,22 @@ public class SelectorManager {
 
 
     /**
-     * ²éÕÒÏÂÒ»¸öreactor
-     * 
+     * æŸ¥æ‰¾ä¸‹ä¸€ä¸ªreactor
+     *
      * @return
      */
     final Reactor nextReactor() {
         if (this.dividend > 0) {
             return this.reactorSet[this.sets.incrementAndGet() % this.dividend + 1];
-        }
-        else {
+        } else {
             return this.reactorSet[0];
         }
     }
 
 
     /**
-     * ×¢²áÁ¬½ÓÊÂ¼ş
-     * 
+     * æ³¨å†Œè¿æ¥äº‹ä»¶
+     *
      * @param session
      * @param event
      */
@@ -199,12 +192,12 @@ public class SelectorManager {
 
 
     /**
-     * ²åÈë¶¨Ê±Æ÷µ½session¹ØÁªµÄreactor£¬·µ»Øµ±Ç°Ê±¼ä
-     * 
+     * æ’å…¥å®šæ—¶å™¨åˆ°sessionå…³è”çš„reactorï¼Œè¿”å›å½“å‰æ—¶é—´
+     *
      * @param session
      * @param timeout
      * @param runnable
-     * @return µ±Ç°Ê±¼ä
+     * @return å½“å‰æ—¶é—´
      */
     public final void insertTimer(final Session session, final TimerRef timerRef) {
         final Reactor reactor = this.getReactorFromSession(session);
@@ -213,8 +206,8 @@ public class SelectorManager {
 
 
     /**
-     * ²åÈë¶¨Ê±Æ÷²¢·µ»Øµ±Ç°Ê±¼ä£¬Ëæ»úÑ¡ÔñÒ»¸öreactor
-     * 
+     * æ’å…¥å®šæ—¶å™¨å¹¶è¿”å›å½“å‰æ—¶é—´ï¼Œéšæœºé€‰æ‹©ä¸€ä¸ªreactor
+     *
      * @param timeout
      * @param runnable
      */

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,12 +35,8 @@ import com.taobao.gecko.service.notify.NotifyCommandFactory;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-21 œ¬ŒÁ02:28:37
+ * @since 1.0, 2009-12-21 ‰∏ãÂçà02:28:37
  */
 
 public class DefaultRemotingContextUnitTest {
@@ -105,7 +101,7 @@ public class DefaultRemotingContextUnitTest {
 
         assertNull(this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP));
         assertNull(this.remotingContext.getConnectionsByGroup(groupName));
-        // º”»Îƒ¨»œ∑÷◊È
+        // Âä†ÂÖ•ÈªòËÆ§ÂàÜÁªÑ
         this.remotingContext.addConnection(conn);
         assertNotNull(this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP));
 
@@ -113,7 +109,7 @@ public class DefaultRemotingContextUnitTest {
         assertTrue(this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP).contains(conn));
         assertNull(this.remotingContext.getConnectionsByGroup(groupName));
 
-        // º”»ÎgroupName
+        // Âä†ÂÖ•groupName
         this.remotingContext.addConnectionToGroup(groupName, conn);
         assertEquals(1, this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP).size());
         assertEquals(1, this.remotingContext.getConnectionsByGroup(groupName).size());
@@ -124,15 +120,15 @@ public class DefaultRemotingContextUnitTest {
         assertTrue(groupSet.contains(Constants.DEFAULT_GROUP));
         assertTrue(groupSet.contains(groupName));
 
-        // ¥”ƒ¨»œ∑÷◊È“∆≥˝
+        // ‰ªéÈªòËÆ§ÂàÜÁªÑÁßªÈô§
         this.remotingContext.removeConnection(conn);
         assertNull(this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP));
-        // ¥”groupName“∆≥˝
+        // ‰ªégroupNameÁßªÈô§
         this.remotingContext.removeConnectionFromGroup(groupName, conn);
         assertNull(this.remotingContext.getConnectionsByGroup(groupName));
         assertTrue(this.remotingContext.getGroupSet().isEmpty());
 
-        // ≤‚ ‘sessionµΩconnµƒ”≥…‰
+        // ÊµãËØïsessionÂà∞connÁöÑÊò†Â∞Ñ
         this.remotingContext.addSession2ConnectionMapping(session, conn);
         assertSame(conn, this.remotingContext.getConnectionBySession(session));
         assertSame(conn, this.remotingContext.removeSession2ConnectionMapping(session));

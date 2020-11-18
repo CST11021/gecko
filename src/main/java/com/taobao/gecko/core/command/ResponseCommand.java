@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,10 @@ import java.net.InetSocketAddress;
 
 
 /**
- * Ó¦´ğÃüÁî¹«¹²½Ó¿Ú
- * 
- * 
- * 
+ * åº”ç­”å‘½ä»¤å…¬å…±æ¥å£
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç05:55:15
+ * @since 1.0, 2009-12-16 ä¸‹åˆ05:55:15
  */
 
 public interface ResponseCommand extends CommandHeader {
@@ -33,64 +30,64 @@ public interface ResponseCommand extends CommandHeader {
 
 
     /**
-     * ·µ»ØÏìÓ¦×´Ì¬
-     * 
+     * è¿”å›å“åº”çŠ¶æ€
+     *
      * @return
      */
     public ResponseStatus getResponseStatus();
 
 
     /**
-     * ÉèÖÃÏìÓ¦×´Ì¬
-     * 
+     * è®¾ç½®å“åº”çŠ¶æ€
+     *
      * @param responseStatus
      */
     public void setResponseStatus(ResponseStatus responseStatus);
 
 
     /**
-     * ÊÇ·ñÎªBooleanAckCommand
-     * 
+     * æ˜¯å¦ä¸ºBooleanAckCommand
+     *
      * @return
      */
     public boolean isBoolean();
 
 
     /**
-     * ·µ»ØÏìÓ¦µÄÔ¶¶ËµØÖ·
-     * 
+     * è¿”å›å“åº”çš„è¿œç«¯åœ°å€
+     *
      * @return
      */
     public InetSocketAddress getResponseHost();
 
 
     /**
-     * ÉèÖÃÏìÓ¦µÄÔ¶¶ËµØÖ·
-     * 
+     * è®¾ç½®å“åº”çš„è¿œç«¯åœ°å€
+     *
      * @param address
      */
     public void setResponseHost(InetSocketAddress address);
 
 
     /**
-     * ·µ»ØÏìÓ¦µÄÊ±¼ä´Á
-     * 
+     * è¿”å›å“åº”çš„æ—¶é—´æˆ³
+     *
      * @return
      */
     public long getResponseTime();
 
 
     /**
-     * ÉèÖÃÏìÓ¦Ê±¼ä´Á
-     * 
+     * è®¾ç½®å“åº”æ—¶é—´æˆ³
+     *
      * @param time
      */
     public void setResponseTime(long time);
 
 
     /**
-     * ÉèÖÃÏìÓ¦µÄopaque
-     * 
+     * è®¾ç½®å“åº”çš„opaque
+     *
      * @param opaque
      */
     public void setOpaque(Integer opaque);

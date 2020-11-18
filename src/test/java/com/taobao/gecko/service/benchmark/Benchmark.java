@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,12 +36,10 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
 
 
 /**
- * 
- * Service²ãµÄÒ»¸öĞÔÄÜ²âÊÔ
- * 
+ * Serviceå±‚çš„ä¸€ä¸ªæ€§èƒ½æµ‹è¯•
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-24 ÏÂÎç06:26:00
+ * @since 1.0, 2009-12-24 ä¸‹åˆ06:26:00
  */
 
 public class Benchmark {
@@ -51,6 +49,7 @@ public class Benchmark {
     static final int CONN_COUNT = 1;
     static final long TIMEOUT = 5000;
     static String body = null;
+
     static {
         final StringBuffer sb = new StringBuffer(BODY_LEN);
         for (int i = 0; i < BODY_LEN; i++) {
@@ -78,8 +77,7 @@ public class Benchmark {
             try {
                 this.counter.incrementAndGet();
                 conn.response(new NotifyDummyAckCommand(request, body));
-            }
-            catch (final NotifyRemotingException e) {
+            } catch (final NotifyRemotingException e) {
                 e.printStackTrace();
             }
         }
@@ -93,7 +91,7 @@ public class Benchmark {
 
 
         public AccessThread(final CyclicBarrier cyclicBarrier, final RemotingClient client,
-                final AtomicInteger timeoutCounter, final String group) {
+                            final AtomicInteger timeoutCounter, final String group) {
             super();
             this.cyclicBarrier = cyclicBarrier;
             this.client = client;
@@ -111,18 +109,16 @@ public class Benchmark {
                     try {
                         response =
                                 this.client.invokeToGroup(this.group, new NotifyDummyRequestCommand(body), TIMEOUT,
-                                    TimeUnit.MILLISECONDS);
+                                        TimeUnit.MILLISECONDS);
                         if (response == null || response.getResponseStatus() != ResponseStatus.NO_ERROR) {
-                            throw new IllegalStateException("µ÷ÓÃ½á¹û·Ç·¨" + response);
+                            throw new IllegalStateException("è°ƒç”¨ç»“æœéæ³•" + response);
                         }
-                    }
-                    catch (final TimeoutException e) {
+                    } catch (final TimeoutException e) {
                         this.timeoutCounter.incrementAndGet();
                     }
                 }
                 this.cyclicBarrier.await();
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -145,8 +141,7 @@ public class Benchmark {
                         Thread.sleep(5000);
                         System.out.println("process count:" + processor.getCounter() + ",timeout:"
                                 + timeoutCounter.get());
-                    }
-                    catch (final Exception e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -163,8 +158,8 @@ public class Benchmark {
         final String group = server.getConnectURI().toString();
         client.connect(group, CONN_COUNT);
         client.awaitReadyInterrupt(group);
-        System.out.println("Á¬½ÓÊı:" + client.getConnectionCount(group));
-        System.out.println("¿ªÊ¼²âÊÔ...");
+        System.out.println("è¿æ¥æ•°:" + client.getConnectionCount(group));
+        System.out.println("å¼€å§‹æµ‹è¯•...");
 
         final CyclicBarrier barrier = new CyclicBarrier(THREAD_COUNT + 1);
         for (int i = 0; i < THREAD_COUNT; i++) {
@@ -175,9 +170,9 @@ public class Benchmark {
         barrier.await();
         final long duration = System.currentTimeMillis() - start;
         final long throughtoutput = REPEAT * THREAD_COUNT * 1000L / duration;
-        System.out.println(String.format("²¢·¢:%d£¬Ñ­»·´ÎÊı:%d,ÏûÏ¢´óĞ¡:%d£¬¿Í»§¶ËÁ¬½ÓÊı%d£¬ºÄÊ±:%d ms,Throughtoutput:%d", THREAD_COUNT,
-            REPEAT, BODY_LEN, CONN_COUNT, duration, throughtoutput));
-        System.out.println("²âÊÔ½áÊø...");
+        System.out.println(String.format("å¹¶å‘:%dï¼Œå¾ªç¯æ¬¡æ•°:%d,æ¶ˆæ¯å¤§å°:%dï¼Œå®¢æˆ·ç«¯è¿æ¥æ•°%dï¼Œè€—æ—¶:%d ms,Throughtoutput:%d", THREAD_COUNT,
+                REPEAT, BODY_LEN, CONN_COUNT, duration, throughtoutput));
+        System.out.println("æµ‹è¯•ç»“æŸ...");
 
         server.stop();
         client.stop();

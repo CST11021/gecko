@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,11 +19,10 @@ import java.lang.reflect.Method;
 
 
 /**
- * ÓÃÓÚJMX×¢²áµÄ¹¤¾ßÀà
- * 
- * @author boyan(boyan@taobao.com)
+ * ç”¨äºŽJMXæ³¨å†Œçš„å·¥å…·ç±»
+ *
+ * @author boyan(boyan @ taobao.com)
  * @date 2011-11-1
- * 
  */
 public class MBeanUtils {
     public static final boolean ENABLE_JMX = Boolean.valueOf(System.getProperty("gecko.jmx.enable", "false"));
@@ -34,7 +33,7 @@ public class MBeanUtils {
             return;
         }
         boolean registered = false;
-        // ÓÅÏÈ×¢²áµ½notifyµÄMBeanServerÉÏ
+        // ä¼˜å…ˆæ³¨å†Œåˆ°notifyçš„MBeanServerä¸Š
         try {
             final Class<?> clazz = Class.forName(" com.taobao.notify.utils.MyMBeanServer");
             final Method getInstance = clazz.getMethod("getInstance");
@@ -47,8 +46,7 @@ public class MBeanUtils {
                 }
             }
 
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             // ignore
 
         }

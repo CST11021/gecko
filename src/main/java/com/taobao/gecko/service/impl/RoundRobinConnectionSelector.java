@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,11 +25,10 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
- * Round robinµÄÁ¬½ÓÑ¡ÔñÆ÷
- * 
+ * Round robinçš„è¿žæŽ¥é€‰æ‹©å™¨
+ *
  * @author boyan
  * @Date 2010-9-10
- * 
  */
 public class RoundRobinConnectionSelector implements ConnectionSelector {
     private final PositiveAtomicCounter sets = new PositiveAtomicCounter();
@@ -38,7 +37,7 @@ public class RoundRobinConnectionSelector implements ConnectionSelector {
 
 
     public Connection select(final String targetGroup, final RequestCommand request,
-            final List<Connection> connectionList) throws NotifyRemotingException {
+                             final List<Connection> connectionList) throws NotifyRemotingException {
         try {
             if (connectionList == null) {
                 return null;
@@ -56,8 +55,7 @@ public class RoundRobinConnectionSelector implements ConnectionSelector {
                 return null;
             }
             return result;
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             throw new NotifyRemotingException(e);
         }
     }

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +22,8 @@ import com.taobao.gecko.core.util.RemotingUtils;
 
 
 /**
- * 
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午05:52:51
+ * @since 1.0, 2009-12-16 涓嬪崍05:52:51
  */
 public class NotifyWrapDecoder implements CodecFactory.Decoder {
     private final RequestCommandDecoder requestDecoder;
@@ -61,8 +56,7 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
         final DecoderState decoderState = this.getDecoderStateFromSession(session);
         if (decoderState.decodeCommand == null) {
             return this.decodeNewCommand(buff, session);
-        }
-        else {
+        } else {
             return this.decodeCurrentCommand(buff, session);
         }
 
@@ -78,11 +72,9 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
         final byte magic = buff.get(buff.position());
         if (magic == Constants.REQUEST_MAGIC) {
             return this.decodeRequestCommand(buff, session);
-        }
-        else if (magic == Constants.RESPONSE_MAGIC) {
+        } else if (magic == Constants.RESPONSE_MAGIC) {
             return this.decodeResponseCommand(buff, session);
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknow command magic " + magic + " Buffer: "
                     + RemotingUtils.dumpBuffer(buff).toString());
         }
@@ -102,8 +94,8 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
 
 
     /**
-     * 从连接属性中获取当前的decode状态，如果不存在就创建
-     * 
+     * 浠庤繛鎺ュ睘鎬т腑鑾峰彇褰撳墠鐨刣ecode鐘舵�侊紝濡傛灉涓嶅瓨鍦ㄥ氨鍒涘缓
+     *
      * @param session
      * @return
      */

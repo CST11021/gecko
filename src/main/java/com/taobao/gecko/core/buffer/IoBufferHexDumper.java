@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,10 +37,10 @@ package com.taobao.gecko.core.buffer;
 /**
  * Provides utility methods to dump an {@link IoBuffer} into a hex formatted
  * string.
- * 
+ *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 686598 $, $Date: 2008-08-17 12:58:23 +0200 (Sun, 17 Aug 2008)
- *          $
+ * $
  */
 class IoBufferHexDumper {
 
@@ -58,7 +58,7 @@ class IoBufferHexDumper {
      * Initialize lookup tables.
      */
     static {
-        final byte[] digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        final byte[] digits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         int i;
         byte[] high = new byte[256];
@@ -76,13 +76,11 @@ class IoBufferHexDumper {
 
     /**
      * Dumps an {@link IoBuffer} to a hex formatted string.
-     * 
-     * @param in
-     *            the buffer to dump
-     * @param lengthLimit
-     *            the limit at which hex dumping will stop
+     *
+     * @param in          the buffer to dump
+     * @param lengthLimit the limit at which hex dumping will stop
      * @return a hex formatted string representation of the <i>in</i>
-     *         {@link Iobuffer}.
+     * {@link Iobuffer}.
      */
     public static String getHexdump(IoBuffer in, int lengthLimit) {
         if (lengthLimit == 0) {
@@ -93,8 +91,7 @@ class IoBufferHexDumper {
         int size;
         if (truncate) {
             size = lengthLimit;
-        }
-        else {
+        } else {
             size = in.remaining();
         }
 

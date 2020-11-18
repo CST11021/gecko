@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,12 +38,10 @@ import com.taobao.gecko.service.processor.HeartBeatCommandProecssor;
 
 
 /**
- * 
- * RemotingServer£¬·şÎñÆ÷µÄÄ¬ÈÏÊµÏÖ
- * 
+ * RemotingServerï¼ŒæœåŠ¡å™¨çš„é»˜è®¤å®ç°
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÉÏÎç11:13:24
+ * @since 1.0, 2009-12-15 ä¸Šåˆ11:13:24
  */
 
 public class DefaultRemotingServer extends BaseRemotingController implements RemotingServer {
@@ -57,24 +55,24 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
 
     public void setServerConfig(final ServerConfig serverConfig) {
         if (this.controller != null && this.controller.isStarted()) {
-            throw new IllegalStateException("RemotingServerÒÑ¾­Æô¶¯£¬ÉèÖÃÎŞĞ§");
+            throw new IllegalStateException("RemotingServerå·²ç»å¯åŠ¨ï¼Œè®¾ç½®æ— æ•ˆ");
         }
         this.config = serverConfig;
     }
 
 
     /**
-     * ·şÎñ¶Ë»¹ĞèÒªÉ¨ÃèÁ¬½ÓÊÇ·ñ´æ»î
+     * æœåŠ¡ç«¯è¿˜éœ€è¦æ‰«æè¿æ¥æ˜¯å¦å­˜æ´»
      */
     @Override
     protected ScanTask[] getScanTasks() {
-        return new ScanTask[] { new InvalidCallBackScanTask(), new InvalidConnectionScanTask() };
+        return new ScanTask[]{new InvalidCallBackScanTask(), new InvalidConnectionScanTask()};
     }
 
 
     @Override
     protected void doStart() throws NotifyRemotingException {
-        // Èç¹ûÃ»ÓĞÉèÖÃĞÄÌø´¦ÀíÆ÷£¬ÔòÊ¹ÓÃÄ¬ÈÏ
+        // å¦‚æœæ²¡æœ‰è®¾ç½®å¿ƒè·³å¤„ç†å™¨ï¼Œåˆ™ä½¿ç”¨é»˜è®¤
         if (!this.remotingContext.processorMap.containsKey(HeartBeatRequestCommand.class)) {
             this.registerProcessor(HeartBeatRequestCommand.class, new HeartBeatCommandProecssor());
         }
@@ -82,15 +80,13 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
 
             final ServerConfig serverConfig = (ServerConfig) this.config;
             ((TCPController) this.controller).setBacklog(serverConfig.getBacklog());
-            // ÓÅÏÈ°ó¶¨Ö¸¶¨IPµØÖ·
+            // ä¼˜å…ˆç»‘å®šæŒ‡å®šIPåœ°å€
             if (serverConfig.getLocalInetSocketAddress() != null) {
                 this.controller.bind(serverConfig.getLocalInetSocketAddress());
-            }
-            else {
+            } else {
                 this.controller.bind(serverConfig.getPort());
             }
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             throw new NotifyRemotingException(e);
         }
     }
@@ -98,7 +94,7 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
 
     @Override
     protected void doStop() throws NotifyRemotingException {
-        // ¹Ø±ÕËùÓĞÁ¬½Ó
+        // å…³é—­æ‰€æœ‰è¿æ¥
         final List<Connection> connections = this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
         if (connections != null) {
             for (final Connection conn : connections) {
@@ -111,29 +107,25 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
     public synchronized URI getConnectURI() {
         final InetSocketAddress socketAddress = this.getInetSocketAddress();
         if (socketAddress == null) {
-            throw new IllegalStateException("serverÎ´Æô¶¯");
+            throw new IllegalStateException("serveræœªå¯åŠ¨");
         }
         InetAddress inetAddress = null;
         try {
             inetAddress = RemotingUtils.getLocalHostAddress();
-        }
-        catch (final Exception e) {
-            throw new IllegalStateException("»ñÈ¡IPµØÖ·Ê§°Ü", e);
+        } catch (final Exception e) {
+            throw new IllegalStateException("è·å–IPåœ°å€å¤±è´¥", e);
         }
         try {
             if (inetAddress instanceof Inet4Address) {
                 return new URI(this.config.getWireFormatType().getScheme() + "://" + inetAddress.getHostAddress() + ":"
                         + socketAddress.getPort());
-            }
-            else if (inetAddress instanceof Inet6Address) {
+            } else if (inetAddress instanceof Inet6Address) {
                 return new URI(this.config.getWireFormatType().getScheme() + "://[" + inetAddress.getHostAddress()
                         + "]:" + socketAddress.getPort());
-            }
-            else {
+            } else {
                 throw new IllegalStateException("Unknow InetAddress type " + inetAddress);
             }
-        }
-        catch (final URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             throw new IllegalStateException(e);
         }
     }

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import javax.management.ObjectName;
 
 /**
  * @author boyan
- * 
  */
 public final class MyMBeanServer {
 
@@ -54,14 +53,13 @@ public final class MyMBeanServer {
 
 
     public void registMBean(final Object o, final String name) {
-        // ×¢²áMBean
+        // æ³¨å†ŒMBean
         if (null != this.mbs) {
             try {
                 this.mbs.registerMBean(o, new ObjectName(o.getClass().getPackage().getName() + ":type="
                         + o.getClass().getSimpleName()
                         + (null == name ? ",id=" + o.hashCode() : ",name=" + name + "-" + o.hashCode())));
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -69,7 +67,7 @@ public final class MyMBeanServer {
 
 
     public void registerMBeanWithId(final Object o, final String id) {
-        // ×¢²áMBean
+        // æ³¨å†ŒMBean
         if (null == id || id.length() == 0) {
             throw new IllegalArgumentException("must set id");
         }
@@ -77,8 +75,7 @@ public final class MyMBeanServer {
             try {
                 this.mbs.registerMBean(o, new ObjectName(o.getClass().getPackage().getName() + ":type="
                         + o.getClass().getSimpleName() + ",id=" + id));
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -95,8 +92,7 @@ public final class MyMBeanServer {
                     subMap = new ConcurrentHashMap<String, AtomicLong>();
                     this.idMap.put(name, subMap);
                 }
-            }
-            finally {
+            } finally {
                 this.lock.unlock();
             }
         }
@@ -110,8 +106,7 @@ public final class MyMBeanServer {
                     indexValue = new AtomicLong(0);
                     subMap.put(idPrefix, indexValue);
                 }
-            }
-            finally {
+            } finally {
                 this.lock.unlock();
             }
         }
@@ -122,7 +117,7 @@ public final class MyMBeanServer {
 
 
     public void registerMBeanWithIdPrefix(final Object o, String idPrefix) {
-        // ×¢²áMBean
+        // æ³¨å†ŒMBean
         if (null != this.mbs) {
             if (null == idPrefix || idPrefix.length() == 0) {
                 idPrefix = "default";
@@ -134,8 +129,7 @@ public final class MyMBeanServer {
 
                 this.mbs.registerMBean(o, new ObjectName(o.getClass().getPackage().getName() + ":type="
                         + o.getClass().getSimpleName() + ",id=" + id));
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }

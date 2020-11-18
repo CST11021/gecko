@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,13 +23,10 @@ import com.taobao.gecko.core.core.CodecFactory;
 
 
 /**
- * 
- * 
- * wireĞ­ÒéÀàĞÍ£¬ÈÎºÎÏëÒªÊ¹ÓÃgeckoµÄĞ­Òé¶¼ĞèÒª¼Ì³Ğ´ËÀà²¢ÊµÏÖÏàÓ¦·½·¨
- * 
+ * wireåè®®ç±»å‹ï¼Œä»»ä½•æƒ³è¦ä½¿ç”¨geckoçš„åè®®éƒ½éœ€è¦ç»§æ‰¿æ­¤ç±»å¹¶å®ç°ç›¸åº”æ–¹æ³•
+ *
  * @author boyan
- * 
- * @since 1.0, 2010-1-27 ÏÂÎç05:46:27
+ * @since 1.0, 2010-1-27 ä¸‹åˆ05:46:27
  */
 
 public abstract class WireFormatType {
@@ -37,8 +34,8 @@ public abstract class WireFormatType {
 
 
     /**
-     * ×¢²áĞ­ÒéÀàĞÍ
-     * 
+     * æ³¨å†Œåè®®ç±»å‹
+     *
      * @param wireFormatType
      */
     public static void registerWireFormatType(final WireFormatType wireFormatType) {
@@ -50,8 +47,8 @@ public abstract class WireFormatType {
 
 
     /**
-     * È¡ÏûĞ­ÒéÀàĞÍµÄ×¢²á
-     * 
+     * å–æ¶ˆåè®®ç±»å‹çš„æ³¨å†Œ
+     *
      * @param wireFormatType
      */
     public static void unregisterWireFormatType(final WireFormatType wireFormatType) {
@@ -75,32 +72,32 @@ public abstract class WireFormatType {
 
 
     /**
-     * Ğ­ÒéµÄscheme
-     * 
+     * åè®®çš„scheme
+     *
      * @return
      */
     public abstract String getScheme();
 
 
     /**
-     * Ğ­ÒéµÄ±à½âÂë¹¤³§
-     * 
+     * åè®®çš„ç¼–è§£ç å·¥å‚
+     *
      * @return
      */
     public abstract CodecFactory newCodecFactory();
 
 
     /**
-     * Ğ­ÒéµÄÃüÁî¹¤³§
-     * 
+     * åè®®çš„å‘½ä»¤å·¥å‚
+     *
      * @return
      */
     public abstract CommandFactory newCommandFactory();
 
 
     /**
-     * Ğ­ÒéÃû³Æ
-     * 
+     * åè®®åç§°
+     *
      * @return
      */
     public abstract String name();

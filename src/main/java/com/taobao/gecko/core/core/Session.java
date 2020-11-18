@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,13 +23,10 @@ import java.util.concurrent.Future;
 
 
 /**
- * 连接抽象
- * 
- * 
- * 
+ * 杩炴帴鎶借薄
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午06:01:17
+ * @since 1.0, 2009-12-16 涓嬪崍06:01:17
  */
 public interface Session {
 
@@ -52,7 +49,7 @@ public interface Session {
 
     /**
      * Async write a message to socket,return a future
-     * 
+     *
      * @param packet
      * @return
      */
@@ -61,7 +58,7 @@ public interface Session {
 
     /**
      * Write a message,if you don't care when the message is written
-     * 
+     *
      * @param packet
      */
     void write(Object packet);
@@ -69,7 +66,7 @@ public interface Session {
 
     /**
      * Check if session is closed
-     * 
+     *
      * @return
      */
     boolean isClosed();
@@ -83,15 +80,15 @@ public interface Session {
 
     /**
      * Return the remote end's InetSocketAddress
-     * 
+     *
      * @return
      */
     InetSocketAddress getRemoteSocketAddress();
 
 
     /**
-     * 获取本地ip地址
-     * 
+     * 鑾峰彇鏈湴ip鍦板潃
+     *
      * @return
      */
     InetAddress getLocalAddress();
@@ -99,7 +96,7 @@ public interface Session {
 
     /**
      * Return true if using blocking write
-     * 
+     *
      * @return
      */
     boolean isUseBlockingWrite();
@@ -107,7 +104,7 @@ public interface Session {
 
     /**
      * Set if using blocking write
-     * 
+     *
      * @param useBlockingWrite
      */
     void setUseBlockingWrite(boolean useBlockingWrite);
@@ -115,7 +112,7 @@ public interface Session {
 
     /**
      * Return true if using blocking read
-     * 
+     *
      * @return
      */
     boolean isUseBlockingRead();
@@ -135,7 +132,7 @@ public interface Session {
      * Return true if session is expired,session is expired beacause you set the
      * sessionTimeout,if since session's last operation form now is over this
      * vlaue,isExpired return true,and Handler.onExpired() will be invoked.
-     * 
+     *
      * @return
      */
     boolean isExpired();
@@ -143,7 +140,7 @@ public interface Session {
 
     /**
      * Check if session is idle
-     * 
+     *
      * @return
      */
     boolean isIdle();
@@ -151,7 +148,7 @@ public interface Session {
 
     /**
      * Return current encoder
-     * 
+     *
      * @return
      */
     CodecFactory.Encoder getEncoder();
@@ -159,7 +156,7 @@ public interface Session {
 
     /**
      * Set encoder
-     * 
+     *
      * @param encoder
      */
     void setEncoder(CodecFactory.Encoder encoder);
@@ -167,7 +164,7 @@ public interface Session {
 
     /**
      * Return current decoder
-     * 
+     *
      * @return
      */
 
@@ -180,7 +177,7 @@ public interface Session {
     /**
      * Return true if allow handling read and write concurrently,default is
      * true.
-     * 
+     *
      * @return
      */
     boolean isHandleReadWriteConcurrently();
@@ -191,7 +188,7 @@ public interface Session {
 
     /**
      * Return the session read buffer's byte order,big end or little end.
-     * 
+     *
      * @return
      */
     ByteOrder getReadBufferByteOrder();
@@ -202,7 +199,7 @@ public interface Session {
 
     /**
      * Set a attribute attched with this session
-     * 
+     *
      * @param key
      * @param value
      */
@@ -211,7 +208,7 @@ public interface Session {
 
     /**
      * Returns all attribute key set
-     * 
+     *
      * @return
      */
     public Set<String> attributeKeySet();
@@ -219,7 +216,7 @@ public interface Session {
 
     /**
      * Remove attribute
-     * 
+     *
      * @param key
      */
     void removeAttribute(String key);
@@ -227,7 +224,7 @@ public interface Session {
 
     /**
      * Return attribute associated with key
-     * 
+     *
      * @param key
      * @return
      */
@@ -243,7 +240,7 @@ public interface Session {
     /**
      * Return the bytes in write queue,there bytes is in memory.Use this method
      * to controll writing speed.
-     * 
+     *
      * @return
      */
     long getScheduleWritenBytes();
@@ -251,7 +248,7 @@ public interface Session {
 
     /**
      * Return last operation timestamp,operation include read,write,idle
-     * 
+     *
      * @return
      */
     long getLastOperationTimeStamp();
@@ -259,7 +256,7 @@ public interface Session {
 
     /**
      * return true if it is a loopback connection
-     * 
+     *
      * @return
      */
     boolean isLoopbackConnection();

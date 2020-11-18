@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,12 +35,8 @@ import com.taobao.gecko.core.nio.TCPController;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-24 ÏÂÎç01:18:18
+ * @since 1.0, 2009-12-24 ä¸‹åˆ01:18:18
  */
 
 public class ReactorUnitTest {
@@ -91,15 +87,13 @@ public class ReactorUnitTest {
         NioSession session = control.createMock(NioSession.class);
         session.onEvent(EventType.ENABLE_READ, this.reactor.getSelector());
         EasyMock.expectLastCall();
-      
+
 
         control.replay();
         this.reactor.registerSession(session, EventType.ENABLE_READ);
         Thread.sleep(Reactor.TIMEOUT_THRESOLD * 3);
         control.verify();
     }
-
-
 
 
     @Test
@@ -147,10 +141,10 @@ public class ReactorUnitTest {
         MockSelectionKey key = new MockSelectionKey();
         NioSession session = mocksControl.createMock(NioSession.class);
         key.attach(session);
-        // ÅĞ¶ÏsessionÊÇ·ñ¹ıÆÚ£¬¼ÙÉèÎª¹ıÆÚ
+        // åˆ¤æ–­sessionæ˜¯å¦è¿‡æœŸï¼Œå‡è®¾ä¸ºè¿‡æœŸ
         EasyMock.expect(session.isExpired()).andReturn(true);
-        // ¹ıÆÚ¾Í»áµ÷ÓÃonSessionExpired£¬×îºó¹Ø±ÕÁ¬½Ó
-        // Í¬Ê±£¬expiredµÄsession²»»áÅĞ¶Ïidle
+        // è¿‡æœŸå°±ä¼šè°ƒç”¨onSessionExpiredï¼Œæœ€åå…³é—­è¿æ¥
+        // åŒæ—¶ï¼Œexpiredçš„sessionä¸ä¼šåˆ¤æ–­idle
         session.onEvent(EventType.EXPIRED, this.reactor.getSelector());
         EasyMock.expectLastCall();
         // session.close();
@@ -196,11 +190,11 @@ public class ReactorUnitTest {
         MockSelectionKey key = new MockSelectionKey();
         NioSession session = mocksControl.createMock(NioSession.class);
         key.attach(session);
-        // ÅĞ¶ÏsessionÊÇ·ñ¹ıÆÚ£¬²»¹ıÆÚ
+        // åˆ¤æ–­sessionæ˜¯å¦è¿‡æœŸï¼Œä¸è¿‡æœŸ
         EasyMock.expect(session.isExpired()).andReturn(false);
-        // ²»¹ıÆÚ¾Í»áÅĞ¶ÏsessionÊÇ·ñidle£¬¼ÙÉèidleÎªÕæ
+        // ä¸è¿‡æœŸå°±ä¼šåˆ¤æ–­sessionæ˜¯å¦idleï¼Œå‡è®¾idleä¸ºçœŸ
         EasyMock.expect(session.isIdle()).andReturn(true);
-        // Èç¹ûidleÌõ¼şÎªÕæ£¬ÄÇÃ´»áµ÷ÓÃonSessionIdle
+        // å¦‚æœidleæ¡ä»¶ä¸ºçœŸï¼Œé‚£ä¹ˆä¼šè°ƒç”¨onSessionIdle
         session.onEvent(EventType.IDLE, this.reactor.getSelector());
         EasyMock.expectLastCall();
 

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,6 +43,7 @@ public class MultiGroupBenchmarkServer {
     static final String GROUP_PREFIX = "group_";
     static String body = null;
     static final int THREAD_COUNT = 10;
+
     static {
         final StringBuffer sb = new StringBuffer(BODY_LEN);
         for (int i = 0; i < BODY_LEN; i++) {
@@ -63,7 +64,7 @@ public class MultiGroupBenchmarkServer {
 
         public void onConnectionCreated(final Connection conn) {
             final String group = GROUP_PREFIX + this.count.incrementAndGet();
-            System.out.println("¼ÓÈë·Ö×é" + group);
+            System.out.println("åŠ å…¥åˆ†ç»„" + group);
             conn.getRemotingContext().addConnectionToGroup(group, conn);
 
         }
@@ -85,7 +86,7 @@ public class MultiGroupBenchmarkServer {
 
 
         public AccessThread(final CountDownLatch countDownLatch, final RemotingServer server,
-                final AtomicInteger timeoutCounter, final AtomicInteger sendErrorCounter) {
+                            final AtomicInteger timeoutCounter, final AtomicInteger sendErrorCounter) {
             super();
             this.countDownLatch = countDownLatch;
             this.server = server;
@@ -104,10 +105,10 @@ public class MultiGroupBenchmarkServer {
                         this.server.sendToGroups(this.getRequestMap(groupCount), new MultiGroupCallBackListener() {
 
                             public void onResponse(final Map<String, ResponseCommand> groupResponses,
-                                    final Object... args) {
+                                                   final Object... args) {
                                 AccessThread.this.countDownLatch.countDown();
                                 if (groupResponses.size() != groupCount) {
-                                    throw new RuntimeException("Ó¦´ğÊıÄ¿²»Æ¥Åä");
+                                    throw new RuntimeException("åº”ç­”æ•°ç›®ä¸åŒ¹é…");
                                 }
                                 for (final Map.Entry<String, ResponseCommand> entry : groupResponses.entrySet()) {
                                     final ResponseCommand response = entry.getValue();
@@ -116,7 +117,7 @@ public class MultiGroupBenchmarkServer {
                                     }
                                     // if (response.getResponseStatus() !=
                                     // ResponseStatus.NO_ERROR) {
-                                    // System.out.println("ÏìÓ¦´íÎó" +
+                                    // System.out.println("å“åº”é”™è¯¯" +
                                     // response.getResponseStatus());
                                     // }
                                 }
@@ -127,14 +128,12 @@ public class MultiGroupBenchmarkServer {
                                 return (ThreadPoolExecutor) AccessThread.this.executor;
                             }
                         }, TIMEOUT, TimeUnit.MILLISECONDS);
-                    }
-                    catch (final Exception e) {
+                    } catch (final Exception e) {
                         this.sendErrorCounter.incrementAndGet();
                     }
                 }
 
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -171,8 +170,7 @@ public class MultiGroupBenchmarkServer {
                     try {
                         Thread.sleep(5000);
                         System.out.println("timeout:" + timeoutCounter.get() + ",send error:" + sendErrorCounter.get());
-                    }
-                    catch (final Exception e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -197,9 +195,9 @@ public class MultiGroupBenchmarkServer {
         final long throughtoutput = REPEAT * THREAD_COUNT * 1000L / duration;
         final int groupCount = server.getRemotingContext().getGroupSet().size() - 1;
         System.out.println(String.format(
-            "²¢·¢:%d£¬Ñ­»·´ÎÊı:%d,ÏûÏ¢´óĞ¡:%d£¬·Ö×éÊı%d£¬ºÄÊ±:%d ms,Throughtoutput:%d,send Error:%d,timeoutError:%d", THREAD_COUNT,
-            REPEAT, BODY_LEN, groupCount, duration, throughtoutput, sendErrorCounter.get(), timeoutCounter.get()));
-        System.out.println("²âÊÔ½áÊø...");
+                "å¹¶å‘:%dï¼Œå¾ªç¯æ¬¡æ•°:%d,æ¶ˆæ¯å¤§å°:%dï¼Œåˆ†ç»„æ•°%dï¼Œè€—æ—¶:%d ms,Throughtoutput:%d,send Error:%d,timeoutError:%d", THREAD_COUNT,
+                REPEAT, BODY_LEN, groupCount, duration, throughtoutput, sendErrorCounter.get(), timeoutCounter.get()));
+        System.out.println("æµ‹è¯•ç»“æŸ...");
 
         // server.stop();
         // client.stop();

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,24 +22,19 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
- * 
- * Ñ¡ÔñÁ¬½Ó²ßÂÔ
- * 
+ * é€‰æ‹©è¿æ¥ç­–ç•¥
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç05:00:54
+ * @since 1.0, 2009-12-15 ä¸‹åˆ05:00:54
  */
 
 public interface ConnectionSelector {
     /**
-     * ´Ó·Ö×éµÄÁ¬½ÓÁĞ±íÖĞÑ¡ÔñÏëÒªµÄÁ¬½Ó
-     * 
-     * @param targetGroup
-     *            ·Ö×éÃû³Æ
-     * @param request
-     *            ÇëÇóÃüÁî
-     * @param connectionList
-     *            ·Ö×éµÄÁ¬½ÓÁĞ±í
+     * ä»åˆ†ç»„çš„è¿æ¥åˆ—è¡¨ä¸­é€‰æ‹©æƒ³è¦çš„è¿æ¥
+     *
+     * @param targetGroup    åˆ†ç»„åç§°
+     * @param request        è¯·æ±‚å‘½ä»¤
+     * @param connectionList åˆ†ç»„çš„è¿æ¥åˆ—è¡¨
      * @return
      */
     public Connection select(String targetGroup, RequestCommand request, List<Connection> connectionList)

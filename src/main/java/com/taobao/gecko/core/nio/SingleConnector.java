@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,17 +21,15 @@ import java.util.concurrent.Future;
 
 
 /**
- * 
- * 客户端单连接管理器，仅连接单个服务器
- * 
+ * 瀹㈡埛绔崟杩炴帴绠＄悊鍣紝浠呰繛鎺ュ崟涓湇鍔″櫒
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-25 下午01:12:47
+ * @since 1.0, 2009-12-25 涓嬪崍01:12:47
  */
 
 public interface SingleConnector {
 
-    public Future<Boolean> connect(SocketAddress socketAddress,Object...args) throws IOException;
+    public Future<Boolean> connect(SocketAddress socketAddress, Object... args) throws IOException;
 
 
     public Future<Boolean> send(Object msg);

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,43 +21,36 @@ import com.taobao.gecko.service.Connection;
 
 
 /**
- * 
- * 
- * ÇëÇó»Øµ÷µÄ¹«¹²½Ó¿Ú
- * 
+ * è¯·æ±‚å›è°ƒçš„å…¬å…±æ¥å£
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç01:13:41
+ * @since 1.0, 2009-12-16 ä¸‹åˆ01:13:41
  */
 
 public interface RequestCallBack {
 
     /**
-     * ÅĞ¶Ï»Øµ÷ÊÇ·ñ¹ıÆÚ
-     * 
-     * @param now
-     *            µ±Ç°Ê±¼ä
+     * åˆ¤æ–­å›è°ƒæ˜¯å¦è¿‡æœŸ
+     *
+     * @param now å½“å‰æ—¶é—´
      * @return
      */
     public boolean isInvalid(long now);
 
 
     /**
-     * µ±ÏìÓ¦µ½´ïµÄÊ±£¬´¥·¢´Ë·½·¨
-     * 
-     * @param group
-     *            Ó¦´ğµÄ·Ö×éÃû
-     * @param responseCommand
-     *            Ó¦´ğÃüÁî
-     * @param connection
-     *            Ó¦´ğµÄÁ¬½Ó
+     * å½“å“åº”åˆ°è¾¾çš„æ—¶ï¼Œè§¦å‘æ­¤æ–¹æ³•
+     *
+     * @param group           åº”ç­”çš„åˆ†ç»„å
+     * @param responseCommand åº”ç­”å‘½ä»¤
+     * @param connection      åº”ç­”çš„è¿æ¥
      */
     public void onResponse(String group, ResponseCommand responseCommand, Connection connection);
 
 
     /**
-     * ÉèÖÃÒì³£
-     * 
+     * è®¾ç½®å¼‚å¸¸
+     *
      * @param e
      * @param conn
      * @param requestCommand

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,19 +16,15 @@
 package com.taobao.gecko.service.config;
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÉÏÎç11:22:49
+ * @since 1.0, 2009-12-15 ä¸Šåˆ11:22:49
  */
 
 public class ClientConfig extends BaseConfig {
 
     public ClientConfig() {
         super();
-        // ÉèÖÃÅĞ¶ÏÁ¬½Ó¿ÕÏĞÊ±¼äÎª10Ãë
+        // è®¾ç½®åˆ¤æ–­è¿æ¥ç©ºé—²æ—¶é—´ä¸º10ç§’
         this.setIdleTime(10);
         this.setMaxCallBackCount(100000);
         this.setSelectorPoolSize(Runtime.getRuntime().availableProcessors());
@@ -42,16 +38,16 @@ public class ClientConfig extends BaseConfig {
      */
     private int maxReconnectTimes = -1;
     /**
-     * Á¬½Ó³¬Ê±,µ¥Î»ºÁÃë
+     * è¿æ¥è¶…æ—¶,å•ä½æ¯«ç§’
      */
     private long connectTimeout = 80000L;
     /**
-     * ÖØÁ¬¼ä¸ô£¬µ¥Î»ºÁÃë
+     * é‡è¿é—´éš”ï¼Œå•ä½æ¯«ç§’
      */
     private long healConnectionInterval = 2000L;
 
     /**
-     * ÖØÁ¬¹ÜÀíÆ÷µÄÁ¬½Ó³Ø´óĞ¡
+     * é‡è¿ç®¡ç†å™¨çš„è¿æ¥æ± å¤§å°
      */
     private int healConnectionExecutorPoolSize = 1;
 

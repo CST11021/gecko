@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,13 +37,10 @@ import com.taobao.gecko.core.statistics.impl.DefaultStatistics;
 
 
 /**
- * Nio UDP¡¨Ω”
- * 
- * 
- * 
+ * Nio UDPËøûÊé•
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 œ¬ŒÁ06:10:25
+ * @since 1.0, 2009-12-16 ‰∏ãÂçà06:10:25
  */
 public class NioUDPSession extends AbstractNioSession implements UDPSession {
 
@@ -82,7 +79,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
         if (packaet instanceof DatagramPacket) {
             if (this.isClosed()) {
                 final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
-                future.failure(new IOException("¡¨Ω”“—æ≠±ªπÿ±’"));
+                future.failure(new IOException("ËøûÊé•Â∑≤ÁªèË¢´ÂÖ≥Èó≠"));
                 return future;
             }
             final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
@@ -90,8 +87,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
             this.scheduleWritenBytes.addAndGet(message.remaining());
             this.writeFromUserCode(message);
             return future;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("UDP session must write DatagramPacket");
         }
 
@@ -102,8 +98,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
     protected void closeChannel() throws IOException {
         try {
             ((DatagramChannel) this.selectableChannel).socket().close();
-        }
-        finally {
+        } finally {
             this.unregisterSession();
         }
     }
@@ -118,8 +113,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
             final WriteMessage message = this.wrapMessage(packet, null);
             this.scheduleWritenBytes.addAndGet(message.remaining());
             this.writeFromUserCode(message);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("UDP session must write DatagramPacket");
         }
     }
@@ -137,7 +131,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
     public Future<Boolean> asyncWrite(final SocketAddress targetAddr, final Object msg) {
         if (this.isClosed()) {
             final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
-            future.failure(new IOException("¡¨Ω”“—æ≠±ªπÿ±’"));
+            future.failure(new IOException("ËøûÊé•Â∑≤ÁªèË¢´ÂÖ≥Èó≠"));
             return future;
         }
         final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
@@ -167,8 +161,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
         try {
             this.decode();
             this.selectorManager.registerSession(this, EventType.ENABLE_READ);
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             log.error("Read from buffer error", e);
             this.onException(e);
             this.close0();
@@ -188,21 +181,18 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
                     if (msg != null) {
                         this.dispatchReceivedMessage(address, msg);
                     }
-                }
-                else {
+                } else {
                     final byte[] bytes = new byte[this.readBuffer.remaining()];
                     this.readBuffer.get(bytes);
                     final DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length, address);
                     this.dispatchReceivedMessage(datagramPacket);
                 }
             }
-        }
-        catch (final ClosedChannelException e) {
+        } catch (final ClosedChannelException e) {
             this.close0();
             // ignore
             log.error("Decode error", e);
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             this.close0();
             log.error("Decode error", e);
             this.onException(e);
@@ -217,8 +207,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
         }
         if (this.handler instanceof UDPHandlerAdapter) {
             ((UDPHandlerAdapter) this.handler).onMessageReceived(this, address, message);
-        }
-        else {
+        } else {
             this.handler.onMessageReceived(this, message);
         }
         if (start != -1) {
@@ -229,7 +218,7 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.google.code.yanf4j.nio.TCPHandler#getRemoteSocketAddress()
      */
     public InetSocketAddress getRemoteSocketAddress() {
@@ -237,13 +226,10 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
     }
 
     /**
-     * UDPœ˚œ¢∑‚◊∞£¨‘ˆº”¡À“ª∏ˆ∑¢ÀÕµÿ÷∑
-     * 
-     * 
-     * 
+     * UDPÊ∂àÊÅØÂ∞ÅË£ÖÔºåÂ¢ûÂä†‰∫Ü‰∏Ä‰∏™ÂèëÈÄÅÂú∞ÂùÄ
+     *
      * @author boyan
-     * 
-     * @since 1.0, 2009-12-16 œ¬ŒÁ06:10:42
+     * @since 1.0, 2009-12-16 ‰∏ãÂçà06:10:42
      */
     class UDPWriteMessage extends ByteBufferWriteMessage {
 
@@ -251,13 +237,12 @@ public class NioUDPSession extends AbstractNioSession implements UDPSession {
 
 
         private UDPWriteMessage(final SocketAddress targetAddress, final Object message,
-                final FutureImpl<Boolean> writeFuture) {
+                                final FutureImpl<Boolean> writeFuture) {
             super(message, writeFuture);
             this.targetAddress = targetAddress;
             if (message instanceof byte[]) {
                 this.buffer = IoBuffer.wrap((byte[]) message);
-            }
-            else {
+            } else {
                 this.buffer = NioUDPSession.this.encoder.encode(message, NioUDPSession.this);
             }
         }

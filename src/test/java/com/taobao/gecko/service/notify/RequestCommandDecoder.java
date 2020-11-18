@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,13 +25,8 @@ import com.taobao.gecko.service.notify.request.NotifyRequestCommand;
 
 
 /**
- * 
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 œ¬ŒÁ05:53:03
+ * @since 1.0, 2009-12-16 ‰∏ãÂçà05:53:03
  */
 
 public class RequestCommandDecoder implements CodecFactory.Decoder {
@@ -44,8 +39,7 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
         if (decoderState.decodeCommand == null) {
             if (in.remaining() < Constants.REQUEST_HEADER_LENGTH) {
                 return null;
-            }
-            else {
+            } else {
                 this.decodeHeader(in, session, decoderState);
             }
         }
@@ -53,8 +47,7 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
             final NotifyRequestCommand requestCommand = (NotifyRequestCommand) decoderState.decodeCommand;
             if (in.remaining() < requestCommand.getTotalBodyLength()) {
                 return null;
-            }
-            else {
+            } else {
                 return this.decodeContent(in, decoderState, requestCommand);
             }
         }
@@ -63,7 +56,7 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
 
 
     private Object decodeContent(final IoBuffer in, final DecoderState decoderState,
-            final NotifyRequestCommand requestCommand) {
+                                 final NotifyRequestCommand requestCommand) {
         if (requestCommand.getTotalBodyLength() > 0) {
             if (requestCommand.getHeaderLength() > 0) {
                 final byte[] header = new byte[requestCommand.getHeaderLength()];
@@ -86,7 +79,7 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
     private void decodeHeader(final IoBuffer in, final Session session, final DecoderState decoderState) {
         final byte magic = in.get();
         if (magic != Constants.REQUEST_MAGIC) {
-            log.error("«Î«Û√¸¡Óµƒmagic ˝÷µ¥ÌŒÛ,expect " + Constants.REQUEST_MAGIC + ",real " + magic);
+            log.error("ËØ∑Ê±ÇÂëΩ‰ª§ÁöÑmagicÊï∞ÂÄºÈîôËØØ,expect " + Constants.REQUEST_MAGIC + ",real " + magic);
             session.close();
             return;
         }

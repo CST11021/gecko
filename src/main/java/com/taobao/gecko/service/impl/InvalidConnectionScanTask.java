@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,28 +22,26 @@ import com.taobao.gecko.service.Connection;
 
 
 /**
- * É¨ÃèÎŞĞ§µÄÁ¬½ÓÈÎÎñ£¬½öÓÃÓÚ·şÎñÆ÷
- * 
+ * æ‰«ææ— æ•ˆçš„è¿æ¥ä»»åŠ¡ï¼Œä»…ç”¨äºæœåŠ¡å™¨
+ *
  * @author boyan
  * @Date 2010-5-26
- * 
  */
 public class InvalidConnectionScanTask implements ScanTask {
-    // ¶ÔÓÚ·şÎñÆ÷À´Ëµ£¬Èç¹û5·ÖÖÓÃ»ÓĞÈÎºÎ²Ù×÷£¬ÄÇÃ´½«¶Ï¿ªÁ¬½Ó£¬ÒòÎª¿Í»§¶Ë×ÜÊÇ»á·¢ÆğĞÄÌø¼ì²â£¬Òò´Ë²»»á¶ÔÕı³£µÄ¿ÕÏĞÁ¬½ÓÎóÅĞ¡£
+    // å¯¹äºæœåŠ¡å™¨æ¥è¯´ï¼Œå¦‚æœ5åˆ†é’Ÿæ²¡æœ‰ä»»ä½•æ“ä½œï¼Œé‚£ä¹ˆå°†æ–­å¼€è¿æ¥ï¼Œå› ä¸ºå®¢æˆ·ç«¯æ€»æ˜¯ä¼šå‘èµ·å¿ƒè·³æ£€æµ‹ï¼Œå› æ­¤ä¸ä¼šå¯¹æ­£å¸¸çš„ç©ºé—²è¿æ¥è¯¯åˆ¤ã€‚
     public static long TIMEOUT_THRESHOLD = Long.parseLong(System.getProperty(
-        "notify.remoting.connection.timeout_threshold", "300000"));
+            "notify.remoting.connection.timeout_threshold", "300000"));
     static final Log log = LogFactory.getLog(InvalidConnectionScanTask.class);
 
 
     public void visit(final long now, final Connection conn) {
         final long lastOpTimestamp = ((DefaultConnection) conn).getSession().getLastOperationTimeStamp();
         if (now - lastOpTimestamp > TIMEOUT_THRESHOLD) {
-            log.info("ÎŞĞ§µÄÁ¬½Ó" + conn.getRemoteSocketAddress() + "±»¹Ø±Õ£¬³¬¹ı" + TIMEOUT_THRESHOLD + "ºÁÃëÃ»ÓĞÈÎºÎIO²Ù×÷");
+            log.info("æ— æ•ˆçš„è¿æ¥" + conn.getRemoteSocketAddress() + "è¢«å…³é—­ï¼Œè¶…è¿‡" + TIMEOUT_THRESHOLD + "æ¯«ç§’æ²¡æœ‰ä»»ä½•IOæ“ä½œ");
             try {
                 conn.close(false);
-            }
-            catch (final Throwable t) {
-                log.error("¹Ø±ÕÁ¬½ÓÊ§°Ü", t);
+            } catch (final Throwable t) {
+                log.error("å…³é—­è¿æ¥å¤±è´¥", t);
             }
         }
     }

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,6 @@ import com.taobao.gecko.example.rpc.transport.RpcWireFormatType.RpcHeartBeatComm
 /**
  * @author boyan
  * @Date 2011-2-17
- * 
  */
 public class RpcCodecFactory implements CodecFactory {
     static final byte REQ_MAGIC = (byte) 0x70;
@@ -47,24 +46,20 @@ public class RpcCodecFactory implements CodecFactory {
                 if (command.decode(buff)) {
                     session.removeAttribute(CURRENT_COMMAND);
                     return command;
-                }
-                else {
+                } else {
                     return null;
                 }
-            }
-            else {
+            } else {
                 byte magic = buff.get();
                 if (magic == REQ_MAGIC) {
                     command = new RpcRequest();
-                }
-                else {
+                } else {
                     command = new RpcResponse();
 
                 }
                 if (command.decode(buff)) {
                     return command;
-                }
-                else {
+                } else {
                     session.setAttribute(CURRENT_COMMAND, command);
                     return null;
                 }

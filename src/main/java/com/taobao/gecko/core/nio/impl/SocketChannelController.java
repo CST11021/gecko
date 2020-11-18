@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,13 +32,10 @@ import com.taobao.gecko.core.nio.NioSessionConfig;
 
 
 /**
- * Nio tcp µœ÷
- * 
- * 
- * 
+ * Nio tcpÂÆûÁé∞
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 œ¬ŒÁ06:18:00
+ * @since 1.0, 2009-12-16 ‰∏ãÂçà06:18:00
  */
 public abstract class SocketChannelController extends NioController {
 
@@ -68,7 +65,7 @@ public abstract class SocketChannelController extends NioController {
 
 
     public SocketChannelController(final Configuration configuration, final Handler handler,
-            final CodecFactory codecFactory) {
+                                   final CodecFactory codecFactory) {
         super(configuration, handler, codecFactory);
     }
 
@@ -78,8 +75,7 @@ public abstract class SocketChannelController extends NioController {
         final Session session = (Session) key.attachment();
         if (session != null) {
             ((NioSession) session).onEvent(EventType.READABLE, key.selector());
-        }
-        else {
+        } else {
             log.warn("Could not find session for readable event,maybe it is closed");
         }
     }
@@ -90,8 +86,7 @@ public abstract class SocketChannelController extends NioController {
         final Session session = (Session) key.attachment();
         if (session != null) {
             ((NioSession) session).onEvent(EventType.WRITEABLE, key.selector());
-        }
-        else {
+        } else {
             log.warn("Could not find session for writable event,maybe it is closed");
         }
 
@@ -111,30 +106,30 @@ public abstract class SocketChannelController extends NioController {
         sc.configureBlocking(false);
         if (this.socketOptions.get(StandardSocketOption.SO_REUSEADDR) != null) {
             sc.socket().setReuseAddress(
-                StandardSocketOption.SO_REUSEADDR.type()
-                    .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
+                    StandardSocketOption.SO_REUSEADDR.type()
+                            .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
         }
         if (this.socketOptions.get(StandardSocketOption.SO_SNDBUF) != null) {
             sc.socket().setSendBufferSize(
-                StandardSocketOption.SO_SNDBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_SNDBUF)));
+                    StandardSocketOption.SO_SNDBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_SNDBUF)));
         }
         if (this.socketOptions.get(StandardSocketOption.SO_KEEPALIVE) != null) {
             sc.socket().setKeepAlive(
-                StandardSocketOption.SO_KEEPALIVE.type()
-                    .cast(this.socketOptions.get(StandardSocketOption.SO_KEEPALIVE)));
+                    StandardSocketOption.SO_KEEPALIVE.type()
+                            .cast(this.socketOptions.get(StandardSocketOption.SO_KEEPALIVE)));
         }
         if (this.socketOptions.get(StandardSocketOption.SO_LINGER) != null) {
             sc.socket().setSoLinger(this.soLingerOn,
-                StandardSocketOption.SO_LINGER.type().cast(this.socketOptions.get(StandardSocketOption.SO_LINGER)));
+                    StandardSocketOption.SO_LINGER.type().cast(this.socketOptions.get(StandardSocketOption.SO_LINGER)));
         }
         if (this.socketOptions.get(StandardSocketOption.SO_RCVBUF) != null) {
             sc.socket().setReceiveBufferSize(
-                StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
+                    StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
 
         }
         if (this.socketOptions.get(StandardSocketOption.TCP_NODELAY) != null) {
             sc.socket().setTcpNoDelay(
-                StandardSocketOption.TCP_NODELAY.type().cast(this.socketOptions.get(StandardSocketOption.TCP_NODELAY)));
+                    StandardSocketOption.TCP_NODELAY.type().cast(this.socketOptions.get(StandardSocketOption.TCP_NODELAY)));
         }
     }
 

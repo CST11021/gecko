@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,11 +19,10 @@ import java.net.InetSocketAddress;
 
 
 /**
- * Ó¦´ğÃüÁîµÄ³éÏó»ù´¡Àà£¬Ìá¹©Ò»Ğ©»ù´¡ÊôĞÔ£¬Ó¦´ğÃüÁî¿ÉÒÔÖ±½Ó¼Ì³Ğ´ËÃüÁî
- * 
- * @author boyan(boyan@taobao.com)
+ * åº”ç­”å‘½ä»¤çš„æŠ½è±¡åŸºç¡€ç±»ï¼Œæä¾›ä¸€äº›åŸºç¡€å±æ€§ï¼Œåº”ç­”å‘½ä»¤å¯ä»¥ç›´æ¥ç»§æ‰¿æ­¤å‘½ä»¤
+ *
+ * @author boyan(boyan @ taobao.com)
  * @date 2011-11-2
- * 
  */
 public abstract class AbstractResponseCommand implements ResponseCommand {
 
@@ -80,16 +79,14 @@ public abstract class AbstractResponseCommand implements ResponseCommand {
             if (other.opaque != null) {
                 return false;
             }
-        }
-        else if (!this.opaque.equals(other.opaque)) {
+        } else if (!this.opaque.equals(other.opaque)) {
             return false;
         }
         if (this.responseHost == null) {
             if (other.responseHost != null) {
                 return false;
             }
-        }
-        else if (!this.responseHost.equals(other.responseHost)) {
+        } else if (!this.responseHost.equals(other.responseHost)) {
             return false;
         }
         if (this.responseStatus != other.responseStatus) {

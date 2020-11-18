@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,16 @@
 package com.taobao.gecko.core.command;
 
 /**
- * ÇëÇóÃüÁî¹«¹²½Ó¿Ú
- * 
+ * è¯·æ±‚å‘½ä»¤å…¬å…±æ¥å£
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç05:55:07
+ * @since 1.0, 2009-12-16 ä¸‹åˆ05:55:07
  */
 public interface RequestCommand extends CommandHeader {
 
     /**
-     * ·µ»ØÇëÇóµÄÍ·²¿£¬ÓÃÓÚ±£´æÔÚcallBackÖĞ
-     * 
+     * è¿”å›è¯·æ±‚çš„å¤´éƒ¨ï¼Œç”¨äºä¿å­˜åœ¨callBackä¸­
+     *
      * @return
      */
     public CommandHeader getRequestHeader();

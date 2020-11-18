@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +16,10 @@
 package com.taobao.gecko.utils;
 
 /**
- * 
- * 用于测试的时间监视器
- * 
+ * 鐢ㄤ簬娴嬭瘯鐨勬椂闂寸洃瑙嗗櫒
+ *
  * @author boyan
- * 
- * @since 1.0, 2010-1-11 下午03:09:20
+ * @since 1.0, 2010-1-11 涓嬪崍03:09:20
  */
 
 public final class ClockWatch implements Runnable {
@@ -32,8 +30,7 @@ public final class ClockWatch implements Runnable {
     public synchronized void run() {
         if (this.startTime == -1) {
             this.startTime = System.nanoTime();
-        }
-        else {
+        } else {
             this.stopTime = System.nanoTime();
         }
 

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,12 +37,10 @@ import com.taobao.gecko.service.config.BaseConfig;
 
 
 /**
- * 
- * Õ®—∂≤„µƒ»´æ÷…œœ¬Œƒ
- * 
+ * ÈÄöËÆØÂ±ÇÁöÑÂÖ®Â±Ä‰∏ä‰∏ãÊñá
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 œ¬ŒÁ02:46:34
+ * @since 1.0, 2009-12-15 ‰∏ãÂçà02:46:34
  */
 
 public class DefaultRemotingContext implements RemotingContext, DefaultRemotingContextMBean {
@@ -53,7 +51,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
     private final Semaphore callBackSemaphore;
     static final Log log = LogFactory.getLog(DefaultRemotingContext.class);
     /**
-     * SessionµΩconnectionµƒ”≥…‰πÿœµ
+     * SessionÂà∞connectionÁöÑÊò†Â∞ÑÂÖ≥Á≥ª
      */
     protected final ConcurrentHashMap<NioSession, DefaultConnection> session2ConnectionMap =
             new ConcurrentHashMap<NioSession, DefaultConnection>();
@@ -68,7 +66,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         this.groupManager = new GroupManager();
         this.config = config;
         if (commandFactory == null) {
-            throw new IllegalArgumentException("CommandFactory≤ªƒ‹Œ™ø’");
+            throw new IllegalArgumentException("CommandFactory‰∏çËÉΩ‰∏∫Á©∫");
         }
         this.commandFactory = commandFactory;
         this.callBackSemaphore = new Semaphore(this.config.getMaxCallBackCount());
@@ -92,8 +90,8 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
 
     /**
-     * «Î«Û‘ –Ìº”»ÎcallBack£¨◊ˆcallBack◊‹ ˝œﬁ÷∆
-     * 
+     * ËØ∑Ê±ÇÂÖÅËÆ∏Âä†ÂÖ•callBackÔºåÂÅöcallBackÊÄªÊï∞ÈôêÂà∂
+     *
      * @return
      */
     boolean aquire() {
@@ -102,7 +100,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
 
     /**
-     * ‘⁄”¶¥µΩ¥Ô ± Õ∑≈–Ìø…
+     * Âú®Â∫îÁ≠îÂà∞ËææÊó∂ÈáäÊîæËÆ∏ÂèØ
      */
     void release() {
         this.callBackSemaphore.release();
@@ -118,9 +116,8 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         for (final ConnectionLifeCycleListener listener : this.connectionLifeCycleListenerList) {
             try {
                 listener.onConnectionCreated(conn);
-            }
-            catch (final Throwable t) {
-                log.error("NotifyRemoting-µ˜”√ConnectionLifeCycleListener.onConnectionCreated≥ˆ¥Ì", t);
+            } catch (final Throwable t) {
+                log.error("NotifyRemoting-Ë∞ÉÁî®ConnectionLifeCycleListener.onConnectionCreatedÂá∫Èîô", t);
             }
         }
     }
@@ -130,9 +127,8 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         for (final ConnectionLifeCycleListener listener : this.connectionLifeCycleListenerList) {
             try {
                 listener.onConnectionClosed(conn);
-            }
-            catch (final Throwable t) {
-                log.error("NotifyRemoting-µ˜”√ConnectionLifeCycleListener.onConnectionClosed≥ˆ¥Ì", t);
+            } catch (final Throwable t) {
+                log.error("NotifyRemoting-Ë∞ÉÁî®ConnectionLifeCycleListener.onConnectionClosedÂá∫Èîô", t);
             }
         }
     }
@@ -160,7 +156,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#addConnectionToGroup
      * (java.lang.String, com.taobao.gecko.service.Connection)
@@ -172,7 +168,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#addConnection
      * (com.taobao.gecko.service.Connection)
@@ -184,7 +180,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#removeConnection
      * (com.taobao.gecko.service.Connection)
@@ -196,7 +192,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seecom.taobao.notify.remoting.service.impl.RemotingContext#
      * getConnectionSetByGroup(java.lang.String)
      */
@@ -207,7 +203,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seecom.taobao.notify.remoting.service.impl.RemotingContext#
      * removeConnectionFromGroup(java.lang.String,
      * com.taobao.gecko.service.Connection)
@@ -219,7 +215,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#getAttribute(
      * java.lang.Object, java.lang.Object)
@@ -232,7 +228,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#getAttribute(
      * java.lang.Object)
@@ -244,7 +240,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#getAttributeKeys
      * ()
@@ -256,7 +252,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#setAttribute(
      * java.lang.Object, java.lang.Object)
@@ -268,7 +264,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#setAttribute(
      * java.lang.Object)
@@ -280,7 +276,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.taobao.gecko.service.impl.RemotingContext#dispose()
      */
     public void dispose() {
@@ -291,7 +287,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#setAttributeIfAbsent
      * (java.lang.Object, java.lang.Object)
@@ -308,7 +304,7 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.taobao.gecko.service.impl.RemotingContext#setAttributeIfAbsent
      * (java.lang.Object)

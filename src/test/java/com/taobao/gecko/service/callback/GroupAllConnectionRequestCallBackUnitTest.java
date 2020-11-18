@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,12 +44,8 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-22 下午03:49:55
+ * @since 1.0, 2009-12-22 涓嬪崍03:49:55
  */
 
 public class GroupAllConnectionRequestCallBackUnitTest {
@@ -93,7 +89,7 @@ public class GroupAllConnectionRequestCallBackUnitTest {
 
         conn = new DefaultConnection(new MockSession(), this.remotingContext);
         this.requestCallBack.onResponse("group2", new NotifyDummyAckCommand((NotifyRequestCommand) requestCommand,
-            "hello"), conn);
+                "hello"), conn);
         Assert.assertEquals(2, resultMap.size());
         Assert.assertEquals(1, latch.getCount());
 
@@ -106,12 +102,10 @@ public class GroupAllConnectionRequestCallBackUnitTest {
             final ResponseCommand response = entry.getValue();
             if (response.getResponseStatus() == ResponseStatus.NO_ERROR) {
                 Assert.assertEquals("hello", ((NotifyDummyAckCommand) response).getDummy());
-            }
-            else if (response.getResponseStatus() == ResponseStatus.ERROR_COMM) {
+            } else if (response.getResponseStatus() == ResponseStatus.ERROR_COMM) {
                 Assert.assertEquals("error", ((BooleanAckCommand) response).getErrorMsg());
-            }
-            else {
-                throw new RuntimeException("无效结果");
+            } else {
+                throw new RuntimeException("鏃犳晥缁撴灉");
             }
         }
 

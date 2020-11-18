@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,12 +29,8 @@ import com.taobao.gecko.core.core.impl.FutureImpl;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-24 …œŒÁ11:04:22
+ * @since 1.0, 2009-12-24 ‰∏äÂçà11:04:22
  */
 
 public class FutureImplUnitTest {
@@ -58,12 +54,10 @@ public class FutureImplUnitTest {
                 Thread.sleep(sleepTime);
                 if (this.throwable != null) {
                     future.failure(throwable);
-                }
-                else {
+                } else {
                     future.setResult(true);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -99,8 +93,7 @@ public class FutureImplUnitTest {
         try {
             future.get();
             Assert.fail();
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             Assert.assertEquals("hello", e.getCause().getMessage());
 
         }
@@ -118,8 +111,7 @@ public class FutureImplUnitTest {
                 try {
                     Thread.sleep(3000);
                     future.cancel(true);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -127,8 +119,7 @@ public class FutureImplUnitTest {
         try {
             future.get();
             Assert.fail();
-        }
-        catch (CancellationException e) {
+        } catch (CancellationException e) {
             Assert.assertTrue(true);
 
         }
@@ -143,8 +134,7 @@ public class FutureImplUnitTest {
         try {
             future.get(1000, TimeUnit.MILLISECONDS);
             Assert.fail();
-        }
-        catch (TimeoutException e) {
+        } catch (TimeoutException e) {
             Assert.assertTrue(true);
         }
     }

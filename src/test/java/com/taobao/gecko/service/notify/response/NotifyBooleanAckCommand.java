@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,17 +26,15 @@ import com.taobao.gecko.service.notify.request.NotifyRequestCommandHeader;
 
 
 /**
- * 
- * 响应成功或者失败的应答，如果失败，可能body带有错误信息
- * 
+ * 鍝嶅簲鎴愬姛鎴栬�呭け璐ョ殑搴旂瓟锛屽鏋滃け璐ワ紝鍙兘body甯︽湁閿欒淇℃伅
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-17 下午07:38:13
+ * @since 1.0, 2009-12-17 涓嬪崍07:38:13
  */
 
 public class NotifyBooleanAckCommand extends NotifyResponseCommand implements BooleanAckCommand {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -2729908481782608962L;
     private String errorMsg;
@@ -48,7 +46,7 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
 
 
     public NotifyBooleanAckCommand(final NotifyRequestCommand request, final ResponseStatus responseStatus,
-            final String errorMsg) {
+                                   final String errorMsg) {
         if (request == null) {
             throw new NullPointerException("Null request");
         }
@@ -63,7 +61,7 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
 
 
     public NotifyBooleanAckCommand(final CommandHeader header, final ResponseStatus responseStatus,
-            final String errorMsg) {
+                                   final String errorMsg) {
         if (header == null) {
             throw new NullPointerException("Null header");
         }
@@ -72,9 +70,8 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
         }
         if (header instanceof NotifyRequestCommandHeader) {
             this.opCode = ((NotifyRequestCommandHeader) header).getOpCode();
-        }
-        else {
-            // remoting自身返回的header，可能没有设置opcode，那么默认设置为dummy
+        } else {
+            // remoting鑷韩杩斿洖鐨刪eader锛屽彲鑳芥病鏈夎缃畂pcode锛岄偅涔堥粯璁よ缃负dummy
             this.opCode = OpCode.DUMMY;
         }
         this.opaque = header.getOpaque();
@@ -90,8 +87,7 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
                 if (errorMsg.hasErrorMessage()) {
                     this.errorMsg = errorMsg.getErrorMessage();
                 }
-            }
-            catch (final InvalidProtocolBufferException e) {
+            } catch (final InvalidProtocolBufferException e) {
                 throw new RuntimeException(e);
             }
         }

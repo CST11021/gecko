@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,12 +30,8 @@ import com.taobao.gecko.core.core.impl.UDPHandlerAdapter;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-25 œ¬ŒÁ01:46:11
+ * @since 1.0, 2009-12-25 ‰∏ãÂçà01:46:11
  */
 
 public class UDPConnectorControllerUnitTest {
@@ -71,16 +67,15 @@ public class UDPConnectorControllerUnitTest {
         this.connector.connect(server.getLocalSocketAddress());
         Assert.assertTrue(this.connector.isConnected());
 
-        this.connector.send(new DatagramPacket("test".getBytes(), 4)).get(3000,TimeUnit.MILLISECONDS);
+        this.connector.send(new DatagramPacket("test".getBytes(), 4)).get(3000, TimeUnit.MILLISECONDS);
         Thread.sleep(1000);
         Assert.assertEquals(4, recvSize.get());
 
         this.connector.disconnect();
         try {
-            this.connector.send(new DatagramPacket("test".getBytes(), 4)).get(3000,TimeUnit.MILLISECONDS);
+            this.connector.send(new DatagramPacket("test".getBytes(), 4)).get(3000, TimeUnit.MILLISECONDS);
             Assert.fail();
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
 
         }
         Thread.sleep(1000);

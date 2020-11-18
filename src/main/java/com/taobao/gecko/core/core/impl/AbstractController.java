@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,13 +48,10 @@ import com.taobao.gecko.core.util.LinkedTransferQueue;
 
 
 /**
- * Controller抽象基类
- * 
- * 
- * 
+ * Controller鎶借薄鍩虹被
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 下午06:03:07
+ * @since 1.0, 2009-12-16 涓嬪崍06:03:07
  */
 public abstract class AbstractController implements Controller, ControllerLifeCycle {
 
@@ -142,7 +139,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
     /**
      * Build write queue for session
-     * 
+     *
      * @return
      */
     protected Queue<WriteMessage> buildQueue() {
@@ -209,7 +206,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
 
     private synchronized void init(final Configuration configuration, final Handler handler,
-            final CodecFactory codecFactory) {
+                                   final CodecFactory codecFactory) {
         this.setHandler(handler);
         this.setCodecFactory(codecFactory);
         this.setConfiguration(configuration);
@@ -234,8 +231,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
             this.statistics = new SimpleStatistics();
             this.statisticsInterval = configuration.getStatisticsInterval();
 
-        }
-        else {
+        } else {
             this.statistics = new DefaultStatistics();
             this.statisticsInterval = -1;
         }
@@ -360,11 +356,11 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
         this.setStarted(true);
         this.setReadEventDispatcher(DispatcherFactory.newDispatcher(this.getReadThreadCount(),
-            "notify-remoting-ReadEvent", new ThreadPoolExecutor.CallerRunsPolicy()));
+                "notify-remoting-ReadEvent", new ThreadPoolExecutor.CallerRunsPolicy()));
         this.setWriteEventDispatcher(DispatcherFactory.newDispatcher(this.getWriteThreadCount(),
-            "notify-remoting-WriteEvent", new ThreadPoolExecutor.CallerRunsPolicy()));
+                "notify-remoting-WriteEvent", new ThreadPoolExecutor.CallerRunsPolicy()));
         this.setDispatchMessageDispatcher(DispatcherFactory.newDispatcher(this.getDispatchMessageThreadCount(),
-            "notify-remoting-DispatchMessage", new ThreadPoolExecutor.CallerRunsPolicy()));
+                "notify-remoting-DispatchMessage", new ThreadPoolExecutor.CallerRunsPolicy()));
         this.startStatistics();
         this.start0();
         this.notifyStarted();
@@ -380,8 +376,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
                 try {
                     AbstractController.this.isHutdownHookCalled = true;
                     AbstractController.this.stop();
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     log.error("Stop controller fail", e);
                 }
             }
@@ -483,8 +478,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     public final synchronized void registerSession(final Session session) {
         if (this.started && !session.isClosed()) {
             this.sessionSet.add(session);
-        }
-        else {
+        } else {
             session.close();
         }
 
@@ -599,7 +593,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
     /**
      * Bind localhost address
-     * 
+     *
      * @param inetSocketAddress
      * @throws IOException
      */

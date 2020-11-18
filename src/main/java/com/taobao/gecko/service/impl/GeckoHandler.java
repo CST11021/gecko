@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,21 +48,18 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
- * 
- * ÍøÂç²ãµÄÒµÎñ´¦ÀíÆ÷
- * 
+ * ç½‘ç»œå±‚çš„ä¸šåŠ¡å¤„ç†å™¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÉÏÎç11:14:51
+ * @since 1.0, 2009-12-15 ä¸Šåˆ11:14:51
  */
 
 public class GeckoHandler implements Handler {
 
     /**
-     * ÇëÇó´¦ÀíÆ÷µÄÈÎÎñ°ü×°
-     * 
+     * è¯·æ±‚å¤„ç†å™¨çš„ä»»åŠ¡åŒ…è£…
+     *
      * @author boyan
-     * 
      */
     private static final class ProcessorRunner<T extends RequestCommand> implements Runnable {
         private final DefaultConnection defaultConnection;
@@ -71,7 +68,7 @@ public class GeckoHandler implements Handler {
 
 
         private ProcessorRunner(final DefaultConnection defaultConnection, final RequestProcessor<T> processor,
-                final T message) {
+                                final T message) {
             this.defaultConnection = defaultConnection;
             this.processor = processor;
             this.message = message;
@@ -84,10 +81,9 @@ public class GeckoHandler implements Handler {
     }
 
     /**
-     * ĞÄÌøÃüÁîµÄÒì²½¼àÌıÆ÷
-     * 
+     * å¿ƒè·³å‘½ä»¤çš„å¼‚æ­¥ç›‘å¬å™¨
+     *
      * @author boyan
-     * 
      */
     private final static class HeartBeatListener implements SingleRequestCallBackListener {
         private final Connection conn;
@@ -116,25 +112,22 @@ public class GeckoHandler implements Handler {
                     count++;
                     if (count < 3) {
                         conn.setAttribute(HEARBEAT_FAIL_COUNT, count);
-                    }
-                    else {
+                    } else {
                         this.innerCloseConnection(conn);
                     }
                 }
-            }
-            else {
+            } else {
                 this.conn.removeAttribute(HEARBEAT_FAIL_COUNT);
             }
         }
 
 
         private void innerCloseConnection(final Connection conn) {
-            log.info("ĞÄÌø¼ì²âÊ§°Ü£¬¹Ø±ÕÁ¬½Ó" + conn.getRemoteSocketAddress() + ",·Ö×éĞÅÏ¢" + conn.getGroupSet());
+            log.info("å¿ƒè·³æ£€æµ‹å¤±è´¥ï¼Œå…³é—­è¿æ¥" + conn.getRemoteSocketAddress() + ",åˆ†ç»„ä¿¡æ¯" + conn.getGroupSet());
             try {
                 conn.close(true);
-            }
-            catch (final NotifyRemotingException e) {
-                log.error("¹Ø±ÕÁ¬½ÓÊ§°Ü", e);
+            } catch (final NotifyRemotingException e) {
+                log.error("å…³é—­è¿æ¥å¤±è´¥", e);
             }
         }
     }
@@ -151,16 +144,15 @@ public class GeckoHandler implements Handler {
 
 
     private void responseThreadPoolBusy(final Session session, final Object msg,
-            final DefaultConnection defaultConnection) {
+                                        final DefaultConnection defaultConnection) {
         if (defaultConnection != null && msg instanceof RequestCommand) {
             try {
                 defaultConnection.response(defaultConnection
-                    .getRemotingContext()
-                    .getCommandFactory()
-                    .createBooleanAckCommand(((RequestCommand) msg).getRequestHeader(), ResponseStatus.THREADPOOL_BUSY,
-                        "Ïß³Ì³Ø·±Ã¦"));
-            }
-            catch (final NotifyRemotingException e) {
+                        .getRemotingContext()
+                        .getCommandFactory()
+                        .createBooleanAckCommand(((RequestCommand) msg).getRequestHeader(), ResponseStatus.THREADPOOL_BUSY,
+                                "çº¿ç¨‹æ± ç¹å¿™"));
+            } catch (final NotifyRemotingException e) {
                 this.onExceptionCaught(session, e);
             }
         }
@@ -176,8 +168,7 @@ public class GeckoHandler implements Handler {
     public void onExceptionCaught(final Session session, final Throwable throwable) {
         if (throwable.getCause() != null) {
             ExceptionMonitor.getInstance().exceptionCaught(throwable.getCause());
-        }
-        else {
+        } else {
             ExceptionMonitor.getInstance().exceptionCaught(throwable);
         }
     }
@@ -186,18 +177,16 @@ public class GeckoHandler implements Handler {
     public void onMessageReceived(final Session session, final Object message) {
         final DefaultConnection defaultConnection = this.remotingContext.getConnectionBySession((NioSession) session);
         if (defaultConnection == null) {
-            log.error("Connection[" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()) + "]ÒÑ¾­±»¹Ø±Õ£¬ÎŞ·¨´¦ÀíÏûÏ¢");
+            log.error("Connection[" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()) + "]å·²ç»è¢«å…³é—­ï¼Œæ— æ³•å¤„ç†æ¶ˆæ¯");
             session.close();
             return;
         }
         if (message instanceof RequestCommand) {
             this.processRequest(session, message, defaultConnection);
-        }
-        else if (message instanceof ResponseCommand) {
+        } else if (message instanceof ResponseCommand) {
             this.processResponse(message, defaultConnection);
-        }
-        else {
-            throw new IllegalMessageException("Î´ÖªµÄÏûÏ¢ÀàĞÍ" + message);
+        } else {
+            throw new IllegalMessageException("æœªçŸ¥çš„æ¶ˆæ¯ç±»å‹" + message);
         }
 
     }
@@ -216,14 +205,13 @@ public class GeckoHandler implements Handler {
 
     @SuppressWarnings("unchecked")
     private <T extends RequestCommand> void processRequest(final Session session, final Object message,
-            final DefaultConnection defaultConnection) {
+                                                           final DefaultConnection defaultConnection) {
         final RequestProcessor<T> processor = this.getProcessorByMessage(message);
         if (processor == null) {
-            log.error("Î´ÕÒµ½" + message.getClass().getCanonicalName() + "¶ÔÓ¦µÄ´¦ÀíÆ÷");
+            log.error("æœªæ‰¾åˆ°" + message.getClass().getCanonicalName() + "å¯¹åº”çš„å¤„ç†å™¨");
             this.responseNoProcessor(session, message, defaultConnection);
             return;
-        }
-        else {
+        } else {
             this.executeProcessor(session, (T) message, defaultConnection, processor);
         }
     }
@@ -234,8 +222,7 @@ public class GeckoHandler implements Handler {
         final RequestProcessor<T> processor;
         if (message instanceof HeartBeatRequestCommand) {
             processor = (RequestProcessor<T>) this.remotingContext.processorMap.get(HeartBeatRequestCommand.class);
-        }
-        else {
+        } else {
             processor = (RequestProcessor<T>) this.remotingContext.processorMap.get(message.getClass());
         }
         return processor;
@@ -243,23 +230,21 @@ public class GeckoHandler implements Handler {
 
 
     /**
-     * Ö´ĞĞÊµ¼ÊµÄProcessor
-     * 
+     * æ‰§è¡Œå®é™…çš„Processor
+     *
      * @param session
      * @param message
      * @param defaultConnection
      * @param processor
      */
     private <T extends RequestCommand> void executeProcessor(final Session session, final T message,
-            final DefaultConnection defaultConnection, final RequestProcessor<T> processor) {
+                                                             final DefaultConnection defaultConnection, final RequestProcessor<T> processor) {
         if (processor.getExecutor() == null) {
             processor.handleRequest(message, defaultConnection);
-        }
-        else {
+        } else {
             try {
                 processor.getExecutor().execute(new ProcessorRunner<T>(defaultConnection, processor, message));
-            }
-            catch (final RejectedExecutionException e) {
+            } catch (final RejectedExecutionException e) {
                 this.responseThreadPoolBusy(session, message, defaultConnection);
             }
         }
@@ -267,16 +252,15 @@ public class GeckoHandler implements Handler {
 
 
     private void responseNoProcessor(final Session session, final Object message,
-            final DefaultConnection defaultConnection) {
+                                     final DefaultConnection defaultConnection) {
         if (defaultConnection != null && message instanceof RequestCommand) {
             try {
                 defaultConnection.response(defaultConnection
-                    .getRemotingContext()
-                    .getCommandFactory()
-                    .createBooleanAckCommand(((RequestCommand) message).getRequestHeader(),
-                        ResponseStatus.NO_PROCESSOR, "Î´×¢²áÇëÇó´¦ÀíÆ÷£¬ÇëÇó´¦ÀíÆ÷ÀàÎª" + message.getClass().getCanonicalName()));
-            }
-            catch (final NotifyRemotingException e) {
+                        .getRemotingContext()
+                        .getCommandFactory()
+                        .createBooleanAckCommand(((RequestCommand) message).getRequestHeader(),
+                                ResponseStatus.NO_PROCESSOR, "æœªæ³¨å†Œè¯·æ±‚å¤„ç†å™¨ï¼Œè¯·æ±‚å¤„ç†å™¨ç±»ä¸º" + message.getClass().getCanonicalName()));
+            } catch (final NotifyRemotingException e) {
                 this.onExceptionCaught(session, e);
             }
         }
@@ -297,18 +281,18 @@ public class GeckoHandler implements Handler {
             return;
         }
 
-        log.debug("Ô¶¶ËÁ¬½Ó" + RemotingUtils.getAddrString(remoteSocketAddress) + "¶Ï¿ª,·Ö×éĞÅÏ¢" + conn.getGroupSet());
+        log.debug("è¿œç«¯è¿æ¥" + RemotingUtils.getAddrString(remoteSocketAddress) + "æ–­å¼€,åˆ†ç»„ä¿¡æ¯" + conn.getGroupSet());
 
-        // ÔÊĞíÖØÁ¬£¬²¢ÇÒÊÇ¿Í»§¶Ë£¬¼ÓÈëÖØÁ¬ÈÎÎñ
+        // å…è®¸é‡è¿ï¼Œå¹¶ä¸”æ˜¯å®¢æˆ·ç«¯ï¼ŒåŠ å…¥é‡è¿ä»»åŠ¡
         if (conn.isAllowReconnect() && this.reconnectManager != null) {
             this.waitForReady(conn);
             this.addReconnectTask(remoteSocketAddress, conn);
         }
-        // ´Ó·Ö×éÖĞÒÆ³ı
+        // ä»åˆ†ç»„ä¸­ç§»é™¤
         this.removeFromGroups(conn);
-        // ´¦ÀíÊ£ÓàµÄcallBack
+        // å¤„ç†å‰©ä½™çš„callBack
         conn.dispose();
-        // ÒÆ³ısessionµ½connectionÓ³Éä
+        // ç§»é™¤sessionåˆ°connectionæ˜ å°„
         this.remotingContext.removeSession2ConnectionMapping((NioSession) session);
         this.adjustMaxScheduleWrittenBytes();
         this.remotingContext.notifyConnectionClosed(conn);
@@ -316,7 +300,7 @@ public class GeckoHandler implements Handler {
 
 
     private void removeFromGroups(final DefaultConnection conn) {
-        // ´ÓËùÓĞ·Ö×éÖĞÒÆ³ı
+        // ä»æ‰€æœ‰åˆ†ç»„ä¸­ç§»é™¤
         for (final String group : conn.getGroupSet()) {
             this.remotingContext.removeConnectionFromGroup(group, conn);
 
@@ -327,12 +311,12 @@ public class GeckoHandler implements Handler {
     private void addReconnectTask(final InetSocketAddress remoteSocketAddress, final DefaultConnection conn) {
         // make a copy
         final Set<String> groupSet = conn.getGroupSet();
-        log.info("Ô¶¶ËÁ¬½Ó" + RemotingUtils.getAddrString(remoteSocketAddress) + "¹Ø±Õ£¬Æô¶¯ÖØÁ¬ÈÎÎñ");
-        // ÖØĞÂ¼ì²é
+        log.info("è¿œç«¯è¿æ¥" + RemotingUtils.getAddrString(remoteSocketAddress) + "å…³é—­ï¼Œå¯åŠ¨é‡è¿ä»»åŠ¡");
+        // é‡æ–°æ£€æŸ¥
         synchronized (conn) {
             if (!groupSet.isEmpty() && !this.hasOnlyDefaultGroup(groupSet) && conn.isAllowReconnect()) {
                 this.reconnectManager.addReconnectTask(new ReconnectTask(groupSet, remoteSocketAddress));
-                // ²»ÔÊĞí·¢ÆğÖØÁ¬ÈÎÎñ£¬·ÀÖ¹ÖØ¸´
+                // ä¸å…è®¸å‘èµ·é‡è¿ä»»åŠ¡ï¼Œé˜²æ­¢é‡å¤
                 conn.setAllowReconnect(false);
             }
         }
@@ -346,16 +330,15 @@ public class GeckoHandler implements Handler {
 
     private void waitForReady(final DefaultConnection conn) {
         /**
-         * ´Ë´¦×öÍ¬²½±£»¤£¬µÈ´ıÁ¬½Ó¾ÍĞ÷£¬·ÀÖ¹ÖØÁ¬µÄÊ±ºòÒÅÂ©·Ö×éĞÅÏ¢
+         * æ­¤å¤„åšåŒæ­¥ä¿æŠ¤ï¼Œç­‰å¾…è¿æ¥å°±ç»ªï¼Œé˜²æ­¢é‡è¿çš„æ—¶å€™é—æ¼åˆ†ç»„ä¿¡æ¯
          */
         synchronized (conn) {
             int count = 0;
             while (!conn.isReady() && conn.isAllowReconnect() && count++ < 3) {
                 try {
                     conn.wait(5000);
-                }
-                catch (final InterruptedException e) {
-                    // ÖØÉèÖĞ¶Ï×´Ì¬¸øÉÏ²ã´¦Àí
+                } catch (final InterruptedException e) {
+                    // é‡è®¾ä¸­æ–­çŠ¶æ€ç»™ä¸Šå±‚å¤„ç†
                     Thread.currentThread().interrupt();
                 }
             }
@@ -374,18 +357,16 @@ public class GeckoHandler implements Handler {
         }
         final DefaultConnection conn = this.remotingContext.getConnectionBySession((NioSession) session);
         try {
-            // Á¬½ÓÒÑ¾­±»¹Ø±Õ£¬»òÕßgroupSetÎª¿Õ£¬Ôò¹Ø±Õsession£¬ÎŞĞèÖØÁ¬
+            // è¿æ¥å·²ç»è¢«å…³é—­ï¼Œæˆ–è€…groupSetä¸ºç©ºï¼Œåˆ™å…³é—­sessionï¼Œæ— éœ€é‡è¿
             if (conn == null || groupSet.isEmpty()) {
-                // ¿ÉÄÜ¹Ø±ÕÁË
+                // å¯èƒ½å…³é—­äº†
                 session.close();
-                log.error("½¨Á¢µÄÁ¬½ÓÃ»ÓĞ¶ÔÓ¦µÄconnection");
-            }
-            else {
+                log.error("å»ºç«‹çš„è¿æ¥æ²¡æœ‰å¯¹åº”çš„connection");
+            } else {
                 this.addConnection2Group(conn, groupSet);
             }
-        }
-        finally {
-            // Ò»¶¨ÒªÍ¨Öª¾ÍĞ÷
+        } finally {
+            // ä¸€å®šè¦é€šçŸ¥å°±ç»ª
             if (conn != null && conn.isConnected()) {
                 this.notifyConnectionReady(conn);
             }
@@ -398,33 +379,30 @@ public class GeckoHandler implements Handler {
             this.closeConnectionWithoutReconnect(conn);
             return;
         }
-        // ½«½¨Á¢µÄÁ¬½Ó¼ÓÈë·Ö×é
+        // å°†å»ºç«‹çš„è¿æ¥åŠ å…¥åˆ†ç»„
         for (final String group : groupSet) {
             final Object attribute = this.remotingController.getAttribute(group, Constants.CONNECTION_COUNT_ATTR);
             if (attribute == null) {
-                // Ã»ÓĞ·¢ÆğÁ¬½ÓÇëÇó²¢ÇÒ²»ÊÇÄ¬ÈÏ·Ö×é£¬Ç¿ÖÆ¹Ø±Õ
-                log.info("Á¬½Ó±»Ç¿ÖÆ¶Ï¿ª£¬ÓÉÓÚ·Ö×é" + group + "Ã»ÓĞ·¢Æğ¹ıÁ¬½ÓÇëÇó");
+                // æ²¡æœ‰å‘èµ·è¿æ¥è¯·æ±‚å¹¶ä¸”ä¸æ˜¯é»˜è®¤åˆ†ç»„ï¼Œå¼ºåˆ¶å…³é—­
+                log.info("è¿æ¥è¢«å¼ºåˆ¶æ–­å¼€ï¼Œç”±äºåˆ†ç»„" + group + "æ²¡æœ‰å‘èµ·è¿‡è¿æ¥è¯·æ±‚");
                 this.closeConnectionWithoutReconnect(conn);
                 return;
-            }
-            else {
+            } else {
                 final int maxConnCount = (Integer) attribute;
                 /**
-                 * ÅĞ¶Ï·Ö×éÁ¬½ÓÊıºÍ¼ÓÈë·Ö×é·ÅÈëÍ¬Ò»¸öÍ¬²½¿é£¬·ÀÖ¹¾ºÕùÌõ¼ş
+                 * åˆ¤æ–­åˆ†ç»„è¿æ¥æ•°å’ŒåŠ å…¥åˆ†ç»„æ”¾å…¥åŒä¸€ä¸ªåŒæ­¥å—ï¼Œé˜²æ­¢ç«äº‰æ¡ä»¶
                  */
                 synchronized (this) {
-                    // ¼ÓÈë·Ö×é
+                    // åŠ å…¥åˆ†ç»„
                     if (this.remotingController.getConnectionCount(group) < maxConnCount) {
                         this.addConnectionToGroup(conn, group, maxConnCount);
-                    }
-                    else {
-                        // ³¢ÊÔÒÆ³ı¶Ï¿ªµÄÁ¬½Ó£¬ÔÙ´Î¼ÓÈë
+                    } else {
+                        // å°è¯•ç§»é™¤æ–­å¼€çš„è¿æ¥ï¼Œå†æ¬¡åŠ å…¥
                         if (this.removeDisconnectedConnection(group)) {
                             this.addConnectionToGroup(conn, group, maxConnCount);
-                        }
-                        else {
-                            // È·ÈÏÊÇ¶àÓàµÄ£¬¹Ø±Õ
-                            log.warn("Á¬½ÓÊı(" + conn.getRemoteSocketAddress() + ")³¬¹ıÉè¶¨Öµ" + maxConnCount + "£¬Á¬½Ó½«±»¹Ø±Õ");
+                        } else {
+                            // ç¡®è®¤æ˜¯å¤šä½™çš„ï¼Œå…³é—­
+                            log.warn("è¿æ¥æ•°(" + conn.getRemoteSocketAddress() + ")è¶…è¿‡è®¾å®šå€¼" + maxConnCount + "ï¼Œè¿æ¥å°†è¢«å…³é—­");
                             this.closeConnectionWithoutReconnect(conn);
                         }
                     }
@@ -437,27 +415,25 @@ public class GeckoHandler implements Handler {
     private void closeConnectionWithoutReconnect(final DefaultConnection conn) {
         try {
             conn.close(false);
-        }
-        catch (final NotifyRemotingException e) {
-            log.error("¹Ø±ÕÁ¬½ÓÊ§°Ü", e);
+        } catch (final NotifyRemotingException e) {
+            log.error("å…³é—­è¿æ¥å¤±è´¥", e);
         }
     }
 
 
     private void notifyConnectionReady(final DefaultConnection conn) {
-        // Í¨ÖªÁ¬½ÓÒÑ¾­¾ÍĞ÷£¬¶Ï¿ªÁ¬½ÓµÄÊ±ºò½«×Ô¶¯½«´ËÁ¬½Ó¼ÓÈë¸Ã·Ö×é
+        // é€šçŸ¥è¿æ¥å·²ç»å°±ç»ªï¼Œæ–­å¼€è¿æ¥çš„æ—¶å€™å°†è‡ªåŠ¨å°†æ­¤è¿æ¥åŠ å…¥è¯¥åˆ†ç»„
         if (conn != null) {
             synchronized (conn) {
                 conn.setReady(true);
                 conn.notifyAll();
             }
-            // Í¨Öª¼àÌıÆ÷Á¬½Ó¾ÍĞ÷
+            // é€šçŸ¥ç›‘å¬å™¨è¿æ¥å°±ç»ª
             for (final ConnectionLifeCycleListener listener : this.remotingContext.connectionLifeCycleListenerList) {
                 try {
                     listener.onConnectionReady(conn);
-                }
-                catch (final Throwable t) {
-                    log.error("µ÷ÓÃConnectionLifeCycleListener.onConnectionReadyÒì³£", t);
+                } catch (final Throwable t) {
+                    log.error("è°ƒç”¨ConnectionLifeCycleListener.onConnectionReadyå¼‚å¸¸", t);
                 }
             }
         }
@@ -465,7 +441,7 @@ public class GeckoHandler implements Handler {
 
 
     private boolean removeDisconnectedConnection(final String group) {
-        // ³¬¹ı×î´óÊıÄ¿ÏŞÖÆ£¬±éÀúËùÓĞÁ¬½Ó£¬ÒÆ³ı¶Ï¿ªµÄconnection£¨¿ÉÄÜÃ»ÓĞ±»¼°Ê±ÒÆ³ı)
+        // è¶…è¿‡æœ€å¤§æ•°ç›®é™åˆ¶ï¼Œéå†æ‰€æœ‰è¿æ¥ï¼Œç§»é™¤æ–­å¼€çš„connectionï¼ˆå¯èƒ½æ²¡æœ‰è¢«åŠæ—¶ç§»é™¤)
         final List<Connection> currentConnList =
                 this.remotingController.getRemotingContext().getConnectionsByGroup(group);
         Connection disconnectedConn = null;
@@ -478,10 +454,9 @@ public class GeckoHandler implements Handler {
                     if (!currentConn.isConnected()) {
                         disconnectedConn = currentConn;
                         break;
-                    }
-                    else {
-                        // µ±Ç°¿ÉÓÃÁ¬½Ó£¬È·±£ÒÑ¾­ÊÇ¾ÍĞ÷×´Ì¬£¬ÕâÊÇÎªÁË·ÀÖ¹ÏÂÁĞ³¡¾°£º
-                        // Á¬½Ó½¨Á¢³É¹¦£¬µ«ÊÇ³¬¹ıÁË¹æ¶¨µÄ³¬Ê±Ê±¼ä£¬È´ÈÔÈ»±»¼ÓÈëÁË·Ö×é£¬Ã»ÓĞÍ¨Öª¾ÍĞ÷
+                    } else {
+                        // å½“å‰å¯ç”¨è¿æ¥ï¼Œç¡®ä¿å·²ç»æ˜¯å°±ç»ªçŠ¶æ€ï¼Œè¿™æ˜¯ä¸ºäº†é˜²æ­¢ä¸‹åˆ—åœºæ™¯ï¼š
+                        // è¿æ¥å»ºç«‹æˆåŠŸï¼Œä½†æ˜¯è¶…è¿‡äº†è§„å®šçš„è¶…æ—¶æ—¶é—´ï¼Œå´ä»ç„¶è¢«åŠ å…¥äº†åˆ†ç»„ï¼Œæ²¡æœ‰é€šçŸ¥å°±ç»ª
                         if (!((DefaultConnection) currentConn).isReady() && !currentConn.getGroupSet().isEmpty()) {
                             this.notifyConnectionReady((DefaultConnection) currentConn);
                         }
@@ -491,8 +466,7 @@ public class GeckoHandler implements Handler {
         }
         if (disconnectedConn != null) {
             return currentConnList.remove(disconnectedConn);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -500,10 +474,10 @@ public class GeckoHandler implements Handler {
 
     private void addConnectionToGroup(final DefaultConnection conn, final String group, final int maxConnCount) {
         conn.getRemotingContext().addConnectionToGroup(group, conn);
-        // »ñÈ¡·Ö×éÁ¬½Ó¾ÍĞ÷Ëø
+        // è·å–åˆ†ç»„è¿æ¥å°±ç»ªé”
         final Object readyLock = this.remotingController.getAttribute(group, Constants.GROUP_CONNECTION_READY_LOCK);
         if (readyLock != null) {
-            // Í¨Öª·Ö×éËùÓĞÁ¬½Ó¾ÍĞ÷
+            // é€šçŸ¥åˆ†ç»„æ‰€æœ‰è¿æ¥å°±ç»ª
             synchronized (readyLock) {
                 if (this.remotingController.getConnectionCount(group) >= maxConnCount) {
                     readyLock.notifyAll();
@@ -514,11 +488,11 @@ public class GeckoHandler implements Handler {
 
 
     public void onSessionCreated(final Session session) {
-        log.debug("Á¬½Ó½¨Á¢£¬Ô¶¶ËĞÅÏ¢:" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()));
+        log.debug("è¿æ¥å»ºç«‹ï¼Œè¿œç«¯ä¿¡æ¯:" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()));
         final DefaultConnection connection = new DefaultConnection((NioSession) session, this.remotingContext);
-        // ¼ÓÈëÄ¬ÈÏ·Ö×é
+        // åŠ å…¥é»˜è®¤åˆ†ç»„
         this.remotingContext.addConnection(connection);
-        // ¼ÓÈësessionµ½connectionµÄÓ³Éä
+        // åŠ å…¥sessionåˆ°connectionçš„æ˜ å°„
         this.remotingContext.addSession2ConnectionMapping((NioSession) session, connection);
         this.remotingContext.notifyConnectionCreated(connection);
         this.adjustMaxScheduleWrittenBytes();
@@ -526,13 +500,13 @@ public class GeckoHandler implements Handler {
 
 
     private void adjustMaxScheduleWrittenBytes() {
-        // Server¸ù¾İÁ¬½ÓÊı×Ô¶¯µ÷Õû×î´ó·¢ËÍÁ÷Á¿²ÎÊı
+        // Serveræ ¹æ®è¿æ¥æ•°è‡ªåŠ¨è°ƒæ•´æœ€å¤§å‘é€æµé‡å‚æ•°
         if (this.remotingController instanceof RemotingServer) {
             final List<Connection> connections = this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
             final int connectionCount = connections != null ? connections.size() : 0;
             if (connectionCount > 0) {
                 this.remotingContext.getConfig().setMaxScheduleWrittenBytes(
-                    Runtime.getRuntime().maxMemory() / 3 / connectionCount);
+                        Runtime.getRuntime().maxMemory() / 3 / connectionCount);
             }
         }
     }
@@ -547,10 +521,9 @@ public class GeckoHandler implements Handler {
         final Connection conn = this.remotingContext.getConnectionBySession((NioSession) session);
         try {
             conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(
-                conn), 5000, TimeUnit.MILLISECONDS);
-        }
-        catch (final NotifyRemotingException e) {
-            log.error("·¢ËÍĞÄÌøÃüÁîÊ§°Ü", e);
+                    conn), 5000, TimeUnit.MILLISECONDS);
+        } catch (final NotifyRemotingException e) {
+            log.error("å‘é€å¿ƒè·³å‘½ä»¤å¤±è´¥", e);
         }
 
     }

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,12 +40,8 @@ import com.taobao.gecko.core.statistics.impl.DefaultStatistics;
 
 
 /**
- *
- *
- *
  * @author boyan
- *
- * @since 1.0, 2009-12-24 ÏÂÎç03:56:48
+ * @since 1.0, 2009-12-24 ä¸‹åˆ03:56:48
  */
 
 public class NioTCPSessionUnitTest {
@@ -125,7 +121,7 @@ public class NioTCPSessionUnitTest {
         this.queue = new LinkedList<WriteMessage>();
         NioSessionConfig sessionConfig =
                 new NioSessionConfig(this.channel, this.handler, this.selectorManager, new TextLineCodecFactory(),
-                    new DefaultStatistics(), this.queue, null, true, -1, -1);
+                        new DefaultStatistics(), this.queue, null, true, -1, -1);
 
         this.session = new NioTCPSession(sessionConfig, 4096);
     }
@@ -179,7 +175,7 @@ public class NioTCPSessionUnitTest {
         ByteBufferWriteMessage message = new ByteBufferWriteMessage("hello good", new FutureImpl<Boolean>());
         message.setWriteBuffer(IoBuffer.wrap("hello good".getBytes()));
         message.getWriteBuffer().position(5);
-        // ·ÖÁ½´ÎĞ´Èë£¬Ã¿´ÎĞ´Èë5¸ö×Ö½Ú
+        // åˆ†ä¸¤æ¬¡å†™å…¥ï¼Œæ¯æ¬¡å†™å…¥5ä¸ªå­—èŠ‚
         this.channel.written = 5;
         this.channel.writeTimesToReturnZero = Integer.MAX_VALUE;
         Assert.assertEquals("hello good", this.session.writeToChannel0(message));
@@ -192,14 +188,14 @@ public class NioTCPSessionUnitTest {
     public void testWriteToChannel_Not_Complete() throws Exception {
         ByteBufferWriteMessage message = new ByteBufferWriteMessage("hello good", new FutureImpl<Boolean>());
         message.setWriteBuffer(IoBuffer.wrap("hello good".getBytes()));
-        // ÏÈĞ´Èë3¸ö×Ö½Ú£¬Ã»ÓĞÍêÈ«Ğ´Èë
+        // å…ˆå†™å…¥3ä¸ªå­—èŠ‚ï¼Œæ²¡æœ‰å®Œå…¨å†™å…¥
         this.channel.written = 3;
         this.channel.writeTimesToReturnZero = 1;
         Assert.assertNull(this.session.writeToChannel0(message));
         Assert.assertFalse(message.getWriteFuture().isDone());
         Assert.assertTrue(message.getWriteBuffer().hasRemaining());
 
-        // ÏÂ´ÎÓ¦¸ÃÍêÈ«Ğ´ÈëÊ£ÏÂµÄ7¸ö×Ö½Ú
+        // ä¸‹æ¬¡åº”è¯¥å®Œå…¨å†™å…¥å‰©ä¸‹çš„7ä¸ªå­—èŠ‚
         this.channel.written = 7;
         this.channel.writeTimesToReturnZero = Integer.MAX_VALUE;
         Assert.assertEquals("hello good", this.session.writeToChannel0(message));
@@ -225,7 +221,7 @@ public class NioTCPSessionUnitTest {
         this.session.readFromBuffer();
         Assert.assertEquals("hello", this.handler.lastMessage);
         Thread.sleep(2000);
-        // È·ÈÏÊÇ·ñ¼ÌĞø×¢²á
+        // ç¡®è®¤æ˜¯å¦ç»§ç»­æ³¨å†Œ
         Assert.assertSame(this.session, this.channel.attch);
         Assert.assertEquals(SelectionKey.OP_READ, this.channel.ops);
     }
@@ -238,25 +234,25 @@ public class NioTCPSessionUnitTest {
         this.session.readFromBuffer();
         Assert.assertNull(this.handler.lastMessage);
         Thread.sleep(2000);
-        // È·ÈÏÊÇ·ñ¼ÌĞø×¢²á
+        // ç¡®è®¤æ˜¯å¦ç»§ç»­æ³¨å†Œ
         Assert.assertSame(this.session, this.channel.attch);
         Assert.assertEquals(SelectionKey.OP_READ, this.channel.ops);
 
-        // ¼ÆÊıÇå0£¬ÔÙ´Î¶Á£¬¿ÉÒÔÍêÈ«decode²¢ÅÉ·¢¸øhandler
+        // è®¡æ•°æ¸…0ï¼Œå†æ¬¡è¯»ï¼Œå¯ä»¥å®Œå…¨decodeå¹¶æ´¾å‘ç»™handler
         this.channel.readTimes = 0;
         this.channel.readBytes = "o\r\n".getBytes();
         this.session.readFromBuffer();
         Assert.assertEquals("hello", this.handler.lastMessage);
         Thread.sleep(2000);
-        // È·ÈÏÊÇ·ñ¼ÌĞø×¢²á
+        // ç¡®è®¤æ˜¯å¦ç»§ç»­æ³¨å†Œ
         Assert.assertSame(this.session, this.channel.attch);
         Assert.assertEquals(SelectionKey.OP_READ, this.channel.ops);
     }
 
 
     @Test(timeout = 20000)
-    public void testReadFromBuffer_CloseChannel()throws Exception {
-        // ²âÊÔ¶Áµ½-1µÄÇé¿ö£¬Ó¦¸Ã¹Ø±ÕÁ¬½Ó
+    public void testReadFromBuffer_CloseChannel() throws Exception {
+        // æµ‹è¯•è¯»åˆ°-1çš„æƒ…å†µï¼Œåº”è¯¥å…³é—­è¿æ¥
         this.channel.readTimesToReturnZero = Integer.MAX_VALUE;
         Assert.assertTrue(this.channel.isOpen());
         this.session.readFromBuffer();

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,12 +41,8 @@ import com.taobao.gecko.core.nio.impl.TimerRef;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-21 œ¬ŒÁ02:27:15
+ * @since 1.0, 2009-12-21 ‰∏ãÂçà02:27:15
  */
 
 public class MockSession implements NioSession {
@@ -58,8 +54,7 @@ public class MockSession implements NioSession {
             this.controller.start();
             this.selectorManager = this.controller.getSelectorManager();
 
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -82,14 +77,14 @@ public class MockSession implements NioSession {
 
 
     public Future<Boolean> asyncTransferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src,
-            final long position, final long size) {
+                                             final long position, final long size) {
         // TODO Auto-generated method stub
         return null;
     }
 
 
     public Future<Boolean> transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src,
-            final long position, final long size) {
+                                        final long position, final long size) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -157,8 +152,7 @@ public class MockSession implements NioSession {
     public void close() {
         try {
             this.controller.stop();
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }

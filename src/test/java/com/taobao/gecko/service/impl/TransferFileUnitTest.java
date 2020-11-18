@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,11 +40,10 @@ import com.taobao.gecko.service.notify.request.NotifyDummyRequestCommand;
 
 
 /**
- * ÎÄ¼ş´«Êäµ¥Ôª²âÊÔ
- * 
+ * æ–‡ä»¶ä¼ è¾“å•å…ƒæµ‹è¯•
+ *
  * @author boyan
  * @Date 2011-4-20
- * 
  */
 public class TransferFileUnitTest {
     int port = 8384;
@@ -58,7 +57,7 @@ public class TransferFileUnitTest {
         final RemotingServer server = RemotingFactory.bind(serverConfig);
         final String url = server.getConnectURI().toString();
 
-        // ÁÙÊ±ÎÄ¼ş£¬Ğ´Èë7¸ö×Ö·û
+        // ä¸´æ—¶æ–‡ä»¶ï¼Œå†™å…¥7ä¸ªå­—ç¬¦
         final File file = File.createTempFile("remoting", "test");
         file.delete();
         final FileChannel channel = new RandomAccessFile(file, "rw").getChannel();
@@ -77,7 +76,7 @@ public class TransferFileUnitTest {
 
             public void handleRequest(final NotifyDummyRequestCommand request, final Connection conn) {
                 conn.transferFrom(IoBuffer.wrap("head ".getBytes()), IoBuffer.wrap(" tail\r\n".getBytes()), channel, 0,
-                    7);
+                        7);
             }
 
         });

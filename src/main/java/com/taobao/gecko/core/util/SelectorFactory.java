@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Temp selector factory,come from grizzly
- * 
+ *
  * @author dennis zhuang
  */
 public class SelectorFactory {
@@ -77,8 +77,7 @@ public class SelectorFactory {
     static {
         try {
             setMaxSelectors(DEFAULT_MAX_SELECTORS);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             logger.warn("SelectorFactory initializing Selector pool", ex);
         }
     }
@@ -86,16 +85,14 @@ public class SelectorFactory {
 
     /**
      * Set max selector pool size.
-     * 
-     * @param size
-     *            max pool size
+     *
+     * @param size max pool size
      */
     public final static void setMaxSelectors(int size) throws IOException {
         synchronized (selectors) {
             if (size < maxSelectors) {
                 reduce(size);
-            }
-            else if (size > maxSelectors) {
+            } else if (size > maxSelectors) {
                 grow(size);
             }
 
@@ -106,7 +103,7 @@ public class SelectorFactory {
 
     /**
      * Returns max selector pool size
-     * 
+     *
      * @return max pool size
      */
     public final static int getMaxSelectors() {
@@ -116,7 +113,7 @@ public class SelectorFactory {
 
     /**
      * Get a exclusive <code>Selector</code>
-     * 
+     *
      * @return <code>Selector</code>
      */
     public final static Selector getSelector() {
@@ -126,8 +123,7 @@ public class SelectorFactory {
                 if (selectors.size() != 0) {
                     s = selectors.pop();
                 }
-            }
-            catch (EmptyStackException ex) {
+            } catch (EmptyStackException ex) {
             }
 
             int attempts = 0;
@@ -138,14 +134,12 @@ public class SelectorFactory {
                         if (selectors.size() != 0) {
                             s = selectors.pop();
                         }
-                    }
-                    catch (EmptyStackException ex) {
+                    } catch (EmptyStackException ex) {
                         break;
                     }
                     attempts++;
                 }
-            }
-            catch (InterruptedException ex) {
+            } catch (InterruptedException ex) {
             }
             return s;
         }
@@ -154,9 +148,8 @@ public class SelectorFactory {
 
     /**
      * Return the <code>Selector</code> to the cache
-     * 
-     * @param s
-     *            <code>Selector</code>
+     *
+     * @param s <code>Selector</code>
      */
     public final static void returnSelector(Selector s) {
         synchronized (selectors) {
@@ -186,8 +179,7 @@ public class SelectorFactory {
             try {
                 Selector selector = selectors.pop();
                 selector.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 logger.error("SelectorFactory.reduce", e);
             }
         }

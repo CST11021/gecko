@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,25 +28,23 @@ import com.taobao.gecko.service.impl.DefaultConnection;
 
 
 /**
- * 
- * ·¢ËÍ¸ø¶à¸ö·Ö×éµÄÇëÇó»Øµ÷
- * 
+ * å‘é€ç»™å¤šä¸ªåˆ†ç»„çš„è¯·æ±‚å›è°ƒ
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÉÏÎç11:30:57
+ * @since 1.0, 2009-12-16 ä¸Šåˆ11:30:57
  */
 
 public class MultiGroupRequestCallBack extends AbstractRequestCallBack {
-    private final ConcurrentHashMap<String/* group */, ResponseCommand/* Ó¦´ğ */> responseCommandMap;
+    private final ConcurrentHashMap<String/* group */, ResponseCommand/* åº”ç­” */> responseCommandMap;
     private final MultiGroupCallBackListener listener;
     private final AtomicBoolean responsed;
-    private final Object[] args; // ¿Í»§´«ÈëµÄ¸½¼Ó²ÎÊı
+    private final Object[] args; // å®¢æˆ·ä¼ å…¥çš„é™„åŠ å‚æ•°
 
 
     public MultiGroupRequestCallBack(final MultiGroupCallBackListener listener, final CountDownLatch countDownLatch,
-            final long timeout, final long timestamp,
-            final ConcurrentHashMap<String/* group */, ResponseCommand/* Ó¦´ğ */> responseCommandMap,
-            final AtomicBoolean responsed, final Object... args) {
+                                     final long timeout, final long timestamp,
+                                     final ConcurrentHashMap<String/* group */, ResponseCommand/* åº”ç­” */> responseCommandMap,
+                                     final AtomicBoolean responsed, final Object... args) {
         super(countDownLatch, timeout, timestamp);
         this.listener = listener;
         this.responseCommandMap = responseCommandMap;
@@ -60,7 +58,7 @@ public class MultiGroupRequestCallBack extends AbstractRequestCallBack {
         final String group = this.getGroupFromConnection(conn, requestCommand);
         if (group != null) {
             if (this.responseCommandMap.putIfAbsent(group,
-                createComunicationErrorResponseCommand(conn, e, requestCommand, conn.getRemoteSocketAddress())) == null) {
+                    createComunicationErrorResponseCommand(conn, e, requestCommand, conn.getRemoteSocketAddress())) == null) {
                 this.countDownLatch();
             }
         }
@@ -93,7 +91,7 @@ public class MultiGroupRequestCallBack extends AbstractRequestCallBack {
     public void onResponse0(String group, final ResponseCommand responseCommand, final Connection connection) {
         final DefaultConnection defaultConnection = (DefaultConnection) connection;
         if (defaultConnection != null) {
-            // É¾³ıopaqueµ½groupµÄÓ³Éä
+            // åˆ é™¤opaqueåˆ°groupçš„æ˜ å°„
             final String reqGroup = defaultConnection.removeOpaqueToGroupMapping(responseCommand.getOpaque());
             if (reqGroup != null) {
                 group = reqGroup;
@@ -104,9 +102,8 @@ public class MultiGroupRequestCallBack extends AbstractRequestCallBack {
                 this.countDownLatch();
             }
             this.tryNotifyListener();
-        }
-        else {
-            // ·ÖÎöÀ´Ëµ²»Ó¦¸Ã³öÏÖÕâÖÖÇé¿ö£¬µ«ÊÇÔ¤·ÀÍòÒ»£¬»¹ÊÇÒªÈ·±£ÒÆ³ıcallBack
+        } else {
+            // åˆ†ææ¥è¯´ä¸åº”è¯¥å‡ºç°è¿™ç§æƒ…å†µï¼Œä½†æ˜¯é¢„é˜²ä¸‡ä¸€ï¼Œè¿˜æ˜¯è¦ç¡®ä¿ç§»é™¤callBack
             if (defaultConnection != null) {
                 defaultConnection.removeRequestCallBack(responseCommand.getOpaque());
             }
@@ -121,11 +118,10 @@ public class MultiGroupRequestCallBack extends AbstractRequestCallBack {
                     this.listener.getExecutor().execute(new Runnable() {
                         public void run() {
                             MultiGroupRequestCallBack.this.listener.onResponse(
-                                MultiGroupRequestCallBack.this.responseCommandMap, MultiGroupRequestCallBack.this.args);
+                                    MultiGroupRequestCallBack.this.responseCommandMap, MultiGroupRequestCallBack.this.args);
                         }
                     });
-                }
-                else {
+                } else {
                     this.listener.onResponse(this.responseCommandMap, this.args);
                 }
             }

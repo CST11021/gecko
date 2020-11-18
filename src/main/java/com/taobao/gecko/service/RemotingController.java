@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,53 +29,49 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
- * 
- * Notify Remoting·şÎñ»ù´¡½Ó¿Ú
- * 
+ * Notify RemotingæœåŠ¡åŸºç¡€æ¥å£
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç02:15:02
+ * @since 1.0, 2009-12-16 ä¸‹åˆ02:15:02
  */
 
 public interface RemotingController {
 
     /**
-     * ÉèÖÃÁ¬½ÓÑ¡ÔñÆ÷£¬Ä¬ÈÏÎªËæ»úÑ¡ÔñÆ÷
-     * 
+     * è®¾ç½®è¿æ¥é€‰æ‹©å™¨ï¼Œé»˜è®¤ä¸ºéšæœºé€‰æ‹©å™¨
+     *
      * @param selector
      */
     public void setConnectionSelector(ConnectionSelector selector);
 
 
     /**
-     * Æô¶¯Remoting¿ØÖÆÆ÷
-     * 
+     * å¯åŠ¨Remotingæ§åˆ¶å™¨
+     *
      * @throws NotifyRemotingException
-     * 
      */
     public void start() throws NotifyRemotingException;
 
 
     /**
-     * ¹Ø±ÕRemoting¿ØÖÆÆ÷
-     * 
+     * å…³é—­Remotingæ§åˆ¶å™¨
+     *
      * @throws NotifyRemotingException
-     * 
      */
     public void stop() throws NotifyRemotingException;
 
 
     /**
-     * ÅĞ¶ÏÍ¨Ñ¶×é¼şÊÇ·ñÆô¶¯
-     * 
+     * åˆ¤æ–­é€šè®¯ç»„ä»¶æ˜¯å¦å¯åŠ¨
+     *
      * @return
      */
     public boolean isStarted();
 
 
     /**
-     * ×¢²áÇëÇó´¦ÀíÆ÷
-     * 
+     * æ³¨å†Œè¯·æ±‚å¤„ç†å™¨
+     *
      * @param <T>
      * @param commandClazz
      * @param processor
@@ -84,8 +80,8 @@ public interface RemotingController {
 
 
     /**
-     * »ñÈ¡command¶ÔÓ¦µÄ´¦ÀíÆ÷
-     * 
+     * è·å–commandå¯¹åº”çš„å¤„ç†å™¨
+     *
      * @param clazz
      * @return
      */
@@ -93,8 +89,8 @@ public interface RemotingController {
 
 
     /**
-     * È¡Ïû´¦ÀíÆ÷µÄ×¢²á,·µ»Ø±»È¡ÏûµÄ´¦ÀíÆ÷
-     * 
+     * å–æ¶ˆå¤„ç†å™¨çš„æ³¨å†Œ,è¿”å›è¢«å–æ¶ˆçš„å¤„ç†å™¨
+     *
      * @param clazz
      * @return
      */
@@ -102,8 +98,8 @@ public interface RemotingController {
 
 
     /**
-     * ÅúÁ¿Ìí¼ÓÇëÇó´¦ÀíÆ÷
-     * 
+     * æ‰¹é‡æ·»åŠ è¯·æ±‚å¤„ç†å™¨
+     *
      * @param <T>
      * @param map
      */
@@ -111,55 +107,47 @@ public interface RemotingController {
 
 
     /**
-     * Ìí¼ÓÒ»¸ö¶¨Ê±Æ÷
-     * 
-     * @param timeout
-     *            ³¬Ê±µÄÊ±¼ä
-     * @param timeUnit
-     *            Ê±¼äµ¥Î»
-     * @param runnable
-     *            ³¬Ê±Ö´ĞĞµÄÈÎÎñ
+     * æ·»åŠ ä¸€ä¸ªå®šæ—¶å™¨
+     *
+     * @param timeout  è¶…æ—¶çš„æ—¶é—´
+     * @param timeUnit æ—¶é—´å•ä½
+     * @param runnable è¶…æ—¶æ‰§è¡Œçš„ä»»åŠ¡
      */
     public void insertTimer(TimerRef timerRef);
 
 
     /**
-     * Òì²½·¢ËÍÏûÏ¢¸ø¶à¸ö·Ö×é£¬Ã¿¸ö·Ö×é¸ù¾İ²ßÂÔÑ¡Ò»¸öÁ¬½Ó·¢ËÍ£¬Ö¸¶¨»Øµ÷´¦ÀíÆ÷ºÍ³¬Ê±Ê±¼ä£¬³¬Ê±½«·µ»ØÒ»¸ö³¬Ê±Ó¦´ğ¸ø»Øµ÷¼àÌıÆ÷
-     * 
-     * @param groupObjects
-     *            group->message
-     * @param listener
-     *            Ó¦´ğ´¦ÀíÆ÷
-     * @param timeout
-     *            ³¬Ê±Ê±¼ä
-     * @param timeUnit
-     *            Ê±¼äµ¥Î»
-     * @param args
-     *            ¸½¼ş
+     * å¼‚æ­¥å‘é€æ¶ˆæ¯ç»™å¤šä¸ªåˆ†ç»„ï¼Œæ¯ä¸ªåˆ†ç»„æ ¹æ®ç­–ç•¥é€‰ä¸€ä¸ªè¿æ¥å‘é€ï¼ŒæŒ‡å®šå›è°ƒå¤„ç†å™¨å’Œè¶…æ—¶æ—¶é—´ï¼Œè¶…æ—¶å°†è¿”å›ä¸€ä¸ªè¶…æ—¶åº”ç­”ç»™å›è°ƒç›‘å¬å™¨
+     *
+     * @param groupObjects group->message
+     * @param listener     åº”ç­”å¤„ç†å™¨
+     * @param timeout      è¶…æ—¶æ—¶é—´
+     * @param timeUnit     æ—¶é—´å•ä½
+     * @param args         é™„ä»¶
      */
     public void sendToGroups(Map<String, RequestCommand> groupObjects, MultiGroupCallBackListener listener,
-            long timeout, TimeUnit timeUnit, Object... args) throws NotifyRemotingException;
+                             long timeout, TimeUnit timeUnit, Object... args) throws NotifyRemotingException;
 
 
     /**
-     * Òì²½µ¥Ïò·¢ËÍÏûÏ¢¸ø¶à¸ö·Ö×é
-     * 
+     * å¼‚æ­¥å•å‘å‘é€æ¶ˆæ¯ç»™å¤šä¸ªåˆ†ç»„
+     *
      * @param groupObjects
      */
     public void sendToGroups(Map<String, RequestCommand> groupObjects) throws NotifyRemotingException;
 
 
     /**
-     * Òì²½µ¥Ïò·¢ËÍ¸øËùÓĞÁ¬½Ó
-     * 
+     * å¼‚æ­¥å•å‘å‘é€ç»™æ‰€æœ‰è¿æ¥
+     *
      * @param command
      */
     public void sendToAllConnections(RequestCommand command) throws NotifyRemotingException;
 
 
     /**
-     * Òì²½µ¥Ïò·¢ËÍ¸øÖ¸¶¨·Ö×éÖĞµÄÒ»¸öÁ¬½Ó£¬Ä¬ÈÏÊÇËæ»ú²ßÂÔ
-     * 
+     * å¼‚æ­¥å•å‘å‘é€ç»™æŒ‡å®šåˆ†ç»„ä¸­çš„ä¸€ä¸ªè¿æ¥ï¼Œé»˜è®¤æ˜¯éšæœºç­–ç•¥
+     *
      * @param group
      * @param command
      */
@@ -167,11 +155,11 @@ public interface RemotingController {
 
 
     /**
-     * ´ÓÖ¸¶¨FileChannelµÄpositionÎ»ÖÃ¿ªÊ¼´«Êäsize¸ö×Ö½Úµ½Ö¸¶¨groupµÄÒ»¸ösocket,
-     * remoting»á¸ºÔğ±£Ö¤½«Ö¸¶¨´óĞ¡µÄÊı¾İ´«Êä¸øsocket¡£Èç¹ûfile channelÀïµÄÊı¾İ²»×ãsize´óĞ¡£¬ÔòÒÔÊµ¼Ê´óĞ¡´«Êä¡£
-     * ÆäÖĞheadºÍtailÊÇÖ¸ÔÚ´«ÊäÎÄ¼şÖ®Ç°»òÕßÖ®ºóĞèÒªĞ´ÈëµÄÊı¾İ£¬¿ÉÒÔÎªnull£¬ËûÃÇºÍÎÄ¼şÊı¾İ×÷ÎªÒ»¸öÕûÌåÀ´·¢ËÍ¡£
-     * ³¬¹ıÖ¸¶¨µÄ³¬Ê±Ê±¼äÔòÈ¡Ïû´«Êä(Èç¹û»¹Ã»ÓĞ¿ªÊ¼´«ÊäµÄ»°,ÒÑ¾­¿ªÊ¼µÄÎŞ·¨ÖĞÖ¹)£¬²¢Í¨Öªlistener¡£
-     * 
+     * ä»æŒ‡å®šFileChannelçš„positionä½ç½®å¼€å§‹ä¼ è¾“sizeä¸ªå­—èŠ‚åˆ°æŒ‡å®šgroupçš„ä¸€ä¸ªsocket,
+     * remotingä¼šè´Ÿè´£ä¿è¯å°†æŒ‡å®šå¤§å°çš„æ•°æ®ä¼ è¾“ç»™socketã€‚å¦‚æœfile channelé‡Œçš„æ•°æ®ä¸è¶³sizeå¤§å°ï¼Œåˆ™ä»¥å®é™…å¤§å°ä¼ è¾“ã€‚
+     * å…¶ä¸­headå’Œtailæ˜¯æŒ‡åœ¨ä¼ è¾“æ–‡ä»¶ä¹‹å‰æˆ–è€…ä¹‹åéœ€è¦å†™å…¥çš„æ•°æ®ï¼Œå¯ä»¥ä¸ºnullï¼Œä»–ä»¬å’Œæ–‡ä»¶æ•°æ®ä½œä¸ºä¸€ä¸ªæ•´ä½“æ¥å‘é€ã€‚
+     * è¶…è¿‡æŒ‡å®šçš„è¶…æ—¶æ—¶é—´åˆ™å–æ¶ˆä¼ è¾“(å¦‚æœè¿˜æ²¡æœ‰å¼€å§‹ä¼ è¾“çš„è¯,å·²ç»å¼€å§‹çš„æ— æ³•ä¸­æ­¢)ï¼Œå¹¶é€šçŸ¥listenerã€‚
+     *
      * @param group
      * @param head
      * @param tail
@@ -185,29 +173,29 @@ public interface RemotingController {
      * @throws NotifyRemotingException
      */
     public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position,
-            long size, Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit)
+                                long size, Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit)
             throws NotifyRemotingException;
 
 
     /**
-     * µ¥Ïò´«ÊäÊı¾İµ½Ö¸¶¨groupµÄÄ³¸ösocketÁ¬½Ó£¬´«ÊäĞèÒªÊ¹ÓÃµÄÊ±¼äÎ´Öª£¬Ò²²»¿ÉÈ¡Ïû
-     * 
-     * @see #transferToGroup(String, IoBuffer, IoBuffer, FileChannel, long,
-     *      long, Integer, SingleRequestCallBackListener, long, TimeUnit)
+     * å•å‘ä¼ è¾“æ•°æ®åˆ°æŒ‡å®šgroupçš„æŸä¸ªsocketè¿æ¥ï¼Œä¼ è¾“éœ€è¦ä½¿ç”¨çš„æ—¶é—´æœªçŸ¥ï¼Œä¹Ÿä¸å¯å–æ¶ˆ
+     *
      * @param group
      * @param head
      * @param tail
      * @param channel
      * @param position
      * @param size
+     * @see #transferToGroup(String, IoBuffer, IoBuffer, FileChannel, long,
+     * long, Integer, SingleRequestCallBackListener, long, TimeUnit)
      */
     public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position,
-            long size) throws NotifyRemotingException;
+                                long size) throws NotifyRemotingException;
 
 
     /**
-     * Òì²½µ¥Ïò·¢ËÍ¸øÖ¸¶¨·Ö×éµÄËùÓĞÁ¬½Ó
-     * 
+     * å¼‚æ­¥å•å‘å‘é€ç»™æŒ‡å®šåˆ†ç»„çš„æ‰€æœ‰è¿æ¥
+     *
      * @param group
      * @param command
      */
@@ -215,41 +203,33 @@ public interface RemotingController {
 
 
     /**
-     * Òì²½·¢ËÍ¸øÖ¸¶¨·Ö×éÖĞµÄÒ»¸öÁ¬½Ó£¬Ö¸¶¨»Øµ÷¼àÌıÆ÷RequestCallBackListener£¬Ä¬ÈÏ²ßÂÔÊÇËæ»ú£¬Ä¬ÈÏ³¬Ê±Îª1Ãë,
-     * ³¬¹ı³¬Ê±Ê±¼ä½«·µ»ØÒ»¸ö³¬Ê±Ó¦´ğ¸ø»Øµ÷¼àÌıÆ÷
-     * 
-     * @param group
-     *            ·Ö×éÃû³Æ
-     * @param command
-     *            ÇëÇóÃüÁî
-     * @param listener
-     *            ÏìÓ¦´¦ÀíÆ÷
+     * å¼‚æ­¥å‘é€ç»™æŒ‡å®šåˆ†ç»„ä¸­çš„ä¸€ä¸ªè¿æ¥ï¼ŒæŒ‡å®šå›è°ƒç›‘å¬å™¨RequestCallBackListenerï¼Œé»˜è®¤ç­–ç•¥æ˜¯éšæœºï¼Œé»˜è®¤è¶…æ—¶ä¸º1ç§’,
+     * è¶…è¿‡è¶…æ—¶æ—¶é—´å°†è¿”å›ä¸€ä¸ªè¶…æ—¶åº”ç­”ç»™å›è°ƒç›‘å¬å™¨
+     *
+     * @param group    åˆ†ç»„åç§°
+     * @param command  è¯·æ±‚å‘½ä»¤
+     * @param listener å“åº”å¤„ç†å™¨
      */
     public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener)
             throws NotifyRemotingException;
 
 
     /**
-     * Òì²½·¢ËÍ¸øÖ¸¶¨·Ö×éÖĞµÄÒ»¸öÁ¬½Ó£¬Ä¬ÈÏ²ßÂÔÊÇËæ»ú£¬Ö¸¶¨³¬Ê±,³¬¹ı³¬Ê±Ê±¼ä½«·µ»ØÒ»¸ö³¬Ê±Ó¦´ğ¸ø»Øµ÷¼àÌıÆ÷
-     * 
-     * @param group
-     *            ·Ö×éÃû³Æ
-     * @param command
-     *            ÇëÇóÃüÁî
-     * @param listener
-     *            ÏìÓ¦´¦ÀíÆ÷
+     * å¼‚æ­¥å‘é€ç»™æŒ‡å®šåˆ†ç»„ä¸­çš„ä¸€ä¸ªè¿æ¥ï¼Œé»˜è®¤ç­–ç•¥æ˜¯éšæœºï¼ŒæŒ‡å®šè¶…æ—¶,è¶…è¿‡è¶…æ—¶æ—¶é—´å°†è¿”å›ä¸€ä¸ªè¶…æ—¶åº”ç­”ç»™å›è°ƒç›‘å¬å™¨
+     *
+     * @param group    åˆ†ç»„åç§°
+     * @param command  è¯·æ±‚å‘½ä»¤
+     * @param listener å“åº”å¤„ç†å™¨
      */
     public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener, long time,
-            TimeUnit timeunut) throws NotifyRemotingException;
+                            TimeUnit timeunut) throws NotifyRemotingException;
 
 
     /**
-     * Í¬²½µ÷ÓÃ·Ö×éÖĞµÄÒ»¸öÁ¬½Ó£¬Ä¬ÈÏ³¬Ê±1Ãë
-     * 
-     * @param group
-     *            ·Ö×éÃû³Æ
-     * @param command
-     *            ÇëÇóÃüÁî
+     * åŒæ­¥è°ƒç”¨åˆ†ç»„ä¸­çš„ä¸€ä¸ªè¿æ¥ï¼Œé»˜è®¤è¶…æ—¶1ç§’
+     *
+     * @param group   åˆ†ç»„åç§°
+     * @param command è¯·æ±‚å‘½ä»¤
      * @return
      * @throws InterruptedException
      * @throws TimeoutException
@@ -259,16 +239,12 @@ public interface RemotingController {
 
 
     /**
-     * Í¬²½µ÷ÓÃ·Ö×éÖĞµÄÒ»¸öÁ¬½Ó£¬Ö¸¶¨³¬Ê±Ê±¼ä
-     * 
-     * @param group
-     *            ·Ö×éÃû³Æ
-     * @param command
-     *            ÇëÇóÃüÁî
-     * @param time
-     *            ³¬Ê±Ê±¼ä
-     * @param timeUnit
-     *            Ê±¼äµ¥Î»
+     * åŒæ­¥è°ƒç”¨åˆ†ç»„ä¸­çš„ä¸€ä¸ªè¿æ¥ï¼ŒæŒ‡å®šè¶…æ—¶æ—¶é—´
+     *
+     * @param group    åˆ†ç»„åç§°
+     * @param command  è¯·æ±‚å‘½ä»¤
+     * @param time     è¶…æ—¶æ—¶é—´
+     * @param timeUnit æ—¶é—´å•ä½
      * @return
      * @throws InterruptedException
      * @throws TimeoutException
@@ -278,24 +254,21 @@ public interface RemotingController {
 
 
     /**
-     * Òì²½·¢ËÍ¸øÖ¸¶¨·Ö×éµÄËùÓĞÁ¬½Ó£¬Ä¬ÈÏ³¬Ê±1Ãë,³¬¹ı³¬Ê±Ê±¼ä½«·µ»ØÒ»¸ö³¬Ê±Ó¦´ğ¸ø»Øµ÷¼àÌıÆ÷
-     * 
-     * @param group
-     *            ·Ö×éÃû³Æ
-     * @param command
-     *            ÇëÇóÃüÁî
-     * @param listener
-     *            ÏìÓ¦´¦ÀíÆ÷
+     * å¼‚æ­¥å‘é€ç»™æŒ‡å®šåˆ†ç»„çš„æ‰€æœ‰è¿æ¥ï¼Œé»˜è®¤è¶…æ—¶1ç§’,è¶…è¿‡è¶…æ—¶æ—¶é—´å°†è¿”å›ä¸€ä¸ªè¶…æ—¶åº”ç­”ç»™å›è°ƒç›‘å¬å™¨
+     *
+     * @param group    åˆ†ç»„åç§°
+     * @param command  è¯·æ±‚å‘½ä»¤
+     * @param listener å“åº”å¤„ç†å™¨
      */
     public void sendToGroupAllConnections(String group, RequestCommand command,
-            GroupAllConnectionCallBackListener listener) throws NotifyRemotingException;
+                                          GroupAllConnectionCallBackListener listener) throws NotifyRemotingException;
 
 
     /**
-     * Í¬²½µ÷ÓÃ·Ö×éÄÚµÄËùÓĞÁ¬½Ó£¬
-     * ³¬Ê±ÏìÓ¦µÄÁ¬½Ó½«·ÅÈëÒ»¸öBooleanResponseCommand×÷Îª½á¹û²¢ÇÒÉèÖÃresponseStatusÎªTIMEOUT
-     * ,Èç¹û·Ö×éÄÚÃ»ÓĞÁ¬½Ó½«·µ»Ønull
-     * 
+     * åŒæ­¥è°ƒç”¨åˆ†ç»„å†…çš„æ‰€æœ‰è¿æ¥ï¼Œ
+     * è¶…æ—¶å“åº”çš„è¿æ¥å°†æ”¾å…¥ä¸€ä¸ªBooleanResponseCommandä½œä¸ºç»“æœå¹¶ä¸”è®¾ç½®responseStatusä¸ºTIMEOUT
+     * ,å¦‚æœåˆ†ç»„å†…æ²¡æœ‰è¿æ¥å°†è¿”å›null
+     *
      * @param group
      * @param command
      * @return
@@ -307,10 +280,10 @@ public interface RemotingController {
 
 
     /**
-     * Í¬²½µ÷ÓÃ·Ö×éÄÚµÄËùÓĞÁ¬½Ó£¬
-     * ³¬Ê±ÏìÓ¦µÄÁ¬½Ó½«·ÅÈëÒ»¸öBooleanResponseCommand×÷Îª½á¹û²¢ÇÒÉèÖÃresponseStatusÎªTIMEOUT
-     * ,Èç¹û·Ö×éÄÚÃ»ÓĞÁ¬½Ó½«·µ»Ønull
-     * 
+     * åŒæ­¥è°ƒç”¨åˆ†ç»„å†…çš„æ‰€æœ‰è¿æ¥ï¼Œ
+     * è¶…æ—¶å“åº”çš„è¿æ¥å°†æ”¾å…¥ä¸€ä¸ªBooleanResponseCommandä½œä¸ºç»“æœå¹¶ä¸”è®¾ç½®responseStatusä¸ºTIMEOUT
+     * ,å¦‚æœåˆ†ç»„å†…æ²¡æœ‰è¿æ¥å°†è¿”å›null
+     *
      * @param group
      * @param command
      * @return
@@ -318,26 +291,23 @@ public interface RemotingController {
      * @throws NotifyRemotingException
      */
     public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command,
-            long time, TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException;
+                                                                        long time, TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException;
 
 
     /**
-     * Òì²½·¢ËÍ¸øÖ¸¶¨·Ö×éµÄËùÓĞÁ¬½Ó£¬Ö¸¶¨³¬Ê±Ê±¼ä£¬³¬¹ı³¬Ê±Ê±¼ä½«·µ»ØÒ»¸ö³¬Ê±Ó¦´ğ¸ø»Øµ÷¼àÌıÆ÷
-     * 
-     * @param group
-     *            ·Ö×éÃû³Æ
-     * @param command
-     *            ÇëÇóÃüÁî
-     * @param listener
-     *            ÏìÓ¦´¦ÀíÆ÷
+     * å¼‚æ­¥å‘é€ç»™æŒ‡å®šåˆ†ç»„çš„æ‰€æœ‰è¿æ¥ï¼ŒæŒ‡å®šè¶…æ—¶æ—¶é—´ï¼Œè¶…è¿‡è¶…æ—¶æ—¶é—´å°†è¿”å›ä¸€ä¸ªè¶…æ—¶åº”ç­”ç»™å›è°ƒç›‘å¬å™¨
+     *
+     * @param group    åˆ†ç»„åç§°
+     * @param command  è¯·æ±‚å‘½ä»¤
+     * @param listener å“åº”å¤„ç†å™¨
      */
     public void sendToGroupAllConnections(String group, RequestCommand command,
-            GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
+                                          GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
 
 
     /**
-     * »ñÈ¡group¶ÔÓ¦µÄÁ¬½ÓÊı
-     * 
+     * è·å–groupå¯¹åº”çš„è¿æ¥æ•°
+     *
      * @param group
      * @return
      */
@@ -345,18 +315,17 @@ public interface RemotingController {
 
 
     /**
-     * »ñÈ¡group¼¯ºÏ
-     * 
+     * è·å–groupé›†åˆ
+     *
      * @return
      */
     public Set<String> getGroupSet();
 
 
     /**
-     * ÉèÖÃÊôĞÔ
-     * 
+     * è®¾ç½®å±æ€§
+     *
      * @param group
-     * 
      * @param key
      * @param value
      */
@@ -364,10 +333,9 @@ public interface RemotingController {
 
 
     /**
-     * ÉèÖÃÊôĞÔ£¬ÀàËÆConcurrentHashMap.putIfAbsent
-     * 
+     * è®¾ç½®å±æ€§ï¼Œç±»ä¼¼ConcurrentHashMap.putIfAbsent
+     *
      * @param group
-     * 
      * @param key
      * @param value
      * @return
@@ -376,10 +344,9 @@ public interface RemotingController {
 
 
     /**
-     * »ñÈ¡ÊôĞÔ
-     * 
+     * è·å–å±æ€§
+     *
      * @param group
-     * 
      * @param key
      * @return
      */
@@ -387,26 +354,25 @@ public interface RemotingController {
 
 
     /**
-     * Ìí¼ÓÁ¬½ÓÉúÃüÖÜÆÚ¼àÌıÆ÷
-     * 
+     * æ·»åŠ è¿æ¥ç”Ÿå‘½å‘¨æœŸç›‘å¬å™¨
+     *
      * @param connectionLifeCycleListener
      */
     public void addConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
 
 
     /**
-     * Ìí¼ÓÁ¬½ÓÉúÃüÖÜÆÚ¼àÌıÆ÷
-     * 
+     * æ·»åŠ è¿æ¥ç”Ÿå‘½å‘¨æœŸç›‘å¬å™¨
+     *
      * @param connectionLifeCycleListener
      */
     public void removeConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
 
 
     /**
-     * ÒÆ³ıÊôĞÔ
-     * 
+     * ç§»é™¤å±æ€§
+     *
      * @param group
-     * 
      * @param key
      * @return
      */
@@ -414,24 +380,22 @@ public interface RemotingController {
 
 
     /**
-     * »ñÈ¡È«¾ÖÉÏÏÂÎÄ
-     * 
+     * è·å–å…¨å±€ä¸Šä¸‹æ–‡
+     *
      * @return
      */
     public RemotingContext getRemotingContext();
 
 
     /**
-     * ¸ù¾İ²ßÂÔ´Ó·Ö×éÖĞµÄÁ¬½ÓÑ¡ÔñÒ»¸ö
-     * 
+     * æ ¹æ®ç­–ç•¥ä»åˆ†ç»„ä¸­çš„è¿æ¥é€‰æ‹©ä¸€ä¸ª
+     *
      * @param group
-     * @param connectionSelector
-     *            Á¬½ÓÑ¡ÔñÆ÷
-     * @param request
-     *            ·¢ËÍµÄÃüÁî
+     * @param connectionSelector è¿æ¥é€‰æ‹©å™¨
+     * @param request            å‘é€çš„å‘½ä»¤
      * @return
      */
     public Connection selectConnectionForGroup(String group, ConnectionSelector connectionSelector,
-            RequestCommand request) throws NotifyRemotingException;
+                                               RequestCommand request) throws NotifyRemotingException;
 
 }

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,10 +61,10 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests {@link IoBuffer}.
- * 
+ *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 754874 $, $Date: 2009-03-16 12:04:01 +0100 (Mon, 16 Mar 2009)
- *          $
+ * $
  */
 public class IoBufferTest {
 
@@ -104,8 +104,7 @@ public class IoBufferTest {
         try {
             buf.put((byte) 0);
             fail("Buffer can't auto expand, with autoExpand property set at false");
-        }
-        catch (BufferOverflowException e) {
+        } catch (BufferOverflowException e) {
             // Expected Exception as auto expand property is false
             assertTrue(true);
         }
@@ -120,8 +119,7 @@ public class IoBufferTest {
         try {
             buf.put(3, (byte) 0);
             fail("Buffer can't auto expand, with autoExpand property set at false");
-        }
-        catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             // Expected Exception as auto expand property is false
             assertTrue(true);
         }
@@ -331,8 +329,7 @@ public class IoBufferTest {
         try {
             buf.getString(1, decoder);
             fail();
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -370,8 +367,7 @@ public class IoBufferTest {
         try {
             buffer.getString(3, Charset.forName("ASCII").newDecoder());
             fail();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             assertEquals(oldLimit, buffer.limit());
             assertEquals(oldPos, buffer.position());
         }
@@ -379,8 +375,7 @@ public class IoBufferTest {
         try {
             buffer.getString(Charset.forName("ASCII").newDecoder());
             fail();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             assertEquals(oldLimit, buffer.limit());
             assertEquals(oldPos, buffer.position());
         }
@@ -491,8 +486,7 @@ public class IoBufferTest {
         try {
             buf.putPrefixedString("123456789012345", encoder);
             fail();
-        }
-        catch (BufferOverflowException e) {
+        } catch (BufferOverflowException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -587,8 +581,7 @@ public class IoBufferTest {
                     try {
                         buffer.putString("\u89d2", encoder);
                         buffer.putPrefixedString("\u89d2", encoder);
-                    }
-                    catch (CharacterCodingException e) {
+                    } catch (CharacterCodingException e) {
                         fail(e.getMessage());
                     }
                 }
@@ -706,7 +699,7 @@ public class IoBufferTest {
 
     @Test
     public void testWrapSubArray() throws Exception {
-        byte[] array = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        byte[] array = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
         IoBuffer buf = IoBuffer.wrap(array, 3, 4);
         assertEquals(3, buf.position());
@@ -753,8 +746,7 @@ public class IoBufferTest {
         try {
             original.setAutoExpand(true);
             fail("Derived buffers and their parent can't be expanded");
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -762,8 +754,7 @@ public class IoBufferTest {
         try {
             duplicate.setAutoExpand(true);
             fail("Derived buffers and their parent can't be expanded");
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -812,8 +803,7 @@ public class IoBufferTest {
             duplicate = original.asReadOnlyBuffer();
             duplicate.putString("A very very very very looooooong string", Charset.forName("ISO-8859-1").newEncoder());
             fail("ReadOnly buffer's can't be expanded");
-        }
-        catch (ReadOnlyBufferException e) {
+        } catch (ReadOnlyBufferException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -1186,8 +1176,7 @@ public class IoBufferTest {
         try {
             buf.putEnumSet(EnumSet.of(TestEnum.E9));
             fail("Should have thrown IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -1195,8 +1184,7 @@ public class IoBufferTest {
         try {
             buf.putEnumSetShort(EnumSet.of(TestEnum.E17));
             fail("Should have thrown IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -1204,8 +1192,7 @@ public class IoBufferTest {
         try {
             buf.putEnumSetInt(EnumSet.of(TestEnum.E33));
             fail("Should have thrown IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }
@@ -1213,8 +1200,7 @@ public class IoBufferTest {
         try {
             buf.putEnumSetLong(EnumSet.of(TooBigEnum.E65));
             fail("Should have thrown IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Expected an Exception, signifies test success
             assertTrue(true);
         }

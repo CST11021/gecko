@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * 
+ *
  */
 
 package com.taobao.gecko.core.nio.impl;
@@ -50,21 +50,18 @@ import com.taobao.gecko.core.util.SystemUtils;
 
 
 /**
- * 
- * ReactorÊµÏÖ
- * 
+ * Reactorå®ç°
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-24 ÏÂÎç01:25:19
+ * @since 1.0, 2009-12-24 ä¸‹åˆ01:25:19
  */
 
 public final class Reactor extends Thread {
     /**
-     * ¶¨Ê±Æ÷¶ÓÁĞ·ÃÎÊÆ÷
-     * 
+     * å®šæ—¶å™¨é˜Ÿåˆ—è®¿é—®å™¨
+     *
      * @author boyan
      * @Date 2010-5-20
-     * 
      */
     private final class TimerQueueVisitor implements TimerRefQueue.TimerQueueVisitor {
         private final long now;
@@ -77,13 +74,12 @@ public final class Reactor extends Thread {
 
         public boolean visit(final TimerRef timerRef) {
             if (!timerRef.isCanceled()) {
-                // ÒÑ¾­³¬Ê±£¬ÂíÉÏ´¦Àí
+                // å·²ç»è¶…æ—¶ï¼Œé©¬ä¸Šå¤„ç†
                 if (timerRef.getTimeoutTimestamp() < this.now) {
                     Reactor.this.timerQueue.remove(timerRef);
                     Reactor.this.controller.onTimeout(timerRef);
-                }
-                else if (this.now - timerRef.addTimestamp >= TIMEOUT_THRESOLD) {
-                    // ³¬¹ı·§Öµ£¬°áÇ¨µ½ÓÅÏÈ¶ÓÁĞ
+                } else if (this.now - timerRef.addTimestamp >= TIMEOUT_THRESOLD) {
+                    // è¶…è¿‡é˜€å€¼ï¼Œæ¬è¿åˆ°ä¼˜å…ˆé˜Ÿåˆ—
                     Reactor.this.timerQueue.remove(timerRef);
                     Reactor.this.timerHeap.offer(timerRef);
                 }
@@ -94,9 +90,9 @@ public final class Reactor extends Thread {
     }
 
     public static final long TIMEOUT_THRESOLD = Long.parseLong(System.getProperty(
-        "notify.remoting.timer.timeout_threshold", "500"));
+            "notify.remoting.timer.timeout_threshold", "500"));
     /**
-     * ·ÀÖ¹jvm bug
+     * é˜²æ­¢jvm bug
      */
     public static final int JVMBUG_THRESHHOLD = Integer.getInteger("com.googlecode.yanf4j.nio.JVMBUG_THRESHHOLD", 128);
     public static final int JVMBUG_THRESHHOLD2 = JVMBUG_THRESHHOLD * 2;
@@ -108,7 +104,7 @@ public final class Reactor extends Thread {
 
     private static final Log log = LogFactory.getLog(Reactor.class);
 
-    // bugµÈ¼¶
+    // bugç­‰çº§
     private boolean jvmBug0;
     private boolean jvmBug1;
 
@@ -116,10 +112,10 @@ public final class Reactor extends Thread {
 
     private final SelectorManager selectorManager;
 
-    // bug²úÉú´ÎÊı
+    // bugäº§ç”Ÿæ¬¡æ•°
     private final AtomicInteger jvmBug = new AtomicInteger(0);
 
-    // ÉÏÒ»´Î·¢ÉúbugµÄÊ±¼ä
+    // ä¸Šä¸€æ¬¡å‘ç”Ÿbugçš„æ—¶é—´
     private long lastJVMBug;
 
     private volatile Selector selector;
@@ -131,26 +127,26 @@ public final class Reactor extends Thread {
     private final AtomicBoolean wakenUp = new AtomicBoolean(false);
 
     /**
-     * ×¢²áµÄÊÂ¼şÁĞ±í
+     * æ³¨å†Œçš„äº‹ä»¶åˆ—è¡¨
      */
     private final Queue<Object[]> register = new LinkedTransferQueue<Object[]>();
 
     private final TimerRefQueue timerQueue = new TimerRefQueue();
 
     /**
-     * ¼ÇÂ¼cancelµÄkeyÊıÄ¿£¬ÕâÀï±¾µ±ÓÃAtomicInteger£¬²»¹ıÎÒÃÇ²»×·ÇóÍêÈ«¾«È·µÄ¿ØÖÆ£¬Ö»ÊÇÒ»¸öÔ¤·ÀÊÖ¶Î
+     * è®°å½•cancelçš„keyæ•°ç›®ï¼Œè¿™é‡Œæœ¬å½“ç”¨AtomicIntegerï¼Œä¸è¿‡æˆ‘ä»¬ä¸è¿½æ±‚å®Œå…¨ç²¾ç¡®çš„æ§åˆ¶ï¼Œåªæ˜¯ä¸€ä¸ªé¢„é˜²æ‰‹æ®µ
      */
     private volatile int cancelledKeys;
 
-    // cancel keysµÄ¸öÊı·§Öµ£¬³¬¹ıÕâ¸öÊıÖµµ÷ÓÃÒ»´ÎselectNowÒ»´ÎĞÔÇå³ı
+    // cancel keysçš„ä¸ªæ•°é˜€å€¼ï¼Œè¶…è¿‡è¿™ä¸ªæ•°å€¼è°ƒç”¨ä¸€æ¬¡selectNowä¸€æ¬¡æ€§æ¸…é™¤
     static final int CLEANUP_INTERVAL = 256;
 
     /**
-     * ³¬Ê±Ê±¼äµÄ¶ş²æ¶Ñ
+     * è¶…æ—¶æ—¶é—´çš„äºŒå‰å †
      */
     private final PriorityQueue<TimerRef> timerHeap = new PriorityQueue<TimerRef>();
     /**
-     * Ê±¼ä»º´æ
+     * æ—¶é—´ç¼“å­˜
      */
     private volatile long timeCache;
 
@@ -160,7 +156,7 @@ public final class Reactor extends Thread {
 
     private long nextTimeout = 0;
 
-    private long lastMoveTimestamp = 0; // ÉÏ´Î´ÓtimerQueue°áÇ¨µ½timerHeapµÄÊ±¼ä´Á
+    private long lastMoveTimestamp = 0; // ä¸Šæ¬¡ä»timerQueueæ¬è¿åˆ°timerHeapçš„æ—¶é—´æˆ³
 
 
     Reactor(final SelectorManager selectorManager, final Configuration configuration, final int index)
@@ -186,8 +182,8 @@ public final class Reactor extends Thread {
 
 
     /**
-     * È¡×î½üµÄ³¬Ê±Ê±¼äµÄÊ±¼ä
-     * 
+     * å–æœ€è¿‘çš„è¶…æ—¶æ—¶é—´çš„æ—¶é—´
+     *
      * @return
      */
     private long timeoutNext() {
@@ -199,11 +195,10 @@ public final class Reactor extends Thread {
         }
         if (timerRef != null) {
             final long now = this.getTime();
-            // ÒÑ¾­ÓĞÊÂ¼ş³¬Ê±£¬·µ»Ø-1£¬²»½øĞĞselect£¬¼°Ê±´¦Àí³¬Ê±
+            // å·²ç»æœ‰äº‹ä»¶è¶…æ—¶ï¼Œè¿”å›-1ï¼Œä¸è¿›è¡Œselectï¼ŒåŠæ—¶å¤„ç†è¶…æ—¶
             if (timerRef.getTimeoutTimestamp() < now) {
                 selectionTimeout = -1L;
-            }
-            else {
+            } else {
                 selectionTimeout = timerRef.getTimeoutTimestamp() - now;
             }
         }
@@ -212,7 +207,7 @@ public final class Reactor extends Thread {
 
 
     /**
-     * Select²¢ÅÉ·¢ÊÂ¼ş
+     * Selectå¹¶æ´¾å‘äº‹ä»¶
      */
     @Override
     public void run() {
@@ -230,39 +225,35 @@ public final class Reactor extends Thread {
                 if (this.nextTimeout > 0 && this.nextTimeout < wait) {
                     wait = this.nextTimeout;
                 }
-                // Çå¿ÕÊ±¼ä»º´æ
+                // æ¸…ç©ºæ—¶é—´ç¼“å­˜
                 this.timeCache = 0;
                 this.wakenUp.set(false);
                 final int selected = this.select(wait);
                 if (selected == 0) {
                     /**
-                     * ²é¿´ÊÇ·ñ·¢ÉúBUG£¬²Î¼ûhttp://bugs.sun.com/bugdatabase /view_bug
+                     * æŸ¥çœ‹æ˜¯å¦å‘ç”ŸBUGï¼Œå‚è§http://bugs.sun.com/bugdatabase /view_bug
                      * .do?bug_id=6403933
                      */
                     if (before != -1) {
                         this.lookJVMBug(before, selected, wait);
                     }
                     this.selectTries++;
-                    // ¼ì²âÁ¬½ÓÊÇ·ñ¹ıÆÚ»òÕßidle£¬¼ÆËãÏÂ´ÎtimeoutÊ±¼ä
+                    // æ£€æµ‹è¿æ¥æ˜¯å¦è¿‡æœŸæˆ–è€…idleï¼Œè®¡ç®—ä¸‹æ¬¡timeoutæ—¶é—´
                     this.nextTimeout = this.checkSessionTimeout();
-                }
-                else {
+                } else {
                     this.selectTries = 0;
                 }
-                // »º´æÊ±¼ä£¬ÄÇÃ´ºóĞøµÄ´¦Àí³¬Ê±ºÍÌí¼ÓtimerµÄ»ñÈ¡µÄÊ±¼ä¶¼ÊÇ»º´æµÄÊ±¼ä£¬½µµÍ¿ªÏú
+                // ç¼“å­˜æ—¶é—´ï¼Œé‚£ä¹ˆåç»­çš„å¤„ç†è¶…æ—¶å’Œæ·»åŠ timerçš„è·å–çš„æ—¶é—´éƒ½æ˜¯ç¼“å­˜çš„æ—¶é—´ï¼Œé™ä½å¼€é”€
                 this.timeCache = this.getTime();
                 this.processTimeout();
                 this.processSelectedKeys();
-            }
-            catch (final ClosedSelectorException e) {
+            } catch (final ClosedSelectorException e) {
                 break;
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 log.error("Reactor select error", e);
                 if (this.selector.isOpen()) {
                     continue;
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -273,8 +264,7 @@ public final class Reactor extends Thread {
                     this.controller.closeChannel(this.selector);
                     this.selector.selectNow();
                     this.selector.close();
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     this.controller.notifyException(e);
                     log.error("stop reactor error", e);
                 }
@@ -293,11 +283,11 @@ public final class Reactor extends Thread {
                     this.timerHeap.poll();
                     continue;
                 }
-                // Ã»ÓĞ³¬Ê±£¬breakµô
+                // æ²¡æœ‰è¶…æ—¶ï¼Œbreakæ‰
                 if (timerRef.getTimeoutTimestamp() > now) {
                     break;
                 }
-                // ÒÆ³ı²¢´¦Àí
+                // ç§»é™¤å¹¶å¤„ç†
                 this.controller.onTimeout(this.timerHeap.poll());
             }
         }
@@ -310,8 +300,7 @@ public final class Reactor extends Thread {
         try {
             this.postSelect(selectedKeys, this.selector.keys());
             this.dispatchEvent(selectedKeys);
-        }
-        finally {
+        } finally {
             this.gate.unlock();
         }
         this.clearCancelKeys();
@@ -329,11 +318,10 @@ public final class Reactor extends Thread {
 
 
     private int select(final long wait) throws IOException {
-        // ÕâÀïÈÔÈ»ÊÇÓĞ¾ºÕùÌõ¼şµÄ£¬Ö»ÄÜ¾¡Á¿±ÜÃâ
+        // è¿™é‡Œä»ç„¶æ˜¯æœ‰ç«äº‰æ¡ä»¶çš„ï¼Œåªèƒ½å°½é‡é¿å…
         if (wait > 0 && !this.wakenUp.get()) {
             return this.selector.select(wait);
-        }
-        else {
+        } else {
             return this.selector.selectNow();
         }
     }
@@ -343,16 +331,15 @@ public final class Reactor extends Thread {
         final long timeCache = this.timeCache;
         if (timeCache > 0) {
             return timeCache;
-        }
-        else {
+        } else {
             return System.currentTimeMillis();
         }
     }
 
 
     /**
-     * ²åÈë¶¨Ê±Æ÷£¬·µ»Øµ±Ç°Ê±¼ä
-     * 
+     * æ’å…¥å®šæ—¶å™¨ï¼Œè¿”å›å½“å‰æ—¶é—´
+     *
      * @param timeout
      * @param runnable
      */
@@ -371,13 +358,13 @@ public final class Reactor extends Thread {
         boolean seeing = false;
         final long now = System.currentTimeMillis();
         /**
-         * BugÅĞ¶ÏÌõ¼ş,(1)selectÎª0 (2)select×èÈûÊ±¼äĞ¡ÓÚÄ³¸ö·§Öµ (3)·ÇÏß³ÌÖĞ¶ÏÒıÆğ (4)·ÇwakenupÒıÆğ
+         * Bugåˆ¤æ–­æ¡ä»¶,(1)selectä¸º0 (2)selecté˜»å¡æ—¶é—´å°äºæŸä¸ªé˜€å€¼ (3)éçº¿ç¨‹ä¸­æ–­å¼•èµ· (4)éwakenupå¼•èµ·
          */
         if (JVMBUG_THRESHHOLD > 0 && selected == 0 && wait > JVMBUG_THRESHHOLD && now - before < wait / 4
                 && !this.wakenUp.get() /* waken up */
                 && !Thread.currentThread().isInterrupted()/* Interrupted */) {
             this.jvmBug.incrementAndGet();
-            // ÑÏÖØµÈ¼¶1£¬ÖØĞÂ´´½¨selector
+            // ä¸¥é‡ç­‰çº§1ï¼Œé‡æ–°åˆ›å»ºselector
             if (this.jvmBug.get() >= JVMBUG_THRESHHOLD2) {
                 this.gate.lock();
                 try {
@@ -387,13 +374,12 @@ public final class Reactor extends Thread {
                             + this.reactorIndex);
                     if (this.jvmBug1) {
                         log.debug("seeing JVM BUG(s) - recreating selector,reactIndex=" + this.reactorIndex);
-                    }
-                    else {
+                    } else {
                         this.jvmBug1 = true;
                         log.info("seeing JVM BUG(s) - recreating selector,reactIndex=" + this.reactorIndex);
                     }
                     seeing = true;
-                    // ´´½¨ĞÂµÄselector
+                    // åˆ›å»ºæ–°çš„selector
                     final Selector new_selector = SystemUtils.openSelector();
 
                     for (final SelectionKey k : this.selector.keys()) {
@@ -403,26 +389,23 @@ public final class Reactor extends Thread {
 
                         final SelectableChannel channel = k.channel();
                         final Object attachment = k.attachment();
-                        // ½«²»ÊÇÎŞĞ§£¬²¢ÇÒinterestOps>0µÄchannel¼ÌĞø×¢²á
+                        // å°†ä¸æ˜¯æ— æ•ˆï¼Œå¹¶ä¸”interestOps>0çš„channelç»§ç»­æ³¨å†Œ
                         channel.register(new_selector, k.interestOps(), attachment);
                     }
 
                     this.selector.close();
                     this.selector = new_selector;
 
-                }
-                finally {
+                } finally {
                     this.gate.unlock();
                 }
                 this.jvmBug.set(0);
 
-            }
-            else if (this.jvmBug.get() == JVMBUG_THRESHHOLD || this.jvmBug.get() == JVMBUG_THRESHHOLD1) {
-                // BUGÑÏÖØµÈ¼¶0£¬È¡ÏûËùÓĞinterestedOps==0µÄkey
+            } else if (this.jvmBug.get() == JVMBUG_THRESHHOLD || this.jvmBug.get() == JVMBUG_THRESHHOLD1) {
+                // BUGä¸¥é‡ç­‰çº§0ï¼Œå–æ¶ˆæ‰€æœ‰interestedOps==0çš„key
                 if (this.jvmBug0) {
                     log.debug("seeing JVM BUG(s) - cancelling interestOps==0,reactIndex=" + this.reactorIndex);
-                }
-                else {
+                } else {
                     this.jvmBug0 = true;
                     log.info("seeing JVM BUG(s) - cancelling interestOps==0,reactIndex=" + this.reactorIndex);
                 }
@@ -434,13 +417,11 @@ public final class Reactor extends Thread {
                             k.cancel();
                         }
                     }
-                }
-                finally {
+                } finally {
                     this.gate.unlock();
                 }
             }
-        }
-        else {
+        } else {
             this.jvmBug.set(0);
         }
         return seeing;
@@ -454,15 +435,14 @@ public final class Reactor extends Thread {
 
     final void dispatchEvent(final Set<SelectionKey> selectedKeySet) {
         final Iterator<SelectionKey> it = selectedKeySet.iterator();
-        boolean skipOpRead = false; // ÊÇ·ñÌø¹ı¶Á
+        boolean skipOpRead = false; // æ˜¯å¦è·³è¿‡è¯»
         while (it.hasNext()) {
             final SelectionKey key = it.next();
             it.remove();
             if (!key.isValid()) {
                 if (key.attachment() != null) {
                     this.controller.closeSelectionKey(key);
-                }
-                else {
+                } else {
                     key.cancel();
                 }
                 continue;
@@ -481,17 +461,16 @@ public final class Reactor extends Thread {
                     }
                 }
                 if (!skipOpRead && (key.readyOps() & SelectionKey.OP_READ) == SelectionKey.OP_READ) {
-                    // ÒÆ³ı¶ÔreadµÄĞËÈ¤
+                    // ç§»é™¤å¯¹readçš„å…´è¶£
                     key.interestOps(key.interestOps() & ~SelectionKey.OP_READ);
-                    // ÊÇ·ñ³¬¹ıÁ÷Á¿¿ØÖÆ
+                    // æ˜¯å¦è¶…è¿‡æµé‡æ§åˆ¶
                     if (!this.controller.getStatistics().isReceiveOverFlow()) {
                         // Remove read interest
 
-                        this.controller.onRead(key);// ÅÉ·¢¶Á
+                        this.controller.onRead(key);// æ´¾å‘è¯»
                         continue;
-                    }
-                    else {
-                        key.interestOps(key.interestOps() // ¼ÌĞø×¢²á¶Á
+                    } else {
+                        key.interestOps(key.interestOps() // ç»§ç»­æ³¨å†Œè¯»
                                 | SelectionKey.OP_READ);
                     }
 
@@ -501,24 +480,20 @@ public final class Reactor extends Thread {
                     continue;
                 }
 
-            }
-            catch (final RejectedExecutionException e) {
-                // ²¶»ñÏß³Ì³Ø·±Ã¦µÄÒì³££¬²»¹Ø±ÕÁ¬½Ó
+            } catch (final RejectedExecutionException e) {
+                // æ•è·çº¿ç¨‹æ± ç¹å¿™çš„å¼‚å¸¸ï¼Œä¸å…³é—­è¿æ¥
                 if (key.attachment() instanceof AbstractNioSession) {
                     ((AbstractSession) key.attachment()).onException(e);
                 }
                 this.controller.notifyException(e);
                 if (this.selector.isOpen()) {
                     continue;
-                }
-                else {
+                } else {
                     break;
                 }
-            }
-            catch (final CancelledKeyException e) {
+            } catch (final CancelledKeyException e) {
                 // ignore
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 if (key.attachment() instanceof AbstractNioSession) {
                     ((AbstractSession) key.attachment()).onException(e);
                 }
@@ -527,8 +502,7 @@ public final class Reactor extends Thread {
                 log.error("Reactor dispatch events error", e);
                 if (this.selector.isOpen()) {
                     continue;
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -551,8 +525,7 @@ public final class Reactor extends Thread {
             if (channel != null && channel.isOpen()) {
                 channel.close();
             }
-        }
-        catch (final Throwable t) {
+        } catch (final Throwable t) {
             // ignore
         }
         this.wakeup();
@@ -567,7 +540,7 @@ public final class Reactor extends Thread {
                 if (this.selectTries * 1000 >= this.configuration.getCheckSessionTimeoutInterval()) {
                     nextTimeout = this.configuration.getCheckSessionTimeoutInterval();
                     for (final SelectionKey key : this.selector.keys()) {
-                        // ¼ì²âÊÇ·ñexpired»òÕßidle
+                        // æ£€æµ‹æ˜¯å¦expiredæˆ–è€…idle
                         if (key.attachment() != null) {
                             final long n = this.checkExpiredIdle(key, this.getSessionFromAttchment(key));
                             nextTimeout = n < nextTimeout ? n : nextTimeout;
@@ -575,8 +548,7 @@ public final class Reactor extends Thread {
                     }
                     this.selectTries = 0;
                 }
-            }
-            finally {
+            } finally {
                 this.gate.unlock();
             }
         }
@@ -596,9 +568,8 @@ public final class Reactor extends Thread {
         final Selector selector = this.selector;
         if (this.isReactorThread() && selector != null) {
             this.dispatchSessionEvent(session, event, selector);
-        }
-        else {
-            this.register.offer(new Object[] { session, event });
+        } else {
+            this.register.offer(new Object[]{session, event});
             this.wakeup();
         }
     }
@@ -619,7 +590,7 @@ public final class Reactor extends Thread {
 
     private void processMoveTimer() {
         final long now = this.getTime();
-        // ¾àÀëÉÏÒ»´Î¼ì²âÊ±¼ä³¬¹ı1Ãë
+        // è·ç¦»ä¸Šä¸€æ¬¡æ£€æµ‹æ—¶é—´è¶…è¿‡1ç§’
         if (now - this.lastMoveTimestamp >= TIMEOUT_THRESOLD && !this.timerQueue.isEmpty()) {
             this.lastMoveTimestamp = now;
             this.timerQueue.iterateQueue(new TimerQueueVisitor(now));
@@ -631,12 +602,12 @@ public final class Reactor extends Thread {
         Object[] object = null;
         while ((object = this.register.poll()) != null) {
             switch (object.length) {
-            case 2:
-                this.dispatchSessionEvent((Session) object[0], (EventType) object[1], this.selector);
-                break;
-            case 3:
-                this.registerChannelNow((SelectableChannel) object[0], (Integer) object[1], object[2], this.selector);
-                break;
+                case 2:
+                    this.dispatchSessionEvent((Session) object[0], (EventType) object[1], this.selector);
+                    break;
+                case 3:
+                    this.registerChannelNow((SelectableChannel) object[0], (Integer) object[1], object[2], this.selector);
+                    break;
             }
         }
     }
@@ -650,12 +621,10 @@ public final class Reactor extends Thread {
     private final void dispatchSessionEvent(final Session session, final EventType event, final Selector selector) {
         if (EventType.REGISTER.equals(event)) {
             this.controller.registerSession(session);
-        }
-        else if (EventType.UNREGISTER.equals(event)) {
+        } else if (EventType.UNREGISTER.equals(event)) {
             this.controller.unregisterSession(session);
             this.unregisterChannel(((NioSession) session).channel());
-        }
-        else {
+        } else {
             ((NioSession) session).onEvent(event, selector);
         }
     }
@@ -664,7 +633,7 @@ public final class Reactor extends Thread {
     final void postSelect(final Set<SelectionKey> selectedKeys, final Set<SelectionKey> allKeys) {
         if (this.controller.getSessionTimeout() > 0 || this.controller.getSessionIdleTimeout() > 0) {
             for (final SelectionKey key : allKeys) {
-                // Ã»ÓĞ´¥·¢µÄkey¼ì²âÊÇ·ñ³¬Ê±»òÕßidle
+                // æ²¡æœ‰è§¦å‘çš„keyæ£€æµ‹æ˜¯å¦è¶…æ—¶æˆ–è€…idle
                 if (!selectedKeys.contains(key)) {
                     if (key.attachment() != null) {
                         this.checkExpiredIdle(key, this.getSessionFromAttchment(key));
@@ -715,9 +684,8 @@ public final class Reactor extends Thread {
         final Selector selector = this.selector;
         if (this.isReactorThread() && selector != null) {
             this.registerChannelNow(channel, ops, attachment, selector);
-        }
-        else {
-            this.register.offer(new Object[] { channel, ops, attachment });
+        } else {
+            this.register.offer(new Object[]{channel, ops, attachment});
             this.wakeup();
         }
 
@@ -725,18 +693,16 @@ public final class Reactor extends Thread {
 
 
     private void registerChannelNow(final SelectableChannel channel, final int ops, final Object attachment,
-            final Selector selector) {
+                                    final Selector selector) {
         this.gate.lock();
         try {
             if (channel.isOpen()) {
                 channel.register(selector, ops, attachment);
             }
-        }
-        catch (final ClosedChannelException e) {
+        } catch (final ClosedChannelException e) {
             log.error("Register channel error", e);
             this.controller.notifyException(e);
-        }
-        finally {
+        } finally {
             this.gate.unlock();
         }
     }

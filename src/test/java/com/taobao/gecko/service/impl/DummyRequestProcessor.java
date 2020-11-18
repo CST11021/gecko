@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * 
+ *
  */
 
 package com.taobao.gecko.service.impl;
@@ -31,12 +31,10 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
 
 
 /**
- * 
- * 用于单元测试的processor
- * 
+ * 鐢ㄤ簬鍗曞厓娴嬭瘯鐨刾rocessor
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-22 下午01:17:13
+ * @since 1.0, 2009-12-22 涓嬪崍01:17:13
  */
 
 final class DummyRequestProcessor implements RequestProcessor<NotifyDummyRequestCommand> {
@@ -46,7 +44,7 @@ final class DummyRequestProcessor implements RequestProcessor<NotifyDummyRequest
     public long sleepTime = 0;
 
     public ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(10, Integer.MAX_VALUE, 60,
-        TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+            TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
 
     public void dispose() {
@@ -61,8 +59,7 @@ final class DummyRequestProcessor implements RequestProcessor<NotifyDummyRequest
                 Thread.sleep(this.sleepTime);
             }
             conn.response(new NotifyDummyAckCommand(request, null));
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,13 +25,10 @@ import com.taobao.gecko.core.util.WorkerThreadFactory;
 
 
 /**
- * œﬂ≥Ã≥ÿ≈…∑¢∆˜
- * 
- * 
- * 
+ * Á∫øÁ®ãÊ±†Ê¥æÂèëÂô®
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 œ¬ŒÁ06:05:09
+ * @since 1.0, 2009-12-16 ‰∏ãÂçà06:05:09
  */
 public class PoolDispatcher implements Dispatcher {
     public static final int POOL_QUEUE_SIZE_FACTOR = 1000;
@@ -45,20 +42,20 @@ public class PoolDispatcher implements Dispatcher {
 
 
     public PoolDispatcher(final int poolSize, final long keepAliveTime, final TimeUnit unit,
-            final RejectedExecutionHandler rejectedExecutionHandler) {
+                          final RejectedExecutionHandler rejectedExecutionHandler) {
         this.threadPool =
                 new ThreadPoolExecutor(poolSize, (int) (MAX_POOL_SIZE_FACTOR * poolSize), keepAliveTime, unit,
-                    new ArrayBlockingQueue<Runnable>(poolSize * POOL_QUEUE_SIZE_FACTOR), new WorkerThreadFactory());
+                        new ArrayBlockingQueue<Runnable>(poolSize * POOL_QUEUE_SIZE_FACTOR), new WorkerThreadFactory());
         this.threadPool.setRejectedExecutionHandler(rejectedExecutionHandler);
     }
 
 
     public PoolDispatcher(final int poolSize, final long keepAliveTime, final TimeUnit unit, final String prefix,
-            final RejectedExecutionHandler rejectedExecutionHandler) {
+                          final RejectedExecutionHandler rejectedExecutionHandler) {
         this.threadPool =
                 new ThreadPoolExecutor(poolSize, (int) (MAX_POOL_SIZE_FACTOR * poolSize), keepAliveTime, unit,
-                    new ArrayBlockingQueue<Runnable>(poolSize * POOL_QUEUE_SIZE_FACTOR),
-                    new WorkerThreadFactory(prefix));
+                        new ArrayBlockingQueue<Runnable>(poolSize * POOL_QUEUE_SIZE_FACTOR),
+                        new WorkerThreadFactory(prefix));
         this.threadPool.setRejectedExecutionHandler(rejectedExecutionHandler);
     }
 
@@ -74,8 +71,7 @@ public class PoolDispatcher implements Dispatcher {
         this.threadPool.shutdown();
         try {
             this.threadPool.awaitTermination(1000, TimeUnit.MILLISECONDS);
-        }
-        catch (final InterruptedException e) {
+        } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }

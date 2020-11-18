@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,39 +21,34 @@ import com.taobao.gecko.core.command.ResponseCommand;
 
 
 /**
- * 
- * 
- * µ¥¸ö·Ö×éµÄµ¥¸öÁ¬½ÓµÄÓ¦´ğ»Øµ÷¼àÌıÆ÷
- * 
+ * å•ä¸ªåˆ†ç»„çš„å•ä¸ªè¿æ¥çš„åº”ç­”å›è°ƒç›‘å¬å™¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç04:13:17
+ * @since 1.0, 2009-12-15 ä¸‹åˆ04:13:17
  */
 
 public interface SingleRequestCallBackListener {
 
     /**
-     * ´¦ÀíÓ¦´ğ
-     * 
-     * @param responseCommand
-     *            Ó¦´ğÃüÁî
-     * @param conn
-     *            Ó¦´ğÁ¬½Ó
+     * å¤„ç†åº”ç­”
+     *
+     * @param responseCommand åº”ç­”å‘½ä»¤
+     * @param conn            åº”ç­”è¿æ¥
      */
     public void onResponse(ResponseCommand responseCommand, Connection conn);
 
 
     /**
-     * Òì³£·¢ÉúµÄÊ±ºò»Øµ÷
-     * 
+     * å¼‚å¸¸å‘ç”Ÿçš„æ—¶å€™å›è°ƒ
+     *
      * @param e
      */
     public void onException(Exception e);
 
 
     /**
-     * onResponse»Øµ÷Ö´ĞĞµÄÏß³Ì³Ø
-     * 
+     * onResponseå›è°ƒæ‰§è¡Œçš„çº¿ç¨‹æ± 
+     *
      * @return
      */
     public ThreadPoolExecutor getExecutor();

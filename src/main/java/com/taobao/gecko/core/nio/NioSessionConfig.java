@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,10 +28,9 @@ import com.taobao.gecko.core.statistics.Statistics;
 
 
 /**
- * Nio session配置�?
- * 
+ * Nio session閰嶇疆绫?
+ *
  * @author boyan
- * 
  */
 public class NioSessionConfig extends SessionConfig {
 
@@ -40,11 +39,11 @@ public class NioSessionConfig extends SessionConfig {
 
 
     public NioSessionConfig(final SelectableChannel sc, final Handler handler, final SelectorManager reactor,
-            final CodecFactory codecFactory, final Statistics statistics, final Queue<WriteMessage> queue,
-            final Dispatcher dispatchMessageDispatcher, final boolean handleReadWriteConcurrently,
-            final long sessionTimeout, final long sessionIdleTimeout) {
+                            final CodecFactory codecFactory, final Statistics statistics, final Queue<WriteMessage> queue,
+                            final Dispatcher dispatchMessageDispatcher, final boolean handleReadWriteConcurrently,
+                            final long sessionTimeout, final long sessionIdleTimeout) {
         super(handler, codecFactory, statistics, queue, dispatchMessageDispatcher, handleReadWriteConcurrently,
-            sessionTimeout, sessionIdleTimeout);
+                sessionTimeout, sessionIdleTimeout);
         this.selectableChannel = sc;
         this.selectorManager = reactor;
     }

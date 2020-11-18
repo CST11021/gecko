@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,10 @@
 package com.taobao.gecko.service.exception;
 
 /**
- * 
- * 
- * Notify remotingµÄcheckÒì³££¬Ç¿ÖÆÒªÇó²¶×½
- * 
+ * Notify remotingçš„checkå¼‚å¸¸ï¼Œå¼ºåˆ¶è¦æ±‚æ•æ‰
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-18 ÏÂÎç02:07:48
+ * @since 1.0, 2009-12-18 ä¸‹åˆ02:07:48
  */
 
 public class NotifyRemotingException extends Exception {

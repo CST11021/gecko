@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,24 +34,22 @@ import com.taobao.gecko.service.impl.RequestCallBack;
 
 
 /**
- * 
- * »Øµ÷»ùÀà
- * 
+ * å›è°ƒåŸºç±»
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-18 ÏÂÎç04:09:25
+ * @since 1.0, 2009-12-18 ä¸‹åˆ04:09:25
  */
 
 public abstract class AbstractRequestCallBack implements RequestCallBack {
-    private final long timeout; // ³¬Ê±Ê±¼ä£¬µ¥Î»ºÁÃë
-    private final long timestamp; // ´´½¨µÄÊ±¼ä´Á
-    private TimerRef timerRef; // ¶¨Ê±Æ÷ÒıÓÃ
-    private final CountDownLatch countDownLatch; // ÇëÇó¼ÆÊı
+    private final long timeout; // è¶…æ—¶æ—¶é—´ï¼Œå•ä½æ¯«ç§’
+    private final long timestamp; // åˆ›å»ºçš„æ—¶é—´æˆ³
+    private TimerRef timerRef; // å®šæ—¶å™¨å¼•ç”¨
+    private final CountDownLatch countDownLatch; // è¯·æ±‚è®¡æ•°
 
     private final ConcurrentHashMap<Connection, Future<Boolean>> writeFutureMap =
             new ConcurrentHashMap<Connection, Future<Boolean>>();
 
-    // ·ÀÖ¹ÖØ¸´ÏìÓ¦µÄËø
+    // é˜²æ­¢é‡å¤å“åº”çš„é”
     protected final Lock responseLock = new ReentrantLock();
 
 
@@ -83,8 +81,7 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
         this.responseLock.lock();
         try {
             this.countDownLatch.countDown();
-        }
-        finally {
+        } finally {
             this.responseLock.unlock();
         }
     }
@@ -96,7 +93,7 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
 
 
     /**
-     * È¡Ïû¶¨Ê±Æ÷
+     * å–æ¶ˆå®šæ—¶å™¨
      */
     public void cancelTimer() {
         if (this.timerRef != null) {
@@ -116,16 +113,16 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
 
 
     protected static final BooleanAckCommand createComunicationErrorResponseCommand(final Connection conn,
-            final Exception e, final RequestCommand requestCommand, final InetSocketAddress address) {
+                                                                                    final Exception e, final RequestCommand requestCommand, final InetSocketAddress address) {
         final StringBuilder sb = new StringBuilder(e.getMessage());
         if (e.getCause() != null) {
             sb.append("\r\nRroot cause by:\r\n").append(e.getCause().getMessage());
         }
         final BooleanAckCommand value =
                 conn.getRemotingContext()
-                    .getCommandFactory()
-                    .createBooleanAckCommand(requestCommand.getRequestHeader(), ResponseStatus.ERROR_COMM,
-                        sb.toString());
+                        .getCommandFactory()
+                        .createBooleanAckCommand(requestCommand.getRequestHeader(), ResponseStatus.ERROR_COMM,
+                                sb.toString());
         value.setResponseStatus(ResponseStatus.ERROR_COMM);
         value.setResponseTime(System.currentTimeMillis());
         value.setResponseHost(address);
@@ -163,42 +160,41 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
 
 
     /**
-     * ÇëÇóÊÇ·ñÍê³É
-     * 
+     * è¯·æ±‚æ˜¯å¦å®Œæˆ
+     *
      * @return
      */
     public abstract boolean isComplete();
 
 
     /**
-     * ±ê¼ÇÇëÇóÍê³É
+     * æ ‡è®°è¯·æ±‚å®Œæˆ
      */
     public abstract void complete();
 
 
     /**
-     * ³¢ÊÔÍê³ÉÇëÇó
-     * 
+     * å°è¯•å®Œæˆè¯·æ±‚
+     *
      * @return
      */
     public boolean tryComplete() {
         this.responseLock.lock();
         try {
-            // ÒÑ¾­Íê³É
+            // å·²ç»å®Œæˆ
             if (this.isComplete()) {
                 return false;
             }
-            // Ìõ¼şÂú×ã£¬¿ÉÒÔÍê³É
+            // æ¡ä»¶æ»¡è¶³ï¼Œå¯ä»¥å®Œæˆ
             if (this.countDownLatch.getCount() == 0) {
-                // ±ê¼ÇÍê³É
+                // æ ‡è®°å®Œæˆ
                 this.complete();
-                // È¡Ïû¶¨Ê±Æ÷
+                // å–æ¶ˆå®šæ—¶å™¨
                 this.cancelTimer();
                 return true;
             }
             return false;
-        }
-        finally {
+        } finally {
             this.responseLock.unlock();
         }
     }

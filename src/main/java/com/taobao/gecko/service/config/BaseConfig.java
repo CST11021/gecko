@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,8 @@ import com.taobao.gecko.core.util.SystemUtils;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç05:15:01
+ * @since 1.0, 2009-12-16 ä¸‹åˆ05:15:01
  */
 
 public class BaseConfig {
@@ -34,95 +30,95 @@ public class BaseConfig {
     }
 
     /**
-     * Ğ­ÒéÀàĞÍ
+     * åè®®ç±»å‹
      */
     private WireFormatType wireFormatType = WireFormatType.valueOf("NOTIFY_V1");
 
     /**
-     * ÊÇ·ñÖØÓÃ¶Ë¿Ú
+     * æ˜¯å¦é‡ç”¨ç«¯å£
      */
     private boolean reuseAddr = true;
 
     /**
-     * socket SO_KEEPALIVEÑ¡Ïî
+     * socket SO_KEEPALIVEé€‰é¡¹
      */
     private boolean keepAlive = true;
     /**
-     * ÊÇ·ñ½ûÖ¹NagleËã·¨£¬Ä¬ÈÏÎªtrue
+     * æ˜¯å¦ç¦æ­¢Nagleç®—æ³•ï¼Œé»˜è®¤ä¸ºtrue
      */
     private boolean tcpNoDelay = true;
     /**
-     * Á¬½Ó¶Á»º³åÇø´óĞ¡
+     * è¿æ¥è¯»ç¼“å†²åŒºå¤§å°
      */
     private int readBufferSize = 128 * 1024;
     /**
-     * ÈÏÎªÁ¬½ÓIdleµÄ¼ä¸ôÊ±¼ä£¬µ¥Î»Ãë
+     * è®¤ä¸ºè¿æ¥Idleçš„é—´éš”æ—¶é—´ï¼Œå•ä½ç§’
      */
     private int idleTime;
     /**
-     * ×î´óµÄ¶Á»º³åÇø´óĞ¡£¬·ÀÖ¹ÄÚ´æÒç³ö
+     * æœ€å¤§çš„è¯»ç¼“å†²åŒºå¤§å°ï¼Œé˜²æ­¢å†…å­˜æº¢å‡º
      */
     private int maxReadBufferSize;
     /**
-     * ´¦Àí¶ÁÊÂ¼şµÄÏß³ÌÊı
+     * å¤„ç†è¯»äº‹ä»¶çš„çº¿ç¨‹æ•°
      */
     private int readThreadCount = (int) (2.5f * SystemUtils.getCpuProcessorCount());
     /**
-     * ´¦ÀíÏûÏ¢µÄÏß³ÌÊı
+     * å¤„ç†æ¶ˆæ¯çš„çº¿ç¨‹æ•°
      */
     private int dispatchMessageThreadCount = 0;
     /**
-     * ´¦ÀíĞ´ÊÂ¼şµÄÏß³ÌÊı
+     * å¤„ç†å†™äº‹ä»¶çš„çº¿ç¨‹æ•°
      */
     private int writeThreadCount = 0;
     /**
-     * SocketµÄ½ÓÊÕ»º³åÇø´óĞ¡
+     * Socketçš„æ¥æ”¶ç¼“å†²åŒºå¤§å°
      */
     private int rcvBufferSize = 64 * 1024;
     /**
-     * Socket·¢ËÍ»º³åÇø´óĞ¡
+     * Socketå‘é€ç¼“å†²åŒºå¤§å°
      */
     private int sndBufferSize = 64 * 1024;
     /**
-     * Socket SO_LINGERÑ¡Ïî
+     * Socket SO_LINGERé€‰é¡¹
      */
     private boolean soLinger = true;
     /**
-     * lingerÖµ
+     * lingerå€¼
      */
     private int linger = 0;
     /**
-     * Selector³Ø´óĞ¡
+     * Selectoræ± å¤§å°
      */
     private int selectorPoolSize = 2 * SystemUtils.getCpuProcessorCount();
 
     /**
-     * »Øµ÷´¦ÀíµÄÏß³Ì³Ø´óĞ¡
+     * å›è°ƒå¤„ç†çš„çº¿ç¨‹æ± å¤§å°
      */
     private int callBackExecutorPoolSize = SystemUtils.getSystemThreadCount();
 
     /**
-     * »Øµ÷´¦ÀíµÄÏß³Ì³Ø×î´ó´óĞ¡
+     * å›è°ƒå¤„ç†çš„çº¿ç¨‹æ± æœ€å¤§å¤§å°
      */
     private int maxCallBackExecutorPoolSize = 30;
 
     /**
-     * »Øµ÷Ïß³Ì³Ø¶ÓÁĞ´óĞ¡
+     * å›è°ƒçº¿ç¨‹æ± é˜Ÿåˆ—å¤§å°
      */
     private int callBackExecutorQueueSize = 20000;
 
     /**
-     * ·¢ËÍ»º³å¶ÓÁĞ×î´ó×Ö½ÚÊı£¬Ä¬ÈÏÎª×î´óÄÚ´æµÄ1/3£¬¼ÙÉèÁ¬½ÓÊıÎª1000
+     * å‘é€ç¼“å†²é˜Ÿåˆ—æœ€å¤§å­—èŠ‚æ•°ï¼Œé»˜è®¤ä¸ºæœ€å¤§å†…å­˜çš„1/3ï¼Œå‡è®¾è¿æ¥æ•°ä¸º1000
      */
     private volatile long maxScheduleWrittenBytes = Runtime.getRuntime().maxMemory() / 3 / 1000;
 
     /**
-     * ¶¨Ê±É¨ÃèËùÓĞÁ¬½ÓµÄÊ±¼ä¼ä¸ô£¬Ä¬ÈÏÎª5·ÖÖÓ£¬µ¥Î»Ãë
+     * å®šæ—¶æ‰«ææ‰€æœ‰è¿æ¥çš„æ—¶é—´é—´éš”ï¼Œé»˜è®¤ä¸º5åˆ†é’Ÿï¼Œå•ä½ç§’
      */
     private int scanAllConnectionInterval = 5 * 60;
 
     /**
-     * ÔÊĞíµÄ×î´ó»Øµ÷¸öÊı,Ä¬ÈÏ1°ÙÍò¸ö
+     * å…è®¸çš„æœ€å¤§å›è°ƒä¸ªæ•°,é»˜è®¤1ç™¾ä¸‡ä¸ª
      */
     private int maxCallBackCount = 1000000;
 

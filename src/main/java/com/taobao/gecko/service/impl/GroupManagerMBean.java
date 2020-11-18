@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,18 +20,16 @@ import java.util.Set;
 
 
 /**
- * 
- * ·Ö×éÁ¬½Ó¹ÜÀíÆ÷µÄMBean
- * 
+ * åˆ†ç»„è¿æ¥ç®¡ç†å™¨çš„MBean
+ *
  * @author boyan
- * 
- * @since 1.0, 2010-1-13 ÏÂÎç01:48:50
+ * @since 1.0, 2010-1-13 ä¸‹åˆ01:48:50
  */
 
 public interface GroupManagerMBean {
     /**
-     * »ñÈ¡·Ö×é¶ÔÓ¦µÄÁ¬½ÓĞÅÏ¢Ó³Éä
-     * 
+     * è·å–åˆ†ç»„å¯¹åº”çš„è¿æ¥ä¿¡æ¯æ˜ å°„
+     *
      * @return
      */
     Map<String, Set<String>> getGroupConnectionInfo();

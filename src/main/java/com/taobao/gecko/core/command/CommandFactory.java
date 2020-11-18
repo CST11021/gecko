@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,30 +20,26 @@ import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
 
 
 /**
- * Ğ­Òé¹¤³§Àà£¬ÈÎºÎĞ­ÒéµÄÊµÏÖ¶¼±ØĞëÊµÏÖ´Ë¹¤³§½Ó¿Ú£¬Ìá¹©´´½¨BooleanAckCommandºÍHeartBeatRequestCommandµÄ·½·¨
- * 
+ * åè®®å·¥å‚ç±»ï¼Œä»»ä½•åè®®çš„å®ç°éƒ½å¿…é¡»å®ç°æ­¤å·¥å‚æ¥å£ï¼Œæä¾›åˆ›å»ºBooleanAckCommandå’ŒHeartBeatRequestCommandçš„æ–¹æ³•
+ *
  * @author boyan
- * 
  */
 public interface CommandFactory {
     /**
-     * ´´½¨ÌØ¶¨ÓÚĞ­ÒéµÄBooleanAckCommand
-     * 
-     * @param request
-     *            ÇëÇóÍ·
-     * @param responseStatus
-     *            ÏìÓ¦×´Ì¬
-     * @param errorMsg
-     *            ´íÎóĞÅÏ¢
+     * åˆ›å»ºç‰¹å®šäºåè®®çš„BooleanAckCommand
+     *
+     * @param request        è¯·æ±‚å¤´
+     * @param responseStatus å“åº”çŠ¶æ€
+     * @param errorMsg       é”™è¯¯ä¿¡æ¯
      * @return
      */
     public BooleanAckCommand createBooleanAckCommand(CommandHeader request, ResponseStatus responseStatus,
-            String errorMsg);
+                                                     String errorMsg);
 
 
     /**
-     * ´´½¨ÌØ¶¨ÓÚĞ­ÒéµÄĞÄÌøÃüÁî
-     * 
+     * åˆ›å»ºç‰¹å®šäºåè®®çš„å¿ƒè·³å‘½ä»¤
+     *
      * @return
      */
     public HeartBeatRequestCommand createHeartBeatCommand();

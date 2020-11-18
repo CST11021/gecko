@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,8 +17,8 @@ package com.taobao.gecko.core.util;
 
 public class StringUtils {
     /**
-     * ¼ì²é×Ö·û´®ÊÇ·ñÎª<code>null</code>»ò¿Õ×Ö·û´®<code>""</code>¡£
-     * 
+     * æ£€æŸ¥å­—ç¬¦ä¸²æ˜¯å¦ä¸º<code>null</code>æˆ–ç©ºå­—ç¬¦ä¸²<code>""</code>ã€‚
+     *
      * <pre>
      * StringUtil.isEmpty(null)      = true
      * StringUtil.isEmpty("")        = true
@@ -26,11 +26,9 @@ public class StringUtils {
      * StringUtil.isEmpty("bob")     = false
      * StringUtil.isEmpty("  bob  ") = false
      * </pre>
-     * 
-     * @param str
-     *            Òª¼ì²éµÄ×Ö·û´®
-     * 
-     * @return Èç¹ûÎª¿Õ, Ôò·µ»Ø<code>true</code>
+     *
+     * @param str è¦æ£€æŸ¥çš„å­—ç¬¦ä¸²
+     * @return å¦‚æœä¸ºç©º, åˆ™è¿”å›<code>true</code>
      */
     public static boolean isEmpty(final String str) {
         return str == null || str.length() == 0;
@@ -38,8 +36,8 @@ public class StringUtils {
 
 
     /**
-     * ¼ì²é×Ö·û´®ÊÇ·ñÊÇ¿Õ°×£º<code>null</code>¡¢¿Õ×Ö·û´®<code>""</code>»òÖ»ÓĞ¿Õ°××Ö·û¡£
-     * 
+     * æ£€æŸ¥å­—ç¬¦ä¸²æ˜¯å¦æ˜¯ç©ºç™½ï¼š<code>null</code>ã€ç©ºå­—ç¬¦ä¸²<code>""</code>æˆ–åªæœ‰ç©ºç™½å­—ç¬¦ã€‚
+     *
      * <pre>
      * StringUtil.isBlank(null)      = true
      * StringUtil.isBlank("")        = true
@@ -47,11 +45,9 @@ public class StringUtils {
      * StringUtil.isBlank("bob")     = false
      * StringUtil.isBlank("  bob  ") = false
      * </pre>
-     * 
-     * @param str
-     *            Òª¼ì²éµÄ×Ö·û´®
-     * 
-     * @return Èç¹ûÎª¿Õ°×, Ôò·µ»Ø<code>true</code>
+     *
+     * @param str è¦æ£€æŸ¥çš„å­—ç¬¦ä¸²
+     * @return å¦‚æœä¸ºç©ºç™½, åˆ™è¿”å›<code>true</code>
      */
     public static boolean isBlank(final String str) {
         int length;

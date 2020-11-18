@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,10 +58,10 @@ import java.util.Set;
  * You can think this class like a {@link FilterOutputStream}. All operations
  * are proxied by default so that you can extend this class and override
  * existing operations selectively. You can introduce new operations, too.
- * 
+ *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 671827 $, $Date: 2008-06-26 10:49:48 +0200 (Thu, 26 Jun 2008)
- *          $
+ * $
  */
 public class IoBufferWrapper extends IoBuffer {
 
@@ -73,9 +73,8 @@ public class IoBufferWrapper extends IoBuffer {
 
     /**
      * Create a new instance.
-     * 
-     * @param buf
-     *            the buffer to be proxied
+     *
+     * @param buf the buffer to be proxied
      */
     protected IoBufferWrapper(IoBuffer buf) {
         if (buf == null) {
@@ -618,7 +617,7 @@ public class IoBufferWrapper extends IoBuffer {
 
     @Override
     public IoBuffer putPrefixedString(CharSequence in, int prefixLength, int padding, byte padValue,
-            CharsetEncoder encoder) throws CharacterCodingException {
+                                      CharsetEncoder encoder) throws CharacterCodingException {
         buf.putPrefixedString(in, prefixLength, padding, padValue, encoder);
         return this;
     }

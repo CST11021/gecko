@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -159,7 +159,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MapEntry parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                      final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -172,7 +172,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MapEntry parseFrom(final java.io.InputStream input,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                                                                      final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
             return newBuilder().mergeFrom(input, extensionRegistry).buildParsed();
         }
 
@@ -182,8 +182,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -195,8 +194,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -321,8 +319,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MapEntry) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MapEntry) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -346,30 +343,30 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setKey(input.readString());
-                        break;
-                    }
-                    case 18: {
-                        this.setValue(input.readString());
-                        break;
-                    }
+                        case 10: {
+                            this.setKey(input.readString());
+                            break;
+                        }
+                        case 18: {
+                            this.setValue(input.readString());
+                            break;
+                        }
                     }
                 }
             }
@@ -554,7 +551,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                           final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -578,8 +575,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -591,8 +587,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -717,8 +712,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -739,26 +733,26 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setErrorMessage(input.readString());
-                        break;
-                    }
+                        case 10: {
+                            this.setErrorMessage(input.readString());
+                            break;
+                        }
                     }
                 }
             }
@@ -1218,7 +1212,7 @@ public final class NotifyProtos {
                 return false;
             }
             for (final com.taobao.gecko.service.notify.NotifyProtos.MapEntry element : this
-                .getUserDefinedPropertiesList()) {
+                    .getUserDefinedPropertiesList()) {
                 if (!element.isInitialized()) {
                     return false;
                 }
@@ -1285,7 +1279,7 @@ public final class NotifyProtos {
                 output.writeString(18, this.getTargetGroup());
             }
             for (final com.taobao.gecko.service.notify.NotifyProtos.MapEntry element : this
-                .getUserDefinedPropertiesList()) {
+                    .getUserDefinedPropertiesList()) {
                 output.writeMessage(19, element);
             }
             if (this.hasReplyToTopic()) {
@@ -1369,7 +1363,7 @@ public final class NotifyProtos {
                 size += com.google.protobuf.CodedOutputStream.computeStringSize(18, this.getTargetGroup());
             }
             for (final com.taobao.gecko.service.notify.NotifyProtos.MapEntry element : this
-                .getUserDefinedPropertiesList()) {
+                    .getUserDefinedPropertiesList()) {
                 size += com.google.protobuf.CodedOutputStream.computeMessageSize(19, element);
             }
             if (this.hasReplyToTopic()) {
@@ -1411,7 +1405,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MessageHeader parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                           final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -1435,8 +1429,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -1448,8 +1441,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -1578,8 +1570,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MessageHeader) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageHeader) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -1670,117 +1661,117 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setId(input.readBytes());
-                        break;
-                    }
-                    case 16: {
-                        this.setFlag(input.readInt32());
-                        break;
-                    }
-                    case 26: {
-                        this.setTopic(input.readString());
-                        break;
-                    }
-                    case 34: {
-                        this.setMessageType(input.readString());
-                        break;
-                    }
-                    case 42: {
-                        this.setGroupId(input.readString());
-                        break;
-                    }
-                    case 48: {
-                        this.setCommitted(input.readBool());
-                        break;
-                    }
-                    case 56: {
-                        this.setBornTime(input.readUInt64());
-                        break;
-                    }
-                    case 64: {
-                        this.setPriority(input.readInt32());
-                        break;
-                    }
-                    case 72: {
-                        this.setDeliveryCount(input.readInt32());
-                        break;
-                    }
-                    case 80: {
-                        this.setVersion(input.readInt32());
-                        break;
-                    }
-                    case 88: {
-                        this.setTimeToLive(input.readInt32());
-                        break;
-                    }
-                    case 96: {
-                        this.setDlqTime(input.readInt32());
-                        break;
-                    }
-                    case 104: {
-                        this.setPostTimeout(input.readInt32());
-                        break;
-                    }
-                    case 112: {
-                        this.setPostDelayTime(input.readUInt64());
-                        break;
-                    }
-                    case 120: {
-                        this.setGMTCreated(input.readUInt64());
-                        break;
-                    }
-                    case 128: {
-                        this.setGMTLastDelivery(input.readUInt64());
-                        break;
-                    }
-                    case 138: {
-                        this.setPublisherHostName(input.readString());
-                        break;
-                    }
-                    case 146: {
-                        this.setTargetGroup(input.readString());
-                        break;
-                    }
-                    case 154: {
-                        final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder subBuilder =
-                                com.taobao.gecko.service.notify.NotifyProtos.MapEntry.newBuilder();
-                        input.readMessage(subBuilder, extensionRegistry);
-                        this.addUserDefinedProperties(subBuilder.buildPartial());
-                        break;
-                    }
-                    case 162: {
-                        this.setReplyToTopic(input.readString());
-                        break;
-                    }
-                    case 170: {
-                        this.setReplyToMessageType(input.readString());
-                        break;
-                    }
-                    case 176: {
-                        this.setReplyId(input.readUInt64());
-                        break;
-                    }
-                    case 186: {
-                        this.setReplyWhenDelivered(input.readString());
-                        break;
-                    }
+                        case 10: {
+                            this.setId(input.readBytes());
+                            break;
+                        }
+                        case 16: {
+                            this.setFlag(input.readInt32());
+                            break;
+                        }
+                        case 26: {
+                            this.setTopic(input.readString());
+                            break;
+                        }
+                        case 34: {
+                            this.setMessageType(input.readString());
+                            break;
+                        }
+                        case 42: {
+                            this.setGroupId(input.readString());
+                            break;
+                        }
+                        case 48: {
+                            this.setCommitted(input.readBool());
+                            break;
+                        }
+                        case 56: {
+                            this.setBornTime(input.readUInt64());
+                            break;
+                        }
+                        case 64: {
+                            this.setPriority(input.readInt32());
+                            break;
+                        }
+                        case 72: {
+                            this.setDeliveryCount(input.readInt32());
+                            break;
+                        }
+                        case 80: {
+                            this.setVersion(input.readInt32());
+                            break;
+                        }
+                        case 88: {
+                            this.setTimeToLive(input.readInt32());
+                            break;
+                        }
+                        case 96: {
+                            this.setDlqTime(input.readInt32());
+                            break;
+                        }
+                        case 104: {
+                            this.setPostTimeout(input.readInt32());
+                            break;
+                        }
+                        case 112: {
+                            this.setPostDelayTime(input.readUInt64());
+                            break;
+                        }
+                        case 120: {
+                            this.setGMTCreated(input.readUInt64());
+                            break;
+                        }
+                        case 128: {
+                            this.setGMTLastDelivery(input.readUInt64());
+                            break;
+                        }
+                        case 138: {
+                            this.setPublisherHostName(input.readString());
+                            break;
+                        }
+                        case 146: {
+                            this.setTargetGroup(input.readString());
+                            break;
+                        }
+                        case 154: {
+                            final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder subBuilder =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MapEntry.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            this.addUserDefinedProperties(subBuilder.buildPartial());
+                            break;
+                        }
+                        case 162: {
+                            this.setReplyToTopic(input.readString());
+                            break;
+                        }
+                        case 170: {
+                            this.setReplyToMessageType(input.readString());
+                            break;
+                        }
+                        case 176: {
+                            this.setReplyId(input.readUInt64());
+                            break;
+                        }
+                        case 186: {
+                            this.setReplyWhenDelivered(input.readString());
+                            break;
+                        }
                     }
                 }
             }
@@ -2271,7 +2262,7 @@ public final class NotifyProtos {
 
 
             public Builder setUserDefinedProperties(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MapEntry value) {
+                                                    final com.taobao.gecko.service.notify.NotifyProtos.MapEntry value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -2281,7 +2272,7 @@ public final class NotifyProtos {
 
 
             public Builder setUserDefinedProperties(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder builderForValue) {
+                                                    final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder builderForValue) {
                 this.result.userDefinedProperties_.set(index, builderForValue.build());
                 return this;
             }
@@ -2702,8 +2693,7 @@ public final class NotifyProtos {
                 final Builder builder = newBuilder();
                 if (builder.mergeDelimitedFrom(input)) {
                     return builder.buildParsed();
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -2715,8 +2705,7 @@ public final class NotifyProtos {
                 final Builder builder = newBuilder();
                 if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                     return builder.buildParsed();
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -2842,9 +2831,8 @@ public final class NotifyProtos {
                 public Builder mergeFrom(final com.google.protobuf.Message other) {
                     if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo) {
                         return this
-                            .mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo) other);
-                    }
-                    else {
+                                .mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo) other);
+                    } else {
                         super.mergeFrom(other);
                         return this;
                     }
@@ -2854,7 +2842,7 @@ public final class NotifyProtos {
                 public Builder mergeFrom(
                         final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo other) {
                     if (other == com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo
-                        .getDefaultInstance()) {
+                            .getDefaultInstance()) {
                         return this;
                     }
                     if (other.hasGroup()) {
@@ -2879,42 +2867,42 @@ public final class NotifyProtos {
 
                 @Override
                 public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                        final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                         final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                     final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                             com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                     while (true) {
                         final int tag = input.readTag();
                         switch (tag) {
-                        case 0:
-                            this.setUnknownFields(unknownFields.build());
-                            return this;
-                        default: {
-                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                            case 0:
                                 this.setUnknownFields(unknownFields.build());
                                 return this;
+                            default: {
+                                if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                    this.setUnknownFields(unknownFields.build());
+                                    return this;
+                                }
+                                break;
                             }
-                            break;
-                        }
-                        case 10: {
-                            this.setGroup(input.readString());
-                            break;
-                        }
-                        case 18: {
-                            this.setHostName(input.readString());
-                            break;
-                        }
-                        case 26: {
-                            this.setName(input.readString());
-                            break;
-                        }
-                        case 34: {
-                            this.setDescription(input.readString());
-                            break;
-                        }
-                        case 42: {
-                            this.setAppName(input.readString());
-                            break;
-                        }
+                            case 10: {
+                                this.setGroup(input.readString());
+                                break;
+                            }
+                            case 18: {
+                                this.setHostName(input.readString());
+                                break;
+                            }
+                            case 26: {
+                                this.setName(input.readString());
+                                break;
+                            }
+                            case 34: {
+                                this.setDescription(input.readString());
+                                break;
+                            }
+                            case 42: {
+                                this.setAppName(input.readString());
+                                break;
+                            }
                         }
                     }
                 }
@@ -3119,7 +3107,7 @@ public final class NotifyProtos {
         @Override
         public final boolean isInitialized() {
             for (final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo element : this
-                .getClientInfoSetList()) {
+                    .getClientInfoSetList()) {
                 if (!element.isInitialized()) {
                     return false;
                 }
@@ -3137,7 +3125,7 @@ public final class NotifyProtos {
         public void writeTo(final com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
             this.getSerializedSize();
             for (final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo element : this
-                .getClientInfoSetList()) {
+                    .getClientInfoSetList()) {
                 output.writeMessage(1, element);
             }
             for (final com.taobao.gecko.service.notify.NotifyProtos.MapEntry element : this.getClientBuildInfoList()) {
@@ -3158,7 +3146,7 @@ public final class NotifyProtos {
 
             size = 0;
             for (final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo element : this
-                .getClientInfoSetList()) {
+                    .getClientInfoSetList()) {
                 size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, element);
             }
             for (final com.taobao.gecko.service.notify.NotifyProtos.MapEntry element : this.getClientBuildInfoList()) {
@@ -3191,7 +3179,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                          final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -3215,8 +3203,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -3228,8 +3215,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -3360,8 +3346,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -3393,36 +3378,36 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.Builder subBuilder =
-                                com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.newBuilder();
-                        input.readMessage(subBuilder, extensionRegistry);
-                        this.addClientInfoSet(subBuilder.buildPartial());
-                        break;
-                    }
-                    case 18: {
-                        final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder subBuilder =
-                                com.taobao.gecko.service.notify.NotifyProtos.MapEntry.newBuilder();
-                        input.readMessage(subBuilder, extensionRegistry);
-                        this.addClientBuildInfo(subBuilder.buildPartial());
-                        break;
-                    }
+                        case 10: {
+                            final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.Builder subBuilder =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            this.addClientInfoSet(subBuilder.buildPartial());
+                            break;
+                        }
+                        case 18: {
+                            final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder subBuilder =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MapEntry.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            this.addClientBuildInfo(subBuilder.buildPartial());
+                            break;
+                        }
                     }
                 }
             }
@@ -3445,7 +3430,7 @@ public final class NotifyProtos {
 
 
             public Builder setClientInfoSet(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo value) {
+                                            final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -3455,7 +3440,7 @@ public final class NotifyProtos {
 
 
             public Builder setClientInfoSet(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.Builder builderForValue) {
+                                            final com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.Builder builderForValue) {
                 this.result.clientInfoSet_.set(index, builderForValue.build());
                 return this;
             }
@@ -3520,7 +3505,7 @@ public final class NotifyProtos {
 
 
             public Builder setClientBuildInfo(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MapEntry value) {
+                                              final com.taobao.gecko.service.notify.NotifyProtos.MapEntry value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -3530,7 +3515,7 @@ public final class NotifyProtos {
 
 
             public Builder setClientBuildInfo(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder builderForValue) {
+                                              final com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder builderForValue) {
                 this.result.clientBuildInfo_.set(index, builderForValue.build());
                 return this;
             }
@@ -3624,7 +3609,8 @@ public final class NotifyProtos {
         public enum Status implements com.google.protobuf.ProtocolMessageEnum {
             COMMITTED(0, 1),
             ROLLBACK(1, 2),
-            NOACTION(2, 3), ;
+            NOACTION(2, 3),
+            ;
 
             public final int getNumber() {
                 return this.value;
@@ -3633,14 +3619,14 @@ public final class NotifyProtos {
 
             public static Status valueOf(final int value) {
                 switch (value) {
-                case 1:
-                    return COMMITTED;
-                case 2:
-                    return ROLLBACK;
-                case 3:
-                    return NOACTION;
-                default:
-                    return null;
+                    case 1:
+                        return COMMITTED;
+                    case 2:
+                        return ROLLBACK;
+                    case 3:
+                        return NOACTION;
+                    default:
+                        return null;
                 }
             }
 
@@ -3669,10 +3655,10 @@ public final class NotifyProtos {
 
             public static final com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
                 return com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.getDescriptor()
-                    .getEnumTypes().get(0);
+                        .getEnumTypes().get(0);
             }
 
-            private static final Status[] VALUES = { COMMITTED, ROLLBACK, NOACTION, };
+            private static final Status[] VALUES = {COMMITTED, ROLLBACK, NOACTION,};
 
 
             public static Status valueOf(final com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -3889,8 +3875,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -3902,8 +3887,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -4029,9 +4013,8 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader) {
                     return this
-                        .mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader) other);
-                }
-                else {
+                            .mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader) other);
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -4041,7 +4024,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(
                     final com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader other) {
                 if (other == com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader
-                    .getDefaultInstance()) {
+                        .getDefaultInstance()) {
                     return this;
                 }
                 if (other.hasMessageId()) {
@@ -4066,51 +4049,50 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setMessageId(input.readBytes());
-                        break;
-                    }
-                    case 16: {
-                        this.setCommitted(input.readBool());
-                        break;
-                    }
-                    case 26: {
-                        this.setServerData(input.readBytes());
-                        break;
-                    }
-                    case 32: {
-                        this.setPostDelayTime(input.readUInt64());
-                        break;
-                    }
-                    case 40: {
-                        final int rawValue = input.readEnum();
-                        final com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.Status value =
-                                com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.Status
-                                    .valueOf(rawValue);
-                        if (value == null) {
-                            unknownFields.mergeVarintField(5, rawValue);
+                        case 10: {
+                            this.setMessageId(input.readBytes());
+                            break;
                         }
-                        else {
-                            this.setStatus(value);
+                        case 16: {
+                            this.setCommitted(input.readBool());
+                            break;
                         }
-                        break;
-                    }
+                        case 26: {
+                            this.setServerData(input.readBytes());
+                            break;
+                        }
+                        case 32: {
+                            this.setPostDelayTime(input.readUInt64());
+                            break;
+                        }
+                        case 40: {
+                            final int rawValue = input.readEnum();
+                            final com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.Status value =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.Status
+                                            .valueOf(rawValue);
+                            if (value == null) {
+                                unknownFields.mergeVarintField(5, rawValue);
+                            } else {
+                                this.setStatus(value);
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -4400,7 +4382,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -4424,8 +4406,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -4437,8 +4418,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -4563,8 +4543,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -4588,36 +4567,36 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        final com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.Builder subBuilder =
-                                com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.newBuilder();
-                        if (this.hasMessageHeader()) {
-                            subBuilder.mergeFrom(this.getMessageHeader());
+                        case 10: {
+                            final com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.Builder subBuilder =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.newBuilder();
+                            if (this.hasMessageHeader()) {
+                                subBuilder.mergeFrom(this.getMessageHeader());
+                            }
+                            input.readMessage(subBuilder, extensionRegistry);
+                            this.setMessageHeader(subBuilder.buildPartial());
+                            break;
                         }
-                        input.readMessage(subBuilder, extensionRegistry);
-                        this.setMessageHeader(subBuilder.buildPartial());
-                        break;
-                    }
-                    case 18: {
-                        this.setServerData(input.readBytes());
-                        break;
-                    }
+                        case 18: {
+                            this.setServerData(input.readBytes());
+                            break;
+                        }
                     }
                 }
             }
@@ -4655,12 +4634,11 @@ public final class NotifyProtos {
             public Builder mergeMessageHeader(final com.taobao.gecko.service.notify.NotifyProtos.MessageHeader value) {
                 if (this.result.hasMessageHeader()
                         && this.result.messageHeader_ != com.taobao.gecko.service.notify.NotifyProtos.MessageHeader
-                            .getDefaultInstance()) {
+                        .getDefaultInstance()) {
                     this.result.messageHeader_ =
                             com.taobao.gecko.service.notify.NotifyProtos.MessageHeader
-                                .newBuilder(this.result.messageHeader_).mergeFrom(value).buildPartial();
-                }
-                else {
+                                    .newBuilder(this.result.messageHeader_).mergeFrom(value).buildPartial();
+                } else {
                     this.result.messageHeader_ = value;
                 }
                 this.result.hasMessageHeader = true;
@@ -4751,7 +4729,8 @@ public final class NotifyProtos {
         public enum CheckResult implements com.google.protobuf.ProtocolMessageEnum {
             COMMITTED(0, 1),
             ROLLBACK(1, 2),
-            NOACTION(2, 3), ;
+            NOACTION(2, 3),
+            ;
 
             public final int getNumber() {
                 return this.value;
@@ -4760,14 +4739,14 @@ public final class NotifyProtos {
 
             public static CheckResult valueOf(final int value) {
                 switch (value) {
-                case 1:
-                    return COMMITTED;
-                case 2:
-                    return ROLLBACK;
-                case 3:
-                    return NOACTION;
-                default:
-                    return null;
+                    case 1:
+                        return COMMITTED;
+                    case 2:
+                        return ROLLBACK;
+                    case 3:
+                        return NOACTION;
+                    default:
+                        return null;
                 }
             }
 
@@ -4796,10 +4775,10 @@ public final class NotifyProtos {
 
             public static final com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
                 return com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.getDescriptor()
-                    .getEnumTypes().get(0);
+                        .getEnumTypes().get(0);
             }
 
-            private static final CheckResult[] VALUES = { COMMITTED, ROLLBACK, NOACTION, };
+            private static final CheckResult[] VALUES = {COMMITTED, ROLLBACK, NOACTION,};
 
 
             public static CheckResult valueOf(final com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
@@ -4968,7 +4947,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                   final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -4992,8 +4971,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -5005,8 +4983,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -5132,8 +5109,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -5163,47 +5139,46 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setMessageId(input.readBytes());
-                        break;
-                    }
-                    case 16: {
-                        final int rawValue = input.readEnum();
-                        final com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.CheckResult value =
-                                com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.CheckResult
-                                    .valueOf(rawValue);
-                        if (value == null) {
-                            unknownFields.mergeVarintField(2, rawValue);
+                        case 10: {
+                            this.setMessageId(input.readBytes());
+                            break;
                         }
-                        else {
-                            this.setResult(value);
+                        case 16: {
+                            final int rawValue = input.readEnum();
+                            final com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.CheckResult value =
+                                    com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.CheckResult
+                                            .valueOf(rawValue);
+                            if (value == null) {
+                                unknownFields.mergeVarintField(2, rawValue);
+                            } else {
+                                this.setResult(value);
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 26: {
-                        this.setServerData(input.readBytes());
-                        break;
-                    }
-                    case 32: {
-                        this.setPostDelayTime(input.readUInt64());
-                        break;
-                    }
+                        case 26: {
+                            this.setServerData(input.readBytes());
+                            break;
+                        }
+                        case 32: {
+                            this.setPostDelayTime(input.readUInt64());
+                            break;
+                        }
                     }
                 }
             }
@@ -5443,7 +5418,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.Subscription parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                          final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -5467,8 +5442,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -5480,8 +5454,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -5606,8 +5579,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.Subscription) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.Subscription) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -5628,26 +5600,26 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setBinding(input.readString());
-                        break;
-                    }
+                        case 10: {
+                            this.setBinding(input.readString());
+                            break;
+                        }
                     }
                 }
             }
@@ -5822,7 +5794,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                              final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -5846,8 +5818,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -5859,8 +5830,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -5985,8 +5955,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -6010,30 +5979,30 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        this.setServerData(input.readBytes());
-                        break;
-                    }
-                    case 18: {
-                        this.setMessageId(input.readBytes());
-                        break;
-                    }
+                        case 10: {
+                            this.setServerData(input.readBytes());
+                            break;
+                        }
+                        case 18: {
+                            this.setMessageId(input.readBytes());
+                            break;
+                        }
                     }
                 }
             }
@@ -6280,7 +6249,7 @@ public final class NotifyProtos {
 
 
             public static com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message parseFrom(final byte[] data,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                     throws com.google.protobuf.InvalidProtocolBufferException {
                 return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
             }
@@ -6304,8 +6273,7 @@ public final class NotifyProtos {
                 final Builder builder = newBuilder();
                 if (builder.mergeDelimitedFrom(input)) {
                     return builder.buildParsed();
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -6317,8 +6285,7 @@ public final class NotifyProtos {
                 final Builder builder = newBuilder();
                 if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                     return builder.buildParsed();
-                }
-                else {
+                } else {
                     return null;
                 }
             }
@@ -6444,8 +6411,7 @@ public final class NotifyProtos {
                 public Builder mergeFrom(final com.google.protobuf.Message other) {
                     if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message) {
                         return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message) other);
-                    }
-                    else {
+                    } else {
                         super.mergeFrom(other);
                         return this;
                     }
@@ -6469,36 +6435,36 @@ public final class NotifyProtos {
 
                 @Override
                 public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                        final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                         final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                     final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                             com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                     while (true) {
                         final int tag = input.readTag();
                         switch (tag) {
-                        case 0:
-                            this.setUnknownFields(unknownFields.build());
-                            return this;
-                        default: {
-                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                            case 0:
                                 this.setUnknownFields(unknownFields.build());
                                 return this;
+                            default: {
+                                if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                    this.setUnknownFields(unknownFields.build());
+                                    return this;
+                                }
+                                break;
                             }
-                            break;
-                        }
-                        case 10: {
-                            final com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.Builder subBuilder =
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.newBuilder();
-                            if (this.hasMessageHeader()) {
-                                subBuilder.mergeFrom(this.getMessageHeader());
+                            case 10: {
+                                final com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.Builder subBuilder =
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.newBuilder();
+                                if (this.hasMessageHeader()) {
+                                    subBuilder.mergeFrom(this.getMessageHeader());
+                                }
+                                input.readMessage(subBuilder, extensionRegistry);
+                                this.setMessageHeader(subBuilder.buildPartial());
+                                break;
                             }
-                            input.readMessage(subBuilder, extensionRegistry);
-                            this.setMessageHeader(subBuilder.buildPartial());
-                            break;
-                        }
-                        case 18: {
-                            this.setBody(input.readBytes());
-                            break;
-                        }
+                            case 18: {
+                                this.setBody(input.readBytes());
+                                break;
+                            }
                         }
                     }
                 }
@@ -6536,12 +6502,11 @@ public final class NotifyProtos {
                 public Builder mergeMessageHeader(final com.taobao.gecko.service.notify.NotifyProtos.MessageHeader value) {
                     if (this.result.hasMessageHeader()
                             && this.result.messageHeader_ != com.taobao.gecko.service.notify.NotifyProtos.MessageHeader
-                                .getDefaultInstance()) {
+                            .getDefaultInstance()) {
                         this.result.messageHeader_ =
                                 com.taobao.gecko.service.notify.NotifyProtos.MessageHeader
-                                    .newBuilder(this.result.messageHeader_).mergeFrom(value).buildPartial();
-                    }
-                    else {
+                                        .newBuilder(this.result.messageHeader_).mergeFrom(value).buildPartial();
+                    } else {
                         this.result.messageHeader_ = value;
                     }
                     this.result.hasMessageHeader = true;
@@ -6624,7 +6589,7 @@ public final class NotifyProtos {
         @Override
         public final boolean isInitialized() {
             for (final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message element : this
-                .getMessageListList()) {
+                    .getMessageListList()) {
                 if (!element.isInitialized()) {
                     return false;
                 }
@@ -6637,7 +6602,7 @@ public final class NotifyProtos {
         public void writeTo(final com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
             this.getSerializedSize();
             for (final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message element : this
-                .getMessageListList()) {
+                    .getMessageListList()) {
                 output.writeMessage(1, element);
             }
             this.getUnknownFields().writeTo(output);
@@ -6655,7 +6620,7 @@ public final class NotifyProtos {
 
             size = 0;
             for (final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message element : this
-                .getMessageListList()) {
+                    .getMessageListList()) {
                 size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, element);
             }
             size += this.getUnknownFields().getSerializedSize();
@@ -6685,7 +6650,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MessageList parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                         final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -6709,8 +6674,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -6722,8 +6686,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -6851,8 +6814,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MessageList) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageList) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -6877,29 +6839,29 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.Builder subBuilder =
-                                com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.newBuilder();
-                        input.readMessage(subBuilder, extensionRegistry);
-                        this.addMessageList(subBuilder.buildPartial());
-                        break;
-                    }
+                        case 10: {
+                            final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.Builder subBuilder =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            this.addMessageList(subBuilder.buildPartial());
+                            break;
+                        }
                     }
                 }
             }
@@ -6922,7 +6884,7 @@ public final class NotifyProtos {
 
 
             public Builder setMessageList(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message value) {
+                                          final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -6932,7 +6894,7 @@ public final class NotifyProtos {
 
 
             public Builder setMessageList(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.Builder builderForValue) {
+                                          final com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.Builder builderForValue) {
                 this.result.messageList_.set(index, builderForValue.build());
                 return this;
             }
@@ -7104,7 +7066,7 @@ public final class NotifyProtos {
 
 
         public static com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader parseFrom(final byte[] data,
-                final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                                                                                                  final com.google.protobuf.ExtensionRegistryLite extensionRegistry)
                 throws com.google.protobuf.InvalidProtocolBufferException {
             return newBuilder().mergeFrom(data, extensionRegistry).buildParsed();
         }
@@ -7128,8 +7090,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -7141,8 +7102,7 @@ public final class NotifyProtos {
             final Builder builder = newBuilder();
             if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
                 return builder.buildParsed();
-            }
-            else {
+            } else {
                 return null;
             }
         }
@@ -7271,8 +7231,7 @@ public final class NotifyProtos {
             public Builder mergeFrom(final com.google.protobuf.Message other) {
                 if (other instanceof com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader) {
                     return this.mergeFrom((com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader) other);
-                }
-                else {
+                } else {
                     super.mergeFrom(other);
                     return this;
                 }
@@ -7297,29 +7256,29 @@ public final class NotifyProtos {
 
             @Override
             public Builder mergeFrom(final com.google.protobuf.CodedInputStream input,
-                    final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
+                                     final com.google.protobuf.ExtensionRegistryLite extensionRegistry) throws java.io.IOException {
                 final com.google.protobuf.UnknownFieldSet.Builder unknownFields =
                         com.google.protobuf.UnknownFieldSet.newBuilder(this.getUnknownFields());
                 while (true) {
                     final int tag = input.readTag();
                     switch (tag) {
-                    case 0:
-                        this.setUnknownFields(unknownFields.build());
-                        return this;
-                    default: {
-                        if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                        case 0:
                             this.setUnknownFields(unknownFields.build());
                             return this;
+                        default: {
+                            if (!this.parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                                this.setUnknownFields(unknownFields.build());
+                                return this;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case 10: {
-                        final com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.Builder subBuilder =
-                                com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.newBuilder();
-                        input.readMessage(subBuilder, extensionRegistry);
-                        this.addAckList(subBuilder.buildPartial());
-                        break;
-                    }
+                        case 10: {
+                            final com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.Builder subBuilder =
+                                    com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.newBuilder();
+                            input.readMessage(subBuilder, extensionRegistry);
+                            this.addAckList(subBuilder.buildPartial());
+                            break;
+                        }
                     }
                 }
             }
@@ -7342,7 +7301,7 @@ public final class NotifyProtos {
 
 
             public Builder setAckList(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader value) {
+                                      final com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader value) {
                 if (value == null) {
                     throw new NullPointerException();
                 }
@@ -7352,7 +7311,7 @@ public final class NotifyProtos {
 
 
             public Builder setAckList(final int index,
-                    final com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.Builder builderForValue) {
+                                      final com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.Builder builderForValue) {
                 this.result.ackList_.set(index, builderForValue.build());
                 return this;
             }
@@ -7443,51 +7402,52 @@ public final class NotifyProtos {
     }
 
     private static com.google.protobuf.Descriptors.FileDescriptor descriptor;
+
     static {
         final java.lang.String[] descriptorData =
                 {
-                 "\n\014notify.proto\022\006notify\"&\n\010MapEntry\022\013\n\003ke"
-                         + "y\030\001 \002(\t\022\r\n\005value\030\002 \001(\t\"%\n\rErrorMesssage\022"
-                         + "\024\n\014errorMessage\030\001 \002(\t\"\373\003\n\rMessageHeader\022"
-                         + "\n\n\002id\030\001 \002(\014\022\014\n\004flag\030\002 \002(\005\022\r\n\005topic\030\003 \002(\t"
-                         + "\022\023\n\013messageType\030\004 \002(\t\022\017\n\007groupId\030\005 \002(\t\022\021"
-                         + "\n\tcommitted\030\006 \002(\010\022\020\n\010bornTime\030\007 \002(\004\022\020\n\010p"
-                         + "riority\030\010 \002(\005\022\025\n\rdeliveryCount\030\t \001(\005\022\017\n\007"
-                         + "version\030\n \001(\005\022\022\n\ntimeToLive\030\013 \001(\005\022\017\n\007dlq"
-                         + "Time\030\014 \001(\005\022\023\n\013postTimeout\030\r \001(\005\022\025\n\rpostD"
-                         + "elayTime\030\016 \001(\004\022\022\n\nGMTCreated\030\017 \001(\004\022\027\n\017GM",
-                 "TLastDelivery\030\020 \001(\004\022\031\n\021publisherHostName"
-                         + "\030\021 \001(\t\022\023\n\013targetGroup\030\022 \001(\t\022/\n\025userDefin"
-                         + "edProperties\030\023 \003(\0132\020.notify.MapEntry\022\024\n\014"
-                         + "replyToTopic\030\024 \001(\t\022\032\n\022replyToMessageType"
-                         + "\030\025 \001(\t\022\017\n\007replyId\030\026 \001(\004\022\032\n\022replyWhenDeli"
-                         + "vered\030\027 \001(\t\"\324\001\n\014MetaDataBody\0226\n\rclientIn"
-                         + "foSet\030\001 \003(\0132\037.notify.MetaDataBody.Client"
-                         + "Info\022)\n\017clientBuildInfo\030\002 \003(\0132\020.notify.M"
-                         + "apEntry\032a\n\nClientInfo\022\r\n\005group\030\001 \002(\t\022\020\n\010"
-                         + "hostName\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\023\n\013descript",
-                 "ion\030\004 \001(\t\022\017\n\007appName\030\005 \001(\t\"\337\001\n\033MessageCo"
-                         + "mmitRollbackHeader\022\021\n\tmessageId\030\001 \002(\014\022\021\n"
-                         + "\tcommitted\030\002 \002(\010\022\022\n\nserverData\030\003 \001(\014\022\025\n\r"
-                         + "postDelayTime\030\004 \001(\004\022:\n\006status\030\005 \001(\0162*.no"
-                         + "tify.MessageCommitRollbackHeader.Status\""
-                         + "3\n\006Status\022\r\n\tCOMMITTED\020\001\022\014\n\010ROLLBACK\020\002\022\014"
-                         + "\n\010NOACTION\020\003\"V\n\022CheckMessageHeader\022,\n\rme"
-                         + "ssageHeader\030\001 \002(\0132\025.notify.MessageHeader"
-                         + "\022\022\n\nserverData\030\002 \001(\014\"\312\001\n\025CheckMessageAck"
-                         + "Header\022\021\n\tmessageId\030\001 \002(\014\0229\n\006result\030\002 \001(",
-                 "\0162).notify.CheckMessageAckHeader.CheckRe"
-                         + "sult\022\022\n\nserverData\030\003 \001(\014\022\025\n\rpostDelayTim"
-                         + "e\030\004 \001(\004\"8\n\013CheckResult\022\r\n\tCOMMITTED\020\001\022\014\n"
-                         + "\010ROLLBACK\020\002\022\014\n\010NOACTION\020\003\"\037\n\014Subscriptio"
-                         + "n\022\017\n\007binding\030\001 \002(\t\"9\n\020MessageAckHeader\022\022"
-                         + "\n\nserverData\030\001 \001(\014\022\021\n\tmessageId\030\002 \001(\014\"\206\001"
-                         + "\n\013MessageList\0220\n\013messageList\030\001 \003(\0132\033.not"
-                         + "ify.MessageList.Message\032E\n\007Message\022,\n\rme"
-                         + "ssageHeader\030\001 \002(\0132\025.notify.MessageHeader"
-                         + "\022\014\n\004body\030\002 \002(\014\"A\n\024MessageListAckHeader\022)",
-                 "\n\007ackList\030\001 \003(\0132\030.notify.MessageAckHeade"
-                         + "rB@\n.com.taobao.notify.remoting.core.com" + "mand.protosB\014NotifyProtosH\001" };
+                        "\n\014notify.proto\022\006notify\"&\n\010MapEntry\022\013\n\003ke"
+                                + "y\030\001 \002(\t\022\r\n\005value\030\002 \001(\t\"%\n\rErrorMesssage\022"
+                                + "\024\n\014errorMessage\030\001 \002(\t\"\373\003\n\rMessageHeader\022"
+                                + "\n\n\002id\030\001 \002(\014\022\014\n\004flag\030\002 \002(\005\022\r\n\005topic\030\003 \002(\t"
+                                + "\022\023\n\013messageType\030\004 \002(\t\022\017\n\007groupId\030\005 \002(\t\022\021"
+                                + "\n\tcommitted\030\006 \002(\010\022\020\n\010bornTime\030\007 \002(\004\022\020\n\010p"
+                                + "riority\030\010 \002(\005\022\025\n\rdeliveryCount\030\t \001(\005\022\017\n\007"
+                                + "version\030\n \001(\005\022\022\n\ntimeToLive\030\013 \001(\005\022\017\n\007dlq"
+                                + "Time\030\014 \001(\005\022\023\n\013postTimeout\030\r \001(\005\022\025\n\rpostD"
+                                + "elayTime\030\016 \001(\004\022\022\n\nGMTCreated\030\017 \001(\004\022\027\n\017GM",
+                        "TLastDelivery\030\020 \001(\004\022\031\n\021publisherHostName"
+                                + "\030\021 \001(\t\022\023\n\013targetGroup\030\022 \001(\t\022/\n\025userDefin"
+                                + "edProperties\030\023 \003(\0132\020.notify.MapEntry\022\024\n\014"
+                                + "replyToTopic\030\024 \001(\t\022\032\n\022replyToMessageType"
+                                + "\030\025 \001(\t\022\017\n\007replyId\030\026 \001(\004\022\032\n\022replyWhenDeli"
+                                + "vered\030\027 \001(\t\"\324\001\n\014MetaDataBody\0226\n\rclientIn"
+                                + "foSet\030\001 \003(\0132\037.notify.MetaDataBody.Client"
+                                + "Info\022)\n\017clientBuildInfo\030\002 \003(\0132\020.notify.M"
+                                + "apEntry\032a\n\nClientInfo\022\r\n\005group\030\001 \002(\t\022\020\n\010"
+                                + "hostName\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022\023\n\013descript",
+                        "ion\030\004 \001(\t\022\017\n\007appName\030\005 \001(\t\"\337\001\n\033MessageCo"
+                                + "mmitRollbackHeader\022\021\n\tmessageId\030\001 \002(\014\022\021\n"
+                                + "\tcommitted\030\002 \002(\010\022\022\n\nserverData\030\003 \001(\014\022\025\n\r"
+                                + "postDelayTime\030\004 \001(\004\022:\n\006status\030\005 \001(\0162*.no"
+                                + "tify.MessageCommitRollbackHeader.Status\""
+                                + "3\n\006Status\022\r\n\tCOMMITTED\020\001\022\014\n\010ROLLBACK\020\002\022\014"
+                                + "\n\010NOACTION\020\003\"V\n\022CheckMessageHeader\022,\n\rme"
+                                + "ssageHeader\030\001 \002(\0132\025.notify.MessageHeader"
+                                + "\022\022\n\nserverData\030\002 \001(\014\"\312\001\n\025CheckMessageAck"
+                                + "Header\022\021\n\tmessageId\030\001 \002(\014\0229\n\006result\030\002 \001(",
+                        "\0162).notify.CheckMessageAckHeader.CheckRe"
+                                + "sult\022\022\n\nserverData\030\003 \001(\014\022\025\n\rpostDelayTim"
+                                + "e\030\004 \001(\004\"8\n\013CheckResult\022\r\n\tCOMMITTED\020\001\022\014\n"
+                                + "\010ROLLBACK\020\002\022\014\n\010NOACTION\020\003\"\037\n\014Subscriptio"
+                                + "n\022\017\n\007binding\030\001 \002(\t\"9\n\020MessageAckHeader\022\022"
+                                + "\n\nserverData\030\001 \001(\014\022\021\n\tmessageId\030\002 \001(\014\"\206\001"
+                                + "\n\013MessageList\0220\n\013messageList\030\001 \003(\0132\033.not"
+                                + "ify.MessageList.Message\032E\n\007Message\022,\n\rme"
+                                + "ssageHeader\030\001 \002(\0132\025.notify.MessageHeader"
+                                + "\022\014\n\004body\030\002 \002(\014\"A\n\024MessageListAckHeader\022)",
+                        "\n\007ackList\030\001 \003(\0132\030.notify.MessageAckHeade"
+                                + "rB@\n.com.taobao.notify.remoting.core.com" + "mand.protosB\014NotifyProtosH\001"};
         final com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
                 new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
                     public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -7496,111 +7456,111 @@ public final class NotifyProtos {
                         internal_static_notify_MapEntry_descriptor = getDescriptor().getMessageTypes().get(0);
                         internal_static_notify_MapEntry_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MapEntry_descriptor, new java.lang.String[] { "Key",
-                                                                                                        "Value", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MapEntry.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder.class);
+                                        internal_static_notify_MapEntry_descriptor, new java.lang.String[]{"Key",
+                                        "Value",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MapEntry.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MapEntry.Builder.class);
                         internal_static_notify_ErrorMesssage_descriptor = getDescriptor().getMessageTypes().get(1);
                         internal_static_notify_ErrorMesssage_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_ErrorMesssage_descriptor,
-                                    new java.lang.String[] { "ErrorMessage", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage.Builder.class);
+                                        internal_static_notify_ErrorMesssage_descriptor,
+                                        new java.lang.String[]{"ErrorMessage",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.ErrorMesssage.Builder.class);
                         internal_static_notify_MessageHeader_descriptor = getDescriptor().getMessageTypes().get(2);
                         internal_static_notify_MessageHeader_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MessageHeader_descriptor,
-                                    new java.lang.String[] { "Id", "Flag", "Topic", "MessageType", "GroupId",
-                                                            "Committed", "BornTime", "Priority", "DeliveryCount",
-                                                            "Version", "TimeToLive", "DlqTime", "PostTimeout",
-                                                            "PostDelayTime", "GMTCreated", "GMTLastDelivery",
-                                                            "PublisherHostName", "TargetGroup",
-                                                            "UserDefinedProperties", "ReplyToTopic",
-                                                            "ReplyToMessageType", "ReplyId", "ReplyWhenDelivered", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.Builder.class);
+                                        internal_static_notify_MessageHeader_descriptor,
+                                        new java.lang.String[]{"Id", "Flag", "Topic", "MessageType", "GroupId",
+                                                "Committed", "BornTime", "Priority", "DeliveryCount",
+                                                "Version", "TimeToLive", "DlqTime", "PostTimeout",
+                                                "PostDelayTime", "GMTCreated", "GMTLastDelivery",
+                                                "PublisherHostName", "TargetGroup",
+                                                "UserDefinedProperties", "ReplyToTopic",
+                                                "ReplyToMessageType", "ReplyId", "ReplyWhenDelivered",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageHeader.Builder.class);
                         internal_static_notify_MetaDataBody_descriptor = getDescriptor().getMessageTypes().get(3);
                         internal_static_notify_MetaDataBody_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MetaDataBody_descriptor,
-                                    new java.lang.String[] { "ClientInfoSet", "ClientBuildInfo", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.Builder.class);
+                                        internal_static_notify_MetaDataBody_descriptor,
+                                        new java.lang.String[]{"ClientInfoSet", "ClientBuildInfo",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.Builder.class);
                         internal_static_notify_MetaDataBody_ClientInfo_descriptor =
                                 internal_static_notify_MetaDataBody_descriptor.getNestedTypes().get(0);
                         internal_static_notify_MetaDataBody_ClientInfo_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MetaDataBody_ClientInfo_descriptor,
-                                    new java.lang.String[] { "Group", "HostName", "Name", "Description", "AppName", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.Builder.class);
+                                        internal_static_notify_MetaDataBody_ClientInfo_descriptor,
+                                        new java.lang.String[]{"Group", "HostName", "Name", "Description", "AppName",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MetaDataBody.ClientInfo.Builder.class);
                         internal_static_notify_MessageCommitRollbackHeader_descriptor =
                                 getDescriptor().getMessageTypes().get(4);
                         internal_static_notify_MessageCommitRollbackHeader_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MessageCommitRollbackHeader_descriptor,
-                                    new java.lang.String[] { "MessageId", "Committed", "ServerData", "PostDelayTime",
-                                                            "Status", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.Builder.class);
+                                        internal_static_notify_MessageCommitRollbackHeader_descriptor,
+                                        new java.lang.String[]{"MessageId", "Committed", "ServerData", "PostDelayTime",
+                                                "Status",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageCommitRollbackHeader.Builder.class);
                         internal_static_notify_CheckMessageHeader_descriptor = getDescriptor().getMessageTypes().get(5);
                         internal_static_notify_CheckMessageHeader_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_CheckMessageHeader_descriptor,
-                                    new java.lang.String[] { "MessageHeader", "ServerData", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader.Builder.class);
+                                        internal_static_notify_CheckMessageHeader_descriptor,
+                                        new java.lang.String[]{"MessageHeader", "ServerData",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.CheckMessageHeader.Builder.class);
                         internal_static_notify_CheckMessageAckHeader_descriptor =
                                 getDescriptor().getMessageTypes().get(6);
                         internal_static_notify_CheckMessageAckHeader_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_CheckMessageAckHeader_descriptor,
-                                    new java.lang.String[] { "MessageId", "Result", "ServerData", "PostDelayTime", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.Builder.class);
+                                        internal_static_notify_CheckMessageAckHeader_descriptor,
+                                        new java.lang.String[]{"MessageId", "Result", "ServerData", "PostDelayTime",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.CheckMessageAckHeader.Builder.class);
                         internal_static_notify_Subscription_descriptor = getDescriptor().getMessageTypes().get(7);
                         internal_static_notify_Subscription_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_Subscription_descriptor,
-                                    new java.lang.String[] { "Binding", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.Subscription.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.Subscription.Builder.class);
+                                        internal_static_notify_Subscription_descriptor,
+                                        new java.lang.String[]{"Binding",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.Subscription.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.Subscription.Builder.class);
                         internal_static_notify_MessageAckHeader_descriptor = getDescriptor().getMessageTypes().get(8);
                         internal_static_notify_MessageAckHeader_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MessageAckHeader_descriptor,
-                                    new java.lang.String[] { "ServerData", "MessageId", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.Builder.class);
+                                        internal_static_notify_MessageAckHeader_descriptor,
+                                        new java.lang.String[]{"ServerData", "MessageId",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageAckHeader.Builder.class);
                         internal_static_notify_MessageList_descriptor = getDescriptor().getMessageTypes().get(9);
                         internal_static_notify_MessageList_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MessageList_descriptor,
-                                    new java.lang.String[] { "MessageList", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageList.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageList.Builder.class);
+                                        internal_static_notify_MessageList_descriptor,
+                                        new java.lang.String[]{"MessageList",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageList.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageList.Builder.class);
                         internal_static_notify_MessageList_Message_descriptor =
                                 internal_static_notify_MessageList_descriptor.getNestedTypes().get(0);
                         internal_static_notify_MessageList_Message_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MessageList_Message_descriptor,
-                                    new java.lang.String[] { "MessageHeader", "Body", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.Builder.class);
+                                        internal_static_notify_MessageList_Message_descriptor,
+                                        new java.lang.String[]{"MessageHeader", "Body",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageList.Message.Builder.class);
                         internal_static_notify_MessageListAckHeader_descriptor =
                                 getDescriptor().getMessageTypes().get(10);
                         internal_static_notify_MessageListAckHeader_fieldAccessorTable =
                                 new com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                                    internal_static_notify_MessageListAckHeader_descriptor,
-                                    new java.lang.String[] { "AckList", },
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader.class,
-                                    com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader.Builder.class);
+                                        internal_static_notify_MessageListAckHeader_descriptor,
+                                        new java.lang.String[]{"AckList",},
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader.class,
+                                        com.taobao.gecko.service.notify.NotifyProtos.MessageListAckHeader.Builder.class);
                         return null;
                     }
                 };
         com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(descriptorData,
-            new com.google.protobuf.Descriptors.FileDescriptor[] {}, assigner);
+                new com.google.protobuf.Descriptors.FileDescriptor[]{}, assigner);
     }
 
 

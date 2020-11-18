@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 /**
- *Copyright [2008] [dennis zhuang]
- *Licensed under the Apache License, Version 2.0 (the "License");
- *you may not use this file except in compliance with the License. 
- *You may obtain a copy of the License at 
- *             http://www.apache.org/licenses/LICENSE-2.0 
- *Unless required by applicable law or agreed to in writing, 
- *software distributed under the License is distributed on an "AS IS" BASIS, 
- *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, 
- *either express or implied. See the License for the specific language governing permissions and limitations under the License
+ * Copyright [2008] [dennis zhuang]
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
 package com.taobao.gecko.core.util;
 
@@ -36,20 +36,20 @@ import java.util.Properties;
 
 
 /**
- * ◊ ‘¥Œƒº˛π§æﬂ¿‡
- * 
- * 
- * 
+ * ËµÑÊ∫êÊñá‰ª∂Â∑•ÂÖ∑Á±ª
+ *
+ *
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 œ¬ŒÁ06:22:09
+ *
+ * @since 1.0, 2009-12-16 ‰∏ãÂçà06:22:09
  */
 public class ResourcesUtils extends Object {
 
     /** */
     /**
      * Returns the URL of the resource on the classpath
-     * 
+     *
      * @param resource
      *            The resource to find
      * @throws IOException
@@ -75,7 +75,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns the URL of the resource on the classpath
-     * 
+     *
      * @param loader
      *            The classloader used to load the resource
      * @param resource
@@ -102,7 +102,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a Stream object
-     * 
+     *
      * @param resource
      *            The resource to find
      * @throws IOException
@@ -128,7 +128,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a Stream object
-     * 
+     *
      * @param loader
      *            The classloader used to load the resource
      * @param resource
@@ -155,7 +155,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a Properties object
-     * 
+     *
      * @param resource
      *            The resource to find
      * @throws IOException
@@ -176,7 +176,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a Properties object
-     * 
+     *
      * @param loader
      *            The classloader used to load the resource
      * @param resource
@@ -199,7 +199,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a Reader object
-     * 
+     *
      * @param resource
      *            The resource to find
      * @throws IOException
@@ -214,7 +214,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a Reader object
-     * 
+     *
      * @param loader
      *            The classloader used to load the resource
      * @param resource
@@ -231,7 +231,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a File object
-     * 
+     *
      * @param resource
      *            The resource to find
      * @throws IOException
@@ -246,7 +246,7 @@ public class ResourcesUtils extends Object {
     /** */
     /**
      * Returns a resource on the classpath as a File object
-     * 
+     *
      * @param loader
      *            The classloader used to load the resource
      * @param resource

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,8 @@ import org.junit.Test;
 
 
 /**
- * 
- * 
- * 
  * @author boyan
- * 
- * @since 1.0, 2009-12-23 œ¬ŒÁ04:18:39
+ * @since 1.0, 2009-12-23 ‰∏ãÂçà04:18:39
  */
 
 public class OpaqueGeneratorUnitTest {
@@ -50,7 +46,7 @@ public class OpaqueGeneratorUnitTest {
             Assert.assertEquals(Integer.MIN_VALUE + i + 1, OpaqueGenerator.getNextOpaque());
         }
 
-        // ≥¨π˝∑∂Œß£¨reset
+        // Ë∂ÖËøáËåÉÂõ¥Ôºåreset
         OpaqueGenerator.setOpaque(Integer.MAX_VALUE - 10);
         Assert.assertEquals(Integer.MAX_VALUE - 10, OpaqueGenerator.getCurrentOpaque());
         Assert.assertEquals(Integer.MIN_VALUE, OpaqueGenerator.getNextOpaque());

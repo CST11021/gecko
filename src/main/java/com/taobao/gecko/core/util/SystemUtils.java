@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,13 +31,10 @@ import java.util.Map.Entry;
 
 
 /**
- * œµÕ≥π§æﬂ¿‡£¨”√”⁄≈–∂œjvm∞Ê±æµ»
- * 
- * 
- * 
+ * Á≥ªÁªüÂ∑•ÂÖ∑Á±ªÔºåÁî®‰∫éÂà§Êñ≠jvmÁâàÊú¨Á≠â
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 œ¬ŒÁ06:23:11
+ * @since 1.0, 2009-12-16 ‰∏ãÂçà06:23:11
  */
 public final class SystemUtils {
 
@@ -54,15 +51,16 @@ public final class SystemUtils {
             isLinuxPlatform = true;
         }
     }
+
     public static final String JAVA_VERSION = System.getProperty("java.version");
     private static boolean isAfterJava6u4Version = false;
+
     static {
         if (JAVA_VERSION != null) {
             // java4 or java5
             if (JAVA_VERSION.indexOf("1.4.") >= 0 || JAVA_VERSION.indexOf("1.5.") >= 0) {
                 isAfterJava6u4Version = false;
-            }
-            else if (JAVA_VERSION.indexOf("1.6.") >= 0) {
+            } else if (JAVA_VERSION.indexOf("1.6.") >= 0) {
                 final int index = JAVA_VERSION.indexOf("_");
                 if (index > 0) {
                     final String subVersionStr = JAVA_VERSION.substring(index + 1);
@@ -72,15 +70,13 @@ public final class SystemUtils {
                             if (subVersion >= 4) {
                                 isAfterJava6u4Version = true;
                             }
-                        }
-                        catch (final Exception e) {
+                        } catch (final Exception e) {
 
                         }
                     }
                 }
                 // after java6
-            }
-            else {
+            } else {
                 isAfterJava6u4Version = true;
             }
         }
@@ -103,8 +99,8 @@ public final class SystemUtils {
 
 
     /**
-     * ƒ¨»œŒ™CPU∏ˆ ˝-1£¨¡Ù“ª∏ˆCPU◊ˆÕ¯ø®÷–∂œ
-     * 
+     * ÈªòËÆ§‰∏∫CPU‰∏™Êï∞-1ÔºåÁïô‰∏Ä‰∏™CPUÂÅöÁΩëÂç°‰∏≠Êñ≠
+     *
      * @return
      */
     public static int getSystemThreadCount() {
@@ -121,7 +117,7 @@ public final class SystemUtils {
 
     public static Selector openSelector() throws IOException {
         Selector result = null;
-        // ‘⁄linux∆ΩÃ®£¨æ°¡ø∆Ù”√epoll µœ÷
+        // Âú®linuxÂπ≥Âè∞ÔºåÂ∞ΩÈáèÂêØÁî®epollÂÆûÁé∞
         if (SystemUtils.isLinuxPlatform()) {
             try {
                 final Class<?> providerClazz = Class.forName("sun.nio.ch.EPollSelectorProvider");
@@ -134,13 +130,11 @@ public final class SystemUtils {
                                 result = selectorProvider.openSelector();
                             }
                         }
-                    }
-                    catch (final Exception e) {
+                    } catch (final Exception e) {
                         // ignore
                     }
                 }
-            }
-            catch (final Exception e) {
+            } catch (final Exception e) {
                 // ignore
             }
         }
@@ -170,7 +164,7 @@ public final class SystemUtils {
 
     public static boolean DEFAULT_TCP_NO_DELAY = false;
 
-    // æ≤Ã¨≥ı ºªØ£¨»∑»œƒ¨»œµƒtcp—°œÓ≤Œ ˝
+    // ÈùôÊÄÅÂàùÂßãÂåñÔºåÁ°ÆËÆ§ÈªòËÆ§ÁöÑtcpÈÄâÈ°πÂèÇÊï∞
     static {
         initializeTestAddresses();
 
@@ -190,17 +184,15 @@ public final class SystemUtils {
 
     private static void initializeFallbackDefaultSocketParameters() {
         final Socket unconnectedSocket = new Socket(); // Use a unconnected
-                                                       // socket.
+        // socket.
         try {
             initializeDefaultSocketParameters(unconnectedSocket);
-        }
-        catch (final SocketException se) {
+        } catch (final SocketException se) {
             ExceptionMonitor.getInstance().exceptionCaught(se);
 
             try {
                 unconnectedSocket.close();
-            }
-            catch (final IOException ioe) {
+            } catch (final IOException ioe) {
                 ExceptionMonitor.getInstance().exceptionCaught(ioe);
             }
         }
@@ -211,30 +203,29 @@ public final class SystemUtils {
         try {
             // IPv6 localhost
             TEST_ADDRESSES.put(
-                new InetSocketAddress(InetAddress.getByAddress(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                                                           0, 1 }), 0),
-                InetAddress.getByAddress(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }));
+                    new InetSocketAddress(InetAddress.getByAddress(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 1}), 0),
+                    InetAddress.getByAddress(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}));
 
             // IPv4 localhost
-            TEST_ADDRESSES.put(new InetSocketAddress(InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 }), 0),
-                InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 }));
+            TEST_ADDRESSES.put(new InetSocketAddress(InetAddress.getByAddress(new byte[]{127, 0, 0, 1}), 0),
+                    InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
 
             // Bind to wildcard interface and connect to IPv6 localhost
             TEST_ADDRESSES.put(new InetSocketAddress(0),
-                InetAddress.getByAddress(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }));
+                    InetAddress.getByAddress(new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}));
 
             // Bind to wildcard interface and connect to IPv4 localhost
-            TEST_ADDRESSES.put(new InetSocketAddress(0), InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 }));
+            TEST_ADDRESSES.put(new InetSocketAddress(0), InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
 
-        }
-        catch (final UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             ExceptionMonitor.getInstance().exceptionCaught(e);
         }
     }
 
 
     private static boolean initializeDefaultSocketParameters(final InetSocketAddress bindAddress,
-            final InetAddress connectAddress) {
+                                                             final InetAddress connectAddress) {
         ServerSocket ss = null;
         Socket socket = null;
 
@@ -249,16 +240,13 @@ public final class SystemUtils {
 
             initializeDefaultSocketParameters(socket);
             return true;
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             return false;
-        }
-        finally {
+        } finally {
             if (socket != null) {
                 try {
                     socket.close();
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     ExceptionMonitor.getInstance().exceptionCaught(e);
                 }
             }
@@ -266,8 +254,7 @@ public final class SystemUtils {
             if (ss != null) {
                 try {
                     ss.close();
-                }
-                catch (final IOException e) {
+                } catch (final IOException e) {
                     ExceptionMonitor.getInstance().exceptionCaught(e);
                 }
             }
@@ -287,8 +274,7 @@ public final class SystemUtils {
         try {
             socket.setReceiveBufferSize(DEFAULT_RECEIVE_BUFFER_SIZE);
             SET_RECEIVE_BUFFER_SIZE_AVAILABLE = true;
-        }
-        catch (final SocketException e) {
+        } catch (final SocketException e) {
             SET_RECEIVE_BUFFER_SIZE_AVAILABLE = false;
         }
 
@@ -296,8 +282,7 @@ public final class SystemUtils {
         try {
             socket.setSendBufferSize(DEFAULT_SEND_BUFFER_SIZE);
             SET_SEND_BUFFER_SIZE_AVAILABLE = true;
-        }
-        catch (final SocketException e) {
+        } catch (final SocketException e) {
             SET_SEND_BUFFER_SIZE_AVAILABLE = false;
         }
 

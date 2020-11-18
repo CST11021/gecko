@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,20 +50,16 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-
 /**
  * An alternative identity-comparing {@link ConcurrentMap} which is similar to
  * {@link java.util.concurrent.ConcurrentHashMap}.
- * 
+ *
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author Doug Lea
  * @author Jason T. Greene
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
- * 
- * @param <K>
- *            the type of keys maintained by this map
- * @param <V>
- *            the type of mapped values
  */
 public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
 
@@ -152,9 +148,8 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * Returns the segment that should be used for key with given hash.
-     * 
-     * @param hash
-     *            the hash code for the key
+     *
+     * @param hash the hash code for the key
      * @return the segment
      */
     final Segment<K, V> segmentFor(int hash) {
@@ -169,7 +164,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
     /**
      * ConcurrentReferenceHashMap list entry. Note that this is never exported
      * out as a user-visible Map.Entry.
-     * 
+     * <p>
      * Because the value field is volatile, not final, it is legal wrt the Java
      * Memory Model for an unsynchronized reader to see null instead of initial
      * value when read via a data race. Although a reordering leading to this is
@@ -230,17 +225,17 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
          * created to replace them. This works well for hash tables since the
          * bin lists tend to be short. (The average length is less than two for
          * the default load factor threshold.)
-         * 
+         *
          * Read operations can thus proceed without locking, but rely on
          * selected uses of volatiles to ensure that completed write operations
          * performed by other threads are noticed. For most purposes, the
          * "count" field, tracking the number of elements, serves as that
          * volatile variable ensuring visibility. This is convenient because
          * this field needs to be read in many read operations anyway:
-         * 
+         *
          * - All (unsynchronized) read operations must first read the "count"
          * field, and should not look at table entries if it is 0.
-         * 
+         *
          * - All (synchronized) write operations should write to the "count"
          * field after structurally changing any bin. The operations must not
          * take any action that could even momentarily cause a concurrent read
@@ -249,7 +244,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
          * that the table has grown but the threshold has not yet been updated,
          * so there are no atomicity requirements for this with respect to
          * reads.
-         * 
+         *
          * As a guide, all critical volatile reads and writes to the count field
          * are marked in code comments.
          */
@@ -291,7 +286,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
         Segment(int initialCapacity, float lf) {
             this.loadFactor = lf;
-            this.setTable(HashEntry.<K, V> newArray(initialCapacity));
+            this.setTable(HashEntry.<K, V>newArray(initialCapacity));
         }
 
 
@@ -340,8 +335,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
             this.lock();
             try {
                 return e.value();
-            }
-            finally {
+            } finally {
                 this.unlock();
             }
         }
@@ -393,8 +387,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
                         if (opaque == null) {
                             v = this.readValueUnderLock(e); // recheck
-                        }
-                        else {
+                        } else {
                             v = opaque;
                         }
 
@@ -422,8 +415,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     e.setValue(newValue);
                 }
                 return replaced;
-            }
-            finally {
+            } finally {
                 this.unlock();
             }
         }
@@ -443,8 +435,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     e.setValue(newValue);
                 }
                 return oldValue;
-            }
-            finally {
+            } finally {
                 this.unlock();
             }
         }
@@ -475,16 +466,14 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     if (!onlyIfAbsent) {
                         e.setValue(value);
                     }
-                }
-                else {
+                } else {
                     oldValue = null;
                     ++this.modCount;
                     tab[index] = this.newHashEntry(key, hash, first, value);
                     this.count = c; // write-volatile
                 }
                 return oldValue;
-            }
-            finally {
+            } finally {
                 this.unlock();
             }
         }
@@ -526,8 +515,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     // Single node on list
                     if (next == null) {
                         newTable[idx] = e;
-                    }
-                    else {
+                    } else {
                         // Reuse trailing consecutive sequence at same slot
                         HashEntry<K, V> lastRun = e;
                         int lastIdx = idx;
@@ -598,8 +586,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     }
                 }
                 return oldValue;
-            }
-            finally {
+            } finally {
                 this.unlock();
             }
         }
@@ -615,8 +602,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     }
                     ++this.modCount;
                     this.count = 0; // write-volatile
-                }
-                finally {
+                } finally {
                     this.unlock();
                 }
             }
@@ -629,21 +615,17 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
     /**
      * Creates a new, empty map with the specified initial capacity, load factor
      * and concurrency level.
-     * 
-     * @param initialCapacity
-     *            the initial capacity. The implementation performs internal
-     *            sizing to accommodate this many elements.
-     * @param loadFactor
-     *            the load factor threshold, used to control resizing. Resizing
-     *            may be performed when the average number of elements per bin
-     *            exceeds this threshold.
-     * @param concurrencyLevel
-     *            the estimated number of concurrently updating threads. The
-     *            implementation performs internal sizing to try to accommodate
-     *            this many threads.
-     * @throws IllegalArgumentException
-     *             if the initial capacity is negative or the load factor or
-     *             concurrencyLevel are nonpositive.
+     *
+     * @param initialCapacity  the initial capacity. The implementation performs internal
+     *                         sizing to accommodate this many elements.
+     * @param loadFactor       the load factor threshold, used to control resizing. Resizing
+     *                         may be performed when the average number of elements per bin
+     *                         exceeds this threshold.
+     * @param concurrencyLevel the estimated number of concurrently updating threads. The
+     *                         implementation performs internal sizing to try to accommodate
+     *                         this many threads.
+     * @throws IllegalArgumentException if the initial capacity is negative or the load factor or
+     *                                  concurrencyLevel are nonpositive.
      */
     public ConcurrentIdentityHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
         if (!(loadFactor > 0) || initialCapacity < 0 || concurrencyLevel <= 0) {
@@ -687,17 +669,14 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * Creates a new, empty map with the specified initial capacity and load
      * factor and with the default reference types (weak keys, strong values),
      * and concurrencyLevel (16).
-     * 
-     * @param initialCapacity
-     *            The implementation performs internal sizing to accommodate
-     *            this many elements.
-     * @param loadFactor
-     *            the load factor threshold, used to control resizing. Resizing
-     *            may be performed when the average number of elements per bin
-     *            exceeds this threshold.
-     * @throws IllegalArgumentException
-     *             if the initial capacity of elements is negative or the load
-     *             factor is nonpositive
+     *
+     * @param initialCapacity The implementation performs internal sizing to accommodate
+     *                        this many elements.
+     * @param loadFactor      the load factor threshold, used to control resizing. Resizing
+     *                        may be performed when the average number of elements per bin
+     *                        exceeds this threshold.
+     * @throws IllegalArgumentException if the initial capacity of elements is negative or the load
+     *                                  factor is nonpositive
      */
     public ConcurrentIdentityHashMap(int initialCapacity, float loadFactor) {
         this(initialCapacity, loadFactor, DEFAULT_CONCURRENCY_LEVEL);
@@ -708,12 +687,10 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * Creates a new, empty map with the specified initial capacity, and with
      * default reference types (weak keys, strong values), load factor (0.75)
      * and concurrencyLevel (16).
-     * 
-     * @param initialCapacity
-     *            the initial capacity. The implementation performs internal
-     *            sizing to accommodate this many elements.
-     * @throws IllegalArgumentException
-     *             if the initial capacity of elements is negative.
+     *
+     * @param initialCapacity the initial capacity. The implementation performs internal
+     *                        sizing to accommodate this many elements.
+     * @throws IllegalArgumentException if the initial capacity of elements is negative.
      */
     public ConcurrentIdentityHashMap(int initialCapacity) {
         this(initialCapacity, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL);
@@ -735,20 +712,19 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * created with a capacity of 1.5 times the number of mappings in the given
      * map or 16 (whichever is greater), and a default load factor (0.75) and
      * concurrencyLevel (16).
-     * 
-     * @param m
-     *            the map
+     *
+     * @param m the map
      */
     public ConcurrentIdentityHashMap(Map<? extends K, ? extends V> m) {
         this(Math.max((int) (m.size() / DEFAULT_LOAD_FACTOR) + 1, DEFAULT_INITIAL_CAPACITY), DEFAULT_LOAD_FACTOR,
-            DEFAULT_CONCURRENCY_LEVEL);
+                DEFAULT_CONCURRENCY_LEVEL);
         this.putAll(m);
     }
 
 
     /**
      * Returns <tt>true</tt> if this map contains no key-value mappings.
-     * 
+     *
      * @return <tt>true</tt> if this map contains no key-value mappings
      */
     @Override
@@ -767,8 +743,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
         for (int i = 0; i < segments.length; ++i) {
             if (segments[i].count != 0) {
                 return false;
-            }
-            else {
+            } else {
                 mcsum += mc[i] = segments[i].modCount;
             }
         }
@@ -790,7 +765,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * Returns the number of key-value mappings in this map. If the map contains
      * more than <tt>Integer.MAX_VALUE</tt> elements, returns
      * <tt>Integer.MAX_VALUE</tt>.
-     * 
+     *
      * @return the number of key-value mappings in this map
      */
     @Override
@@ -836,8 +811,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
         }
         if (sum > Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;
-        }
-        else {
+        } else {
             return (int) sum;
         }
     }
@@ -846,15 +820,14 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
     /**
      * Returns the value to which the specified key is mapped, or {@code null}
      * if this map contains no mapping for the key.
-     * 
+     *
      * <p>
      * More formally, if this map contains a mapping from a key {@code k} to a
      * value {@code v} such that {@code key.equals(k)}, then this method returns
      * {@code v}; otherwise it returns {@code null}. (There can be at most one
      * such mapping.)
-     * 
-     * @throws NullPointerException
-     *             if the specified key is null
+     *
+     * @throws NullPointerException if the specified key is null
      */
     @Override
     public V get(Object key) {
@@ -865,14 +838,12 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * Tests if the specified object is a key in this table.
-     * 
-     * @param key
-     *            possible key
+     *
+     * @param key possible key
      * @return <tt>true</tt> if and only if the specified object is a key in
-     *         this table, as determined by the <tt>equals</tt> method;
-     *         <tt>false</tt> otherwise.
-     * @throws NullPointerException
-     *             if the specified key is null
+     * this table, as determined by the <tt>equals</tt> method;
+     * <tt>false</tt> otherwise.
+     * @throws NullPointerException if the specified key is null
      */
     @Override
     public boolean containsKey(Object key) {
@@ -885,13 +856,11 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * Returns <tt>true</tt> if this map maps one or more keys to the specified
      * value. Note: This method requires a full internal traversal of the hash
      * table, and so is much slower than method <tt>containsKey</tt>.
-     * 
-     * @param value
-     *            value whose presence in this map is to be tested
+     *
+     * @param value value whose presence in this map is to be tested
      * @return <tt>true</tt> if this map maps one or more keys to the specified
-     *         value
-     * @throws NullPointerException
-     *             if the specified value is null
+     * value
+     * @throws NullPointerException if the specified value is null
      */
 
     @Override
@@ -939,8 +908,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
                     break;
                 }
             }
-        }
-        finally {
+        } finally {
             for (int i = 0; i < segments.length; ++i) {
                 segments[i].unlock();
             }
@@ -955,14 +923,12 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * {@link #containsValue}, and exists solely to ensure full compatibility
      * with class {@link Hashtable}, which supported this method prior to
      * introduction of the Java Collections framework.
-     * 
-     * @param value
-     *            a value to search for
+     *
+     * @param value a value to search for
      * @return <tt>true</tt> if and only if some key maps to the <tt>value</tt>
-     *         argument in this table as determined by the <tt>equals</tt>
-     *         method; <tt>false</tt> otherwise
-     * @throws NullPointerException
-     *             if the specified value is null
+     * argument in this table as determined by the <tt>equals</tt>
+     * method; <tt>false</tt> otherwise
+     * @throws NullPointerException if the specified value is null
      */
     public boolean contains(Object value) {
         return this.containsValue(value);
@@ -972,19 +938,16 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
     /**
      * Maps the specified key to the specified value in this table. Neither the
      * key nor the value can be null.
-     * 
+     *
      * <p>
      * The value can be retrieved by calling the <tt>get</tt> method with a key
      * that is equal to the original key.
-     * 
-     * @param key
-     *            key with which the specified value is to be associated
-     * @param value
-     *            value to be associated with the specified key
+     *
+     * @param key   key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
      * @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
-     *         if there was no mapping for <tt>key</tt>
-     * @throws NullPointerException
-     *             if the specified key or value is null
+     * if there was no mapping for <tt>key</tt>
+     * @throws NullPointerException if the specified key or value is null
      */
     @Override
     public V put(K key, V value) {
@@ -998,11 +961,10 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return the previous value associated with the specified key, or
-     *         <tt>null</tt> if there was no mapping for the key
-     * @throws NullPointerException
-     *             if the specified key or value is null
+     * <tt>null</tt> if there was no mapping for the key
+     * @throws NullPointerException if the specified key or value is null
      */
     public V putIfAbsent(K key, V value) {
         if (value == null) {
@@ -1017,9 +979,8 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * Copies all of the mappings from the specified map to this one. These
      * mappings replace any mappings that this map had for any of the keys
      * currently in the specified map.
-     * 
-     * @param m
-     *            mappings to be stored in this map
+     *
+     * @param m mappings to be stored in this map
      */
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
@@ -1032,13 +993,11 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
     /**
      * Removes the key (and its corresponding value) from this map. This method
      * does nothing if the key is not in the map.
-     * 
-     * @param key
-     *            the key that needs to be removed
+     *
+     * @param key the key that needs to be removed
      * @return the previous value associated with <tt>key</tt>, or <tt>null</tt>
-     *         if there was no mapping for <tt>key</tt>
-     * @throws NullPointerException
-     *             if the specified key is null
+     * if there was no mapping for <tt>key</tt>
+     * @throws NullPointerException if the specified key is null
      */
     @Override
     public V remove(Object key) {
@@ -1049,9 +1008,8 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * {@inheritDoc}
-     * 
-     * @throws NullPointerException
-     *             if the specified key is null
+     *
+     * @throws NullPointerException if the specified key is null
      */
     public boolean remove(Object key, Object value) {
         int hash = this.hashOf(key);
@@ -1064,9 +1022,8 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * {@inheritDoc}
-     * 
-     * @throws NullPointerException
-     *             if any of the arguments are null
+     *
+     * @throws NullPointerException if any of the arguments are null
      */
     public boolean replace(K key, V oldValue, V newValue) {
         if (oldValue == null || newValue == null) {
@@ -1079,11 +1036,10 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return the previous value associated with the specified key, or
-     *         <tt>null</tt> if there was no mapping for the key
-     * @throws NullPointerException
-     *             if the specified key or value is null
+     * <tt>null</tt> if there was no mapping for the key
+     * @throws NullPointerException if the specified key or value is null
      */
     public V replace(K key, V value) {
         if (value == null) {
@@ -1113,7 +1069,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
      * <tt>clear</tt> operations. It does not support the <tt>add</tt> or
      * <tt>addAll</tt> operations.
-     * 
+     *
      * <p>
      * The view's <tt>iterator</tt> is a "weakly consistent" iterator that will
      * never throw {@link ConcurrentModificationException}, and guarantees to
@@ -1136,7 +1092,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * <tt>Iterator.remove</tt>, <tt>Collection.remove</tt>, <tt>removeAll</tt>,
      * <tt>retainAll</tt>, and <tt>clear</tt> operations. It does not support
      * the <tt>add</tt> or <tt>addAll</tt> operations.
-     * 
+     *
      * <p>
      * The view's <tt>iterator</tt> is a "weakly consistent" iterator that will
      * never throw {@link ConcurrentModificationException}, and guarantees to
@@ -1159,7 +1115,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
      * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
      * <tt>clear</tt> operations. It does not support the <tt>add</tt> or
      * <tt>addAll</tt> operations.
-     * 
+     *
      * <p>
      * The view's <tt>iterator</tt> is a "weakly consistent" iterator that will
      * never throw {@link ConcurrentModificationException}, and guarantees to
@@ -1176,7 +1132,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * Returns an enumeration of the keys in this table.
-     * 
+     *
      * @return an enumeration of the keys in this table
      * @see #keySet()
      */
@@ -1187,7 +1143,7 @@ public final class ConcurrentIdentityHashMap<K, V> extends AbstractMap<K, V> imp
 
     /**
      * Returns an enumeration of the values in this table.
-     * 
+     *
      * @return an enumeration of the values in this table
      * @see #values()
      */

@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 /**
- *Copyright [2008-2009] [dennis zhuang]
- *Licensed under the Apache License, Version 2.0 (the "License");
- *you may not use this file except in compliance with the License.
- *You may obtain a copy of the License at
- *             http://www.apache.org/licenses/LICENSE-2.0
- *Unless required by applicable law or agreed to in writing,
- *software distributed under the License is distributed on an "AS IS" BASIS,
- *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- *either express or implied. See the License for the specific language governing permissions and limitations under the License
+ * Copyright [2008-2009] [dennis zhuang]
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
 
 package com.taobao.gecko.core.nio;
@@ -47,7 +47,7 @@ import com.taobao.gecko.core.nio.impl.SocketChannelController;
 
 /**
  * Controller for tcp server
- * 
+ *
  * @author dennis
  */
 public class TCPController extends SocketChannelController implements ServerController {
@@ -112,24 +112,23 @@ public class TCPController extends SocketChannelController implements ServerCont
         this.serverSocketChannel.socket().setSoTimeout(this.soTimeout);
         if (this.connectionTime != 0 || this.latency != 0 || this.bandwidth != 0) {
             this.serverSocketChannel.socket().setPerformancePreferences(this.connectionTime, this.latency,
-                this.bandwidth);
+                    this.bandwidth);
         }
         this.serverSocketChannel.configureBlocking(false);
 
         if (this.socketOptions.get(StandardSocketOption.SO_REUSEADDR) != null) {
             this.serverSocketChannel.socket().setReuseAddress(
-                StandardSocketOption.SO_REUSEADDR.type()
-                    .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
+                    StandardSocketOption.SO_REUSEADDR.type()
+                            .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
         }
         if (this.socketOptions.get(StandardSocketOption.SO_RCVBUF) != null) {
             this.serverSocketChannel.socket().setReceiveBufferSize(
-                StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
+                    StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
 
         }
         if (this.localSocketAddress != null) {
             this.serverSocketChannel.socket().bind(this.localSocketAddress, this.backlog);
-        }
-        else {
+        } else {
             this.serverSocketChannel.socket().bind(new InetSocketAddress("localhost", 0), this.backlog);
         }
         this.setLocalSocketAddress((InetSocketAddress) this.serverSocketChannel.socket().getLocalSocketAddress());
@@ -139,7 +138,7 @@ public class TCPController extends SocketChannelController implements ServerCont
 
     @Override
     public void onAccept(final SelectionKey selectionKey) throws IOException {
-        // Server“—æ≠πÿ±’£¨÷±Ω”∑µªÿ
+        // ServerÂ∑≤ÁªèÂÖ≥Èó≠ÔºåÁõ¥Êé•ËøîÂõû
         if (!this.serverSocketChannel.isOpen()) {
             selectionKey.cancel();
             return;
@@ -154,12 +153,10 @@ public class TCPController extends SocketChannelController implements ServerCont
                 this.selectorManager.registerSession(session, EventType.ENABLE_READ);
                 session.start();
                 super.onAccept(selectionKey); // for statistics
-            }
-            else {
+            } else {
                 log.debug("Accept fail");
             }
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             this.closeAcceptChannel(selectionKey, sc);
             this.notifyException(e);
         }
@@ -167,7 +164,7 @@ public class TCPController extends SocketChannelController implements ServerCont
 
 
     /**
-     * 
+     *
      * @param sk
      * @param sc
      * @throws IOException

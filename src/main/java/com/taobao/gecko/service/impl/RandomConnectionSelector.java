@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,28 +25,26 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
- * 
- * Á¬½ÓÑ¡ÔñÆ÷Ëæ»ú²ßÂÔ
- * 
+ * è¿æ¥é€‰æ‹©å™¨éšæœºç­–ç•¥
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç05:01:45
+ * @since 1.0, 2009-12-15 ä¸‹åˆ05:01:45
  */
 
 public class RandomConnectionSelector implements ConnectionSelector {
 
     /**
-     * ×î´óÖØÊÔ´ÎÊı
+     * æœ€å¤§é‡è¯•æ¬¡æ•°
      */
     private static final int MAX_TIMES = 5;
     private final Random rand = new Random();
 
 
     /**
-     * ÕâÀïµÄconnectionListÎ´×ö¿½±´±£»¤ÊÇ»ùÓÚĞÔÄÜ¿¼ÂÇ£¬Èç¹ûselectÊ§°Ü£¬Ò²ÊÇÅ×³öRuntimeÒì³£
+     * è¿™é‡Œçš„connectionListæœªåšæ‹·è´ä¿æŠ¤æ˜¯åŸºäºæ€§èƒ½è€ƒè™‘ï¼Œå¦‚æœselectå¤±è´¥ï¼Œä¹Ÿæ˜¯æŠ›å‡ºRuntimeå¼‚å¸¸
      */
     public final Connection select(final String targetGroup, final RequestCommand request,
-            final List<Connection> connectionList) throws NotifyRemotingException {
+                                   final List<Connection> connectionList) throws NotifyRemotingException {
         try {
             if (connectionList == null) {
                 return null;
@@ -64,8 +62,7 @@ public class RandomConnectionSelector implements ConnectionSelector {
                 return null;
             }
             return result;
-        }
-        catch (final Throwable e) {
+        } catch (final Throwable e) {
             throw new NotifyRemotingException(e);
         }
     }

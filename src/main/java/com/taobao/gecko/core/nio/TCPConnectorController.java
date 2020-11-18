@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,17 @@
 package com.taobao.gecko.core.nio;
 
 /**
- *Copyright [2008] [dennis zhuang]
- *Licensed under the Apache License, Version 2.0 (the "License");
- *you may not use this file except in compliance with the License.
- *You may obtain a copy of the License at
- *             http://www.apache.org/licenses/LICENSE-2.0
- *Unless required by applicable law or agreed to in writing,
- *software distributed under the License is distributed on an "AS IS" BASIS,
- *WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- *either express or implied. See the License for the specific language governing permissions and limitations under the License
+ * Copyright [2008] [dennis zhuang]
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -45,9 +46,9 @@ import com.taobao.gecko.core.nio.impl.SocketChannelController;
 
 /**
  * Controller for client connecting
- * 
+ *
  * @author dennis
- * 
+ *
  */
 public class TCPConnectorController extends SocketChannelController implements SingleConnector {
     protected SocketChannel socketChannel;
@@ -100,11 +101,9 @@ public class TCPConnectorController extends SocketChannelController implements S
         }
         try {
             this.connectFuture.get();
-        }
-        catch (final ExecutionException e) {
+        } catch (final ExecutionException e) {
             throw new IOException(e.getMessage());
-        }
-        catch (final InterruptedException e) {
+        } catch (final InterruptedException e) {
 
         }
     }
@@ -129,8 +128,8 @@ public class TCPConnectorController extends SocketChannelController implements S
 
 
     /**
-     * ∂œø™¡¨Ω”≤¢÷ÿ¡¨
-     * 
+     * Êñ≠ÂºÄËøûÊé•Âπ∂ÈáçËøû
+     *
      * @throws IOException
      */
     public Future<Boolean> reconnect() throws IOException {
@@ -147,8 +146,8 @@ public class TCPConnectorController extends SocketChannelController implements S
 
 
     /**
-     * ∂œø™µ±«∞¡¨Ω”£¨≤¢÷ÿ¡¨–¬µÿ÷∑remoteAddr
-     * 
+     * Êñ≠ÂºÄÂΩìÂâçËøûÊé•ÔºåÂπ∂ÈáçËøûÊñ∞Âú∞ÂùÄremoteAddr
+     *
      * @param remoteAddr
      * @throws IOException
      */
@@ -173,13 +172,11 @@ public class TCPConnectorController extends SocketChannelController implements S
             }
             if (!this.socketChannel.connect(this.remoteAddress)) {
                 this.selectorManager.registerChannel(this.socketChannel, SelectionKey.OP_CONNECT, null);
-            }
-            else {
+            } else {
                 this.createSession(this.socketChannel, this.connectFuture.getArgs());
                 this.connectFuture.setResult(true);
             }
-        }
-        catch (final IOException e) {
+        } catch (final IOException e) {
             if (this.socketChannel != null) {
                 this.socketChannel.close();
             }
@@ -198,8 +195,7 @@ public class TCPConnectorController extends SocketChannelController implements S
             }
             this.createSession((SocketChannel) key.channel(), this.connectFuture.getArgs());
             this.connectFuture.setResult(true);
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             log.error("Connect error", e);
             this.cancelKey(key);
             this.connectFuture.failure(e);
@@ -212,8 +208,7 @@ public class TCPConnectorController extends SocketChannelController implements S
             if (key.channel() != null) {
                 key.channel().close();
             }
-        }
-        finally {
+        } finally {
             key.cancel();
         }
     }

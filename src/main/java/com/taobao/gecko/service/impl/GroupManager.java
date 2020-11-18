@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,12 +28,10 @@ import com.taobao.gecko.service.Connection;
 
 
 /**
- * 
- * ·Ö×é¹ÜÀíÆ÷,¹ÜÀí·Ö×éµ½Á¬½ÓµÄÓ³Éä¹ØÏµ
- * 
+ * åˆ†ç»„ç®¡ç†å™¨,ç®¡ç†åˆ†ç»„åˆ°è¿æ¥çš„æ˜ å°„å…³ç³»
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-15 ÏÂÎç02:38:09
+ * @since 1.0, 2009-12-15 ä¸‹åˆ02:38:09
  */
 
 public class GroupManager implements GroupManagerMBean {
@@ -50,18 +48,17 @@ public class GroupManager implements GroupManagerMBean {
         synchronized (group.intern()) {
             List<Connection> connections = this.group2ConnectionMap.get(group);
             if (connections == null) {
-                // ²ÉÓÃcopyOnWriteÖ÷ÒªÊÇ¿¼ÂÇ±éÀúconnectionµÄ²Ù×÷»á¶àÒ»Ğ©£¬ÔÚ·¢ËÍÏûÏ¢µÄÊ±ºò
+                // é‡‡ç”¨copyOnWriteä¸»è¦æ˜¯è€ƒè™‘éå†connectionçš„æ“ä½œä¼šå¤šä¸€äº›ï¼Œåœ¨å‘é€æ¶ˆæ¯çš„æ—¶å€™
                 connections = new CopyOnWriteArrayList<Connection>();
                 final List<Connection> oldList = this.group2ConnectionMap.putIfAbsent(group, connections);
                 if (oldList != null) {
                     connections = oldList;
                 }
             }
-            // ÒÑ¾­°üº¬£¬¼´ÈÏÎªÌí¼Ó³É¹¦
+            // å·²ç»åŒ…å«ï¼Œå³è®¤ä¸ºæ·»åŠ æˆåŠŸ
             if (connections.contains(connection)) {
                 return true;
-            }
-            else {
+            } else {
                 ((DefaultConnection) connection).addGroup(group);
                 return connections.add(connection);
             }
@@ -95,8 +92,7 @@ public class GroupManager implements GroupManagerMBean {
             final List<Connection> connections = this.group2ConnectionMap.get(group);
             if (connections == null) {
                 return 0;
-            }
-            else {
+            } else {
 
                 return connections.size();
             }
@@ -109,8 +105,7 @@ public class GroupManager implements GroupManagerMBean {
             final List<Connection> connections = this.group2ConnectionMap.get(group);
             if (connections == null) {
                 return false;
-            }
-            else {
+            } else {
                 final boolean result = connections.remove(connection);
                 if (result) {
                     ((DefaultConnection) connection).removeGroup(group);

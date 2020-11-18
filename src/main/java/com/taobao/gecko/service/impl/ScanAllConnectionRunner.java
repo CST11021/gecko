@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,10 @@ import com.taobao.gecko.service.Connection;
 
 
 /**
- * 
- * 扫描所有连接的任务线程
- * 
+ * 鎵弿鎵�鏈夎繛鎺ョ殑浠诲姟绾跨▼
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-18 下午04:18:10
+ * @since 1.0, 2009-12-18 涓嬪崍04:18:10
  */
 
 public class ScanAllConnectionRunner implements Runnable {
@@ -60,7 +58,7 @@ public class ScanAllConnectionRunner implements Runnable {
 
 
     public void run() {
-        // 获取所有连接并遍历
+        // 鑾峰彇鎵�鏈夎繛鎺ュ苟閬嶅巻
         final long now = System.currentTimeMillis();
         final List<Connection> connections =
                 this.controller.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);

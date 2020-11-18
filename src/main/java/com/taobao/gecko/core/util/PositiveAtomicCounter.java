@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
- * 正数的原子递增器，主要用于实现轮询
- * 
+ * 姝ｆ暟鐨勫師瀛愰�掑鍣紝涓昏鐢ㄤ簬瀹炵幇杞
+ *
  * @author apple
- * 
  */
 public class PositiveAtomicCounter {
     private final AtomicInteger atom;

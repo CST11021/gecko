@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="http://www.jboss.org/netty/">The Netty Project</a>
  * @author <a href="http://gleamynode.net/">Trustin Lee</a>
- *
  * @apiviz.landmark
  * @apiviz.has org.jboss.netty.util.TimerTask oneway - - executes
  * @apiviz.has org.jboss.netty.util.Timeout oneway - - creates
@@ -51,7 +50,6 @@ public interface Timer {
      * the specified delay.
      *
      * @return a handle which is associated with the specified task
-     *
      * @throws IllegalStateException if this timer has been
      *                               {@linkplain #stop() stopped} already
      */
@@ -62,7 +60,7 @@ public interface Timer {
      * tasks which were scheduled but not executed yet.
      *
      * @return the handles associated with the tasks which were canceled by
-     *         this method
+     * this method
      */
     Set<Timeout> stop();
 }

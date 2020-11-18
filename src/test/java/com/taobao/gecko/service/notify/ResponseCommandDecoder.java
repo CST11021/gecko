@@ -1,12 +1,12 @@
 /*
  * (C) 2007-2012 Alibaba Group Holding Limited.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,13 +27,10 @@ import com.taobao.gecko.service.notify.response.NotifyResponseCommand;
 
 
 /**
- * 
- * Ó¦´ğÃüÁî½âÂëÆ÷
- * 
- * 
+ * åº”ç­”å‘½ä»¤è§£ç å™¨
+ *
  * @author boyan
- * 
- * @since 1.0, 2009-12-16 ÏÂÎç05:53:55
+ * @since 1.0, 2009-12-16 ä¸‹åˆ05:53:55
  */
 
 public class ResponseCommandDecoder implements CodecFactory.Decoder {
@@ -46,8 +43,7 @@ public class ResponseCommandDecoder implements CodecFactory.Decoder {
         if (decoderState.decodeCommand == null) {
             if (in.remaining() < Constants.RESPONSE_HEADER_LENGTH) {
                 return null;
-            }
-            else {
+            } else {
                 this.decodeHeader(in, session, decoderState);
             }
         }
@@ -55,8 +51,7 @@ public class ResponseCommandDecoder implements CodecFactory.Decoder {
             final NotifyResponseCommand responseCommand = (NotifyResponseCommand) decoderState.decodeCommand;
             if (in.remaining() < responseCommand.getTotalBodyLength()) {
                 return null;
-            }
-            else {
+            } else {
                 return this.decodeContent(in, decoderState, responseCommand);
             }
         }
@@ -66,7 +61,7 @@ public class ResponseCommandDecoder implements CodecFactory.Decoder {
 
 
     private Object decodeContent(final IoBuffer in, final DecoderState decoderState,
-            final NotifyResponseCommand responseCommand) {
+                                 final NotifyResponseCommand responseCommand) {
         if (responseCommand.getTotalBodyLength() > 0) {
             if (responseCommand.getHeaderLength() > 0) {
                 final byte[] header = new byte[responseCommand.getHeaderLength()];
@@ -89,7 +84,7 @@ public class ResponseCommandDecoder implements CodecFactory.Decoder {
     private void decodeHeader(final IoBuffer in, final Session session, final DecoderState decoderState) {
         final byte magic = in.get();
         if (magic != Constants.RESPONSE_MAGIC) {
-            log.error("Ó¦´ğÃüÁîµÄmagicÊıÖµ´íÎó,expect " + Constants.RESPONSE_MAGIC + ",real " + magic);
+            log.error("åº”ç­”å‘½ä»¤çš„magicæ•°å€¼é”™è¯¯,expect " + Constants.RESPONSE_MAGIC + ",real " + magic);
             session.close();
             return;
         }
@@ -99,8 +94,7 @@ public class ResponseCommandDecoder implements CodecFactory.Decoder {
         NotifyResponseCommand responseCommand = null;
         if (responseStatus == ResponseStatus.NO_ERROR) {
             responseCommand = (NotifyResponseCommand) NotifyCommandFactory.newResponseCommand(opCode);
-        }
-        else {
+        } else {
             responseCommand = new NotifyBooleanAckCommand(opCode);
         }
         responseCommand.setResponseHost(session.getRemoteSocketAddress());
