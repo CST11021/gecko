@@ -24,18 +24,14 @@ import com.taobao.gecko.service.notify.OpCode;
 import com.taobao.gecko.service.notify.request.NotifyRequestCommand;
 import com.taobao.gecko.service.notify.request.NotifyRequestCommandHeader;
 
-
 /**
  * 响应成功或者失败的应答，如果失败，可能body带有错误信息
  *
  * @author boyan
  * @since 1.0, 2009-12-17 下午07:38:13
  */
-
 public class NotifyBooleanAckCommand extends NotifyResponseCommand implements BooleanAckCommand {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = -2729908481782608962L;
     private String errorMsg;
 
@@ -43,10 +39,7 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
     public NotifyBooleanAckCommand(final OpCode opCode) {
         super(opCode);
     }
-
-
-    public NotifyBooleanAckCommand(final NotifyRequestCommand request, final ResponseStatus responseStatus,
-                                   final String errorMsg) {
+    public NotifyBooleanAckCommand(final NotifyRequestCommand request, final ResponseStatus responseStatus, final String errorMsg) {
         if (request == null) {
             throw new NullPointerException("Null request");
         }
@@ -58,10 +51,7 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
         this.responseStatus = responseStatus;
         this.errorMsg = errorMsg;
     }
-
-
-    public NotifyBooleanAckCommand(final CommandHeader header, final ResponseStatus responseStatus,
-                                   final String errorMsg) {
+    public NotifyBooleanAckCommand(final CommandHeader header, final ResponseStatus responseStatus, final String errorMsg) {
         if (header == null) {
             throw new NullPointerException("Null header");
         }
@@ -92,8 +82,6 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
             }
         }
     }
-
-
     public void encodeContent() {
         if (this.errorMsg != null) {
             final NotifyProtos.ErrorMesssage errorMsg =
@@ -106,8 +94,6 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
     public String getErrorMsg() {
         return this.errorMsg;
     }
-
-
     public void setErrorMsg(final String errorMsg) {
         this.errorMsg = errorMsg;
     }

@@ -27,9 +27,16 @@ import com.taobao.gecko.service.notify.request.NotifyRequestCommand;
  * @since 1.0, 2009-12-16 下午05:54:09
  */
 public class RequestCommandEncoder implements CodecFactory.Encoder {
+
     static final IoBuffer EMPTY = IoBuffer.allocate(0);
 
-
+    /**
+     * 对消息进行编码，以便后续的序列化
+     *
+     * @param message
+     * @param session
+     * @return
+     */
     public IoBuffer encode(final Object message, final Session session) {
         if (message instanceof NotifyRequestCommand) {
             final NotifyRequestCommand requestCommand = (NotifyRequestCommand) message;
@@ -60,7 +67,6 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
         }
     }
 
-
     private void putContent(final Object message, final NotifyRequestCommand requestCommand, final IoBuffer buffer) {
         if (requestCommand.getHeaderLength() > 0) {
             if (requestCommand.getHeader() == null) {
@@ -76,7 +82,6 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
         }
     }
 
-
     private void putHeader(final Object message, final NotifyRequestCommand requestCommand, final IoBuffer buffer) {
         buffer.put(requestCommand.getMagic());
         buffer.put(requestCommand.getOpCode().getValue());
@@ -84,4 +89,5 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
         buffer.putInt(requestCommand.getTotalBodyLength());
         buffer.putInt(requestCommand.getOpaque());
     }
+
 }

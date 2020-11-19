@@ -22,5 +22,7 @@ package com.taobao.gecko.example.rpc.server;
  * @Date 2011-2-17
  */
 public interface BeanLocator {
+
     public Object getBean(String name);
+
 }

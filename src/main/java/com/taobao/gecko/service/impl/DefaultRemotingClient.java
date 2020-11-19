@@ -64,32 +64,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
 
     @Override
-    public void close(final String group, final boolean allowReconnect) throws NotifyRemotingException {
-        if (!this.started) {
-            throw new NotifyRemotingException("The controller has been stopped");
-        }
-        if (group == null) {
-            throw new IllegalArgumentException("null group");
-        }
-        if (!allowReconnect) {
-            // 取消重连任务
-            this.reconnectManager.cancelReconnectGroup(group);
-            // 删除属性
-            this.attributes.remove(group);
-        }
-        final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
-        if (connections != null) {
-            for (final Connection conn : connections) {
-                if (conn.isConnected()) {
-                    conn.close(allowReconnect);
-                }
-            }
-        }
-
-    }
-
-
-    @Override
     public void connect(String url, String targetGroup, int connCount) throws NotifyRemotingException {
         if (connCount <= 0) {
             throw new IllegalArgumentException("非法连接数，必须大于0");
@@ -129,22 +103,32 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         }
 
     }
-
-
     @Override
     public void connect(String url, String targetGroup) throws NotifyRemotingException {
         this.connect(url, targetGroup, 1);
     }
-
+    /**
+     * 根据URL连接服务端，如果连接失败将转入重连模式
+     *
+     * @param group 服务端的URL，形如schema://host:port的字符串
+     * @throws IOException
+     */
+    @Override
+    public void connect(final String group) throws NotifyRemotingException {
+        this.connect(group, 1);
+    }
 
     /**
      * 这里需要同步，防止对同一个分组发起多个请求
+     *
+     * @param group
+     * @param connCount
+     * @throws NotifyRemotingException
      */
     @Override
     public synchronized void connect(String group, final int connCount) throws NotifyRemotingException {
         this.connect(group, group, connCount);
     }
-
 
     /**
      * 判断分组是否发起过连接请求
@@ -157,7 +141,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         final Object attribute = this.getAttribute(group, Constants.CONNECTION_COUNT_ATTR);
         return readyLock != null && attribute != null;
     }
-
 
     public ReconnectManager getReconnectManager() {
         return this.reconnectManager;
@@ -200,7 +183,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
     }
 
-
     private InetSocketAddress getSocketAddrFromGroup(String group) throws NotifyRemotingException {
         if (group == null) {
             throw new IllegalArgumentException("Null group");
@@ -218,12 +200,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     }
 
 
-    @Override
-    public void connect(final String group) throws NotifyRemotingException {
-        this.connect(group, 1);
-
-    }
-
 
     @Override
     public void awaitReadyInterrupt(final String group) throws NotifyRemotingException, InterruptedException {
@@ -236,10 +212,8 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.awaitReadyInterrupt(group, defaultConnectTimeout * (Integer) attribute);
     }
 
-
     @Override
-    public void awaitReadyInterrupt(final String group, final long time) throws NotifyRemotingException,
-            InterruptedException {
+    public void awaitReadyInterrupt(final String group, final long time) throws NotifyRemotingException, InterruptedException {
         if (StringUtils.isBlank(group)) {
             throw new IllegalArgumentException("Blank group");
         }
@@ -265,7 +239,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
     }
 
-
     @Override
     public InetSocketAddress getRemoteAddress(final String group) {
         if (this.remotingContext == null) {
@@ -283,12 +256,10 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         return null;
     }
 
-
     @Override
     public String getRemoteAddressString(final String group) {
         return RemotingUtils.getAddrString(this.getRemoteAddress(group));
     }
-
 
     @Override
     public boolean isConnected(final String group) {
@@ -307,7 +278,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         return false;
     }
 
-
     @Override
     public void setClientConfig(final ClientConfig clientConfig) {
         if (this.controller != null && this.controller.isStarted()) {
@@ -316,13 +286,11 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.config = clientConfig;
     }
 
-
     @Override
     protected void doStart() throws NotifyRemotingException {
         this.startController();
         this.startReconnectManager();
     }
-
 
     private void startReconnectManager() {
         // 启动重连管理器
@@ -332,7 +300,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.reconnectManager.start();
     }
 
-
     private void startController() throws NotifyRemotingException {
         try {
             this.controller.start();
@@ -341,13 +308,11 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         }
     }
 
-
     @Override
     protected void doStop() throws NotifyRemotingException {
         this.stopReconnectManager();
         this.closeAllConnection();
     }
-
 
     private void closeAllConnection() throws NotifyRemotingException {
         // 关闭所有连接
@@ -360,11 +325,9 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         }
     }
 
-
     private void stopReconnectManager() {
         this.reconnectManager.stop();
     }
-
 
     /**
      * 当连接失败的时候回调
@@ -384,13 +347,39 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
     }
 
-
     @Override
     protected SocketChannelController initController(final Configuration conf) {
         final GeckoTCPConnectorController notifyTCPConnectorController = new GeckoTCPConnectorController(conf);
         // 设置连接失败监听器
         notifyTCPConnectorController.setConnectFailListener(this);
         return notifyTCPConnectorController;
+    }
+
+
+
+    @Override
+    public void close(final String group, final boolean allowReconnect) throws NotifyRemotingException {
+        if (!this.started) {
+            throw new NotifyRemotingException("The controller has been stopped");
+        }
+        if (group == null) {
+            throw new IllegalArgumentException("null group");
+        }
+        if (!allowReconnect) {
+            // 取消重连任务
+            this.reconnectManager.cancelReconnectGroup(group);
+            // 删除属性
+            this.attributes.remove(group);
+        }
+        final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
+        if (connections != null) {
+            for (final Connection conn : connections) {
+                if (conn.isConnected()) {
+                    conn.close(allowReconnect);
+                }
+            }
+        }
+
     }
 
 }

@@ -29,9 +29,7 @@ import com.taobao.gecko.service.config.WireFormatType;
 public class RpcWireFormatType extends WireFormatType {
 
     public static final class RpcHeartBeatCommand implements HeartBeatRequestCommand {
-        public RpcRequest request = new RpcRequest("heartBeat" + System.currentTimeMillis(), "heartBeat"
-                + System.currentTimeMillis(), null);
-
+        public RpcRequest request = new RpcRequest("heartBeat" + System.currentTimeMillis(), "heartBeat" + System.currentTimeMillis(), null);
 
         public CommandHeader getRequestHeader() {
             return this.request;
@@ -43,24 +41,20 @@ public class RpcWireFormatType extends WireFormatType {
         }
     }
 
-
     @Override
     public String getScheme() {
         return "rpc";
     }
-
 
     @Override
     public String name() {
         return "Notify Remoting rpc";
     }
 
-
     @Override
     public CodecFactory newCodecFactory() {
         return new RpcCodecFactory();
     }
-
 
     @Override
     public CommandFactory newCommandFactory() {
@@ -70,9 +64,7 @@ public class RpcWireFormatType extends WireFormatType {
                 return new RpcHeartBeatCommand();
             }
 
-
-            public BooleanAckCommand createBooleanAckCommand(final CommandHeader request,
-                                                             final ResponseStatus responseStatus, final String errorMsg) {
+            public BooleanAckCommand createBooleanAckCommand(final CommandHeader request, final ResponseStatus responseStatus, final String errorMsg) {
                 final BooleanAckCommand ack = new RpcResponse(request.getOpaque(), responseStatus, null) {
 
                     @Override

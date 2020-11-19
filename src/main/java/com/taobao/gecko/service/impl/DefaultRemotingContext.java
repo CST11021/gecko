@@ -42,24 +42,25 @@ import com.taobao.gecko.service.config.BaseConfig;
  * @author boyan
  * @since 1.0, 2009-12-15 下午02:46:34
  */
-
 public class DefaultRemotingContext implements RemotingContext, DefaultRemotingContextMBean {
-    private final GroupManager groupManager;
-    private final ConcurrentHashMap<Object, Object> attributes = new ConcurrentHashMap<Object, Object>();
+
+    static final Log log = LogFactory.getLog(DefaultRemotingContext.class);
+
+    /** 网络层的基础配置 */
     private final BaseConfig config;
+    /** 分组管理器：管理分组到连接的映射关系 */
+    private final GroupManager groupManager;
+
     private final CommandFactory commandFactory;
     private final Semaphore callBackSemaphore;
-    static final Log log = LogFactory.getLog(DefaultRemotingContext.class);
-    /**
-     * Session到connection的映射关系
-     */
-    protected final ConcurrentHashMap<NioSession, DefaultConnection> session2ConnectionMap =
-            new ConcurrentHashMap<NioSession, DefaultConnection>();
-    protected ConcurrentHashMap<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>> processorMap =
-            new ConcurrentHashMap<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>>();
 
-    protected final CopyOnWriteArrayList<ConnectionLifeCycleListener> connectionLifeCycleListenerList =
-            new CopyOnWriteArrayList<ConnectionLifeCycleListener>();
+    private final ConcurrentHashMap<Object, Object> attributes = new ConcurrentHashMap<Object, Object>();
+    /** Session到connection的映射关系 */
+    protected final ConcurrentHashMap<NioSession, DefaultConnection> session2ConnectionMap = new ConcurrentHashMap<NioSession, DefaultConnection>();
+    /** 保存指定的命令类型对应的命令处理器：Map<RequestCommand, RequestProcessor> */
+    protected ConcurrentHashMap<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>> processorMap = new ConcurrentHashMap<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>>();
+    /** 连接的生命周期监听器 */
+    protected final CopyOnWriteArrayList<ConnectionLifeCycleListener> connectionLifeCycleListenerList = new CopyOnWriteArrayList<ConnectionLifeCycleListener>();
 
 
     public DefaultRemotingContext(final BaseConfig config, final CommandFactory commandFactory) {
@@ -73,21 +74,22 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         MBeanUtils.registerMBeanWithIdPrefix(this, null);
     }
 
+    // 实现 DefaultRemotingContextMBean 接口
 
     public int getCallBackCountAvailablePermits() {
         return this.callBackSemaphore.availablePermits();
     }
 
 
+
+
     public CommandFactory getCommandFactory() {
         return this.commandFactory;
     }
 
-
     public BaseConfig getConfig() {
         return this.config;
     }
-
 
     /**
      * 请求允许加入callBack，做callBack总数限制
@@ -98,7 +100,6 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         return this.callBackSemaphore.tryAcquire();
     }
 
-
     /**
      * 在应答到达时释放许可
      */
@@ -106,11 +107,9 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         this.callBackSemaphore.release();
     }
 
-
     void release(final int n) {
         this.callBackSemaphore.release(n);
     }
-
 
     void notifyConnectionCreated(final Connection conn) {
         for (final ConnectionLifeCycleListener listener : this.connectionLifeCycleListenerList) {
@@ -122,7 +121,6 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         }
     }
 
-
     void notifyConnectionClosed(final Connection conn) {
         for (final ConnectionLifeCycleListener listener : this.connectionLifeCycleListenerList) {
             try {
@@ -133,184 +131,78 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         }
     }
 
-
     void addSession2ConnectionMapping(final NioSession session, final DefaultConnection conn) {
         this.session2ConnectionMap.put(session, conn);
     }
-
 
     DefaultConnection getConnectionBySession(final NioSession session) {
         return this.session2ConnectionMap.get(session);
     }
 
-
     DefaultConnection removeSession2ConnectionMapping(final NioSession session) {
         return this.session2ConnectionMap.remove(session);
     }
-
 
     public Set<String> getGroupSet() {
         return this.groupManager.getGroupSet();
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#addConnectionToGroup
-     * (java.lang.String, com.taobao.gecko.service.Connection)
-     */
     public boolean addConnectionToGroup(final String group, final Connection connection) {
         return this.groupManager.addConnection(group, connection);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#addConnection
-     * (com.taobao.gecko.service.Connection)
-     */
     public void addConnection(final Connection connection) {
         this.groupManager.addConnection(Constants.DEFAULT_GROUP, connection);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#removeConnection
-     * (com.taobao.gecko.service.Connection)
-     */
     public void removeConnection(final Connection connection) {
         this.groupManager.removeConnection(Constants.DEFAULT_GROUP, connection);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @seecom.taobao.notify.remoting.service.impl.RemotingContext#
-     * getConnectionSetByGroup(java.lang.String)
-     */
     public List<Connection> getConnectionsByGroup(final String group) {
         return this.groupManager.getConnectionsByGroup(group);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @seecom.taobao.notify.remoting.service.impl.RemotingContext#
-     * removeConnectionFromGroup(java.lang.String,
-     * com.taobao.gecko.service.Connection)
-     */
     public boolean removeConnectionFromGroup(final String group, final Connection connection) {
         return this.groupManager.removeConnection(group, connection);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#getAttribute(
-     * java.lang.Object, java.lang.Object)
-     */
     public Object getAttribute(final Object key, final Object defaultValue) {
         final Object value = this.attributes.get(key);
         return value == null ? defaultValue : value;
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#getAttribute(
-     * java.lang.Object)
-     */
     public Object getAttribute(final Object key) {
         return this.attributes.get(key);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#getAttributeKeys
-     * ()
-     */
     public Set<Object> getAttributeKeys() {
         return this.attributes.keySet();
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#setAttribute(
-     * java.lang.Object, java.lang.Object)
-     */
     public Object setAttribute(final Object key, final Object value) {
         return this.attributes.put(key, value);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#setAttribute(
-     * java.lang.Object)
-     */
     public Object setAttribute(final Object key) {
         return this.attributes.put(key, null);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.taobao.gecko.service.impl.RemotingContext#dispose()
-     */
-    public void dispose() {
-        this.groupManager.clear();
-        this.attributes.clear();
-    }
-
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#setAttributeIfAbsent
-     * (java.lang.Object, java.lang.Object)
-     */
     public Object setAttributeIfAbsent(final Object key, final Object value) {
         return this.attributes.putIfAbsent(key, value);
     }
-
 
     public Object removeAttribute(final Object key) {
         return this.attributes.remove(key);
     }
 
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RemotingContext#setAttributeIfAbsent
-     * (java.lang.Object)
-     */
     public Object setAttributeIfAbsent(final Object key) {
         return this.attributes.putIfAbsent(key, null);
+    }
+
+    public void dispose() {
+        this.groupManager.clear();
+        this.attributes.clear();
     }
 
 }

@@ -27,6 +27,7 @@ import com.taobao.gecko.service.notify.request.NotifyRequestCommand;
  * @author aoqiong
  */
 public class NotifyDummyAckCommand extends NotifyResponseCommand implements DummyAckCommand {
+
     static final long serialVersionUID = 234985443249230L;
     private String dummy;
 
@@ -34,8 +35,6 @@ public class NotifyDummyAckCommand extends NotifyResponseCommand implements Dumm
     public NotifyDummyAckCommand(final OpCode opCode) {
         super(opCode);
     }
-
-
     public NotifyDummyAckCommand(final NotifyRequestCommand request, final String dummy) {
         this.opCode = OpCode.DUMMY;
         this.responseStatus = ResponseStatus.NO_ERROR;
@@ -43,29 +42,23 @@ public class NotifyDummyAckCommand extends NotifyResponseCommand implements Dumm
         this.dummy = dummy;
     }
 
-
-    public String getDummy() {
-        return this.dummy;
-    }
-
-
-    public void setDummy(final String dummy) {
-        this.dummy = dummy;
-    }
-
-
     public void decodeContent() {
         if (this.header != null) {
             this.dummy = new String(this.header);
         }
     }
-
-
     public void encodeContent() {
         if (this.dummy != null) {
             this.setHeader(this.dummy.getBytes());
         }
 
+    }
+
+    public String getDummy() {
+        return this.dummy;
+    }
+    public void setDummy(final String dummy) {
+        this.dummy = dummy;
     }
 
 }

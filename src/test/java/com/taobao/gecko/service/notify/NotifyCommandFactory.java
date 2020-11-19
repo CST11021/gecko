@@ -34,14 +34,11 @@ import com.taobao.gecko.service.notify.response.NotifyDummyAckCommand;
  * @author boyan
  * @since 1.0, 2009-12-18 上午11:13:33
  */
-
 public final class NotifyCommandFactory implements CommandFactory {
 
-    public BooleanAckCommand createBooleanAckCommand(final CommandHeader request,
-                                                     final ResponseStatus responseStatus, final String errorMsg) {
+    public BooleanAckCommand createBooleanAckCommand(final CommandHeader request, final ResponseStatus responseStatus, final String errorMsg) {
         return new NotifyBooleanAckCommand(request, responseStatus, errorMsg);
     }
-
 
     public HeartBeatRequestCommand createHeartBeatCommand() {
         return new NotifyHeartBeatCommand();

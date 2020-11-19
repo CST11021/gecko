@@ -44,14 +44,12 @@ public interface RemotingController {
      */
     public void setConnectionSelector(ConnectionSelector selector);
 
-
     /**
      * 启动Remoting控制器
      *
      * @throws NotifyRemotingException
      */
     public void start() throws NotifyRemotingException;
-
 
     /**
      * 关闭Remoting控制器
@@ -60,7 +58,6 @@ public interface RemotingController {
      */
     public void stop() throws NotifyRemotingException;
 
-
     /**
      * 判断通讯组件是否启动
      *
@@ -68,16 +65,14 @@ public interface RemotingController {
      */
     public boolean isStarted();
 
-
     /**
-     * 注册请求处理器
+     * 注册请求处理器：当服务端接收到<T>类型的请求时，将请求分派给对应的处理器处理
      *
      * @param <T>
-     * @param commandClazz
-     * @param processor
+     * @param commandClazz  请求类型
+     * @param processor     处理指定类型请求的处理器
      */
     public <T extends RequestCommand> void registerProcessor(Class<T> commandClazz, RequestProcessor<T> processor);
-
 
     /**
      * 获取command对应的处理器
@@ -87,7 +82,6 @@ public interface RemotingController {
      */
     public RequestProcessor<? extends RequestCommand> getProcessor(Class<? extends RequestCommand> clazz);
 
-
     /**
      * 取消处理器的注册,返回被取消的处理器
      *
@@ -96,7 +90,6 @@ public interface RemotingController {
      */
     public RequestProcessor<? extends RequestCommand> unreigsterProcessor(Class<? extends RequestCommand> clazz);
 
-
     /**
      * 批量添加请求处理器
      *
@@ -104,7 +97,6 @@ public interface RemotingController {
      * @param map
      */
     public void addAllProcessors(Map<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>> map);
-
 
     /**
      * 添加一个定时器
@@ -115,7 +107,6 @@ public interface RemotingController {
      */
     public void insertTimer(TimerRef timerRef);
 
-
     /**
      * 异步发送消息给多个分组，每个分组根据策略选一个连接发送，指定回调处理器和超时时间，超时将返回一个超时应答给回调监听器
      *
@@ -125,9 +116,7 @@ public interface RemotingController {
      * @param timeUnit     时间单位
      * @param args         附件
      */
-    public void sendToGroups(Map<String, RequestCommand> groupObjects, MultiGroupCallBackListener listener,
-                             long timeout, TimeUnit timeUnit, Object... args) throws NotifyRemotingException;
-
+    public void sendToGroups(Map<String, RequestCommand> groupObjects, MultiGroupCallBackListener listener, long timeout, TimeUnit timeUnit, Object... args) throws NotifyRemotingException;
 
     /**
      * 异步单向发送消息给多个分组
@@ -136,14 +125,12 @@ public interface RemotingController {
      */
     public void sendToGroups(Map<String, RequestCommand> groupObjects) throws NotifyRemotingException;
 
-
     /**
      * 异步单向发送给所有连接
      *
      * @param command
      */
     public void sendToAllConnections(RequestCommand command) throws NotifyRemotingException;
-
 
     /**
      * 异步单向发送给指定分组中的一个连接，默认是随机策略
@@ -152,7 +139,6 @@ public interface RemotingController {
      * @param command
      */
     public void sendToGroup(String group, RequestCommand command) throws NotifyRemotingException;
-
 
     /**
      * 从指定FileChannel的position位置开始传输size个字节到指定group的一个socket,
@@ -172,10 +158,7 @@ public interface RemotingController {
      * @param unit
      * @throws NotifyRemotingException
      */
-    public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position,
-                                long size, Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit)
-            throws NotifyRemotingException;
-
+    public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size, Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit) throws NotifyRemotingException;
 
     /**
      * 单向传输数据到指定group的某个socket连接，传输需要使用的时间未知，也不可取消
@@ -189,9 +172,7 @@ public interface RemotingController {
      * @see #transferToGroup(String, IoBuffer, IoBuffer, FileChannel, long,
      * long, Integer, SingleRequestCallBackListener, long, TimeUnit)
      */
-    public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position,
-                                long size) throws NotifyRemotingException;
-
+    public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size) throws NotifyRemotingException;
 
     /**
      * 异步单向发送给指定分组的所有连接
@@ -201,7 +182,6 @@ public interface RemotingController {
      */
     public void sendToGroupAllConnections(String group, RequestCommand command) throws NotifyRemotingException;
 
-
     /**
      * 异步发送给指定分组中的一个连接，指定回调监听器RequestCallBackListener，默认策略是随机，默认超时为1秒,
      * 超过超时时间将返回一个超时应答给回调监听器
@@ -210,9 +190,7 @@ public interface RemotingController {
      * @param command  请求命令
      * @param listener 响应处理器
      */
-    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener)
-            throws NotifyRemotingException;
-
+    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener) throws NotifyRemotingException;
 
     /**
      * 异步发送给指定分组中的一个连接，默认策略是随机，指定超时,超过超时时间将返回一个超时应答给回调监听器
@@ -221,9 +199,7 @@ public interface RemotingController {
      * @param command  请求命令
      * @param listener 响应处理器
      */
-    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener, long time,
-                            TimeUnit timeunut) throws NotifyRemotingException;
-
+    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener, long time, TimeUnit timeunut) throws NotifyRemotingException;
 
     /**
      * 同步调用分组中的一个连接，默认超时1秒
@@ -234,9 +210,7 @@ public interface RemotingController {
      * @throws InterruptedException
      * @throws TimeoutException
      */
-    public ResponseCommand invokeToGroup(String group, RequestCommand command) throws InterruptedException,
-            TimeoutException, NotifyRemotingException;
-
+    public ResponseCommand invokeToGroup(String group, RequestCommand command) throws InterruptedException, TimeoutException, NotifyRemotingException;
 
     /**
      * 同步调用分组中的一个连接，指定超时时间
@@ -249,9 +223,7 @@ public interface RemotingController {
      * @throws InterruptedException
      * @throws TimeoutException
      */
-    public ResponseCommand invokeToGroup(String group, RequestCommand command, long time, TimeUnit timeUnit)
-            throws InterruptedException, TimeoutException, NotifyRemotingException;
-
+    public ResponseCommand invokeToGroup(String group, RequestCommand command, long time, TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException;
 
     /**
      * 异步发送给指定分组的所有连接，默认超时1秒,超过超时时间将返回一个超时应答给回调监听器
@@ -260,9 +232,7 @@ public interface RemotingController {
      * @param command  请求命令
      * @param listener 响应处理器
      */
-    public void sendToGroupAllConnections(String group, RequestCommand command,
-                                          GroupAllConnectionCallBackListener listener) throws NotifyRemotingException;
-
+    public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener) throws NotifyRemotingException;
 
     /**
      * 同步调用分组内的所有连接，
@@ -275,9 +245,7 @@ public interface RemotingController {
      * @throws InterruptedException
      * @throws NotifyRemotingException
      */
-    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command)
-            throws InterruptedException, NotifyRemotingException;
-
+    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command) throws InterruptedException, NotifyRemotingException;
 
     /**
      * 同步调用分组内的所有连接，
@@ -290,9 +258,7 @@ public interface RemotingController {
      * @throws InterruptedException
      * @throws NotifyRemotingException
      */
-    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command,
-                                                                        long time, TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException;
-
+    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command, long time, TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException;
 
     /**
      * 异步发送给指定分组的所有连接，指定超时时间，超过超时时间将返回一个超时应答给回调监听器
@@ -301,9 +267,7 @@ public interface RemotingController {
      * @param command  请求命令
      * @param listener 响应处理器
      */
-    public void sendToGroupAllConnections(String group, RequestCommand command,
-                                          GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
-
+    public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
 
     /**
      * 获取group对应的连接数
@@ -313,14 +277,12 @@ public interface RemotingController {
      */
     public int getConnectionCount(String group);
 
-
     /**
      * 获取group集合
      *
      * @return
      */
     public Set<String> getGroupSet();
-
 
     /**
      * 设置属性
@@ -330,7 +292,6 @@ public interface RemotingController {
      * @param value
      */
     public void setAttribute(String group, String key, Object value);
-
 
     /**
      * 设置属性，类似ConcurrentHashMap.putIfAbsent
@@ -342,7 +303,6 @@ public interface RemotingController {
      */
     public Object setAttributeIfAbsent(String group, String key, Object value);
 
-
     /**
      * 获取属性
      *
@@ -352,7 +312,6 @@ public interface RemotingController {
      */
     public Object getAttribute(String group, String key);
 
-
     /**
      * 添加连接生命周期监听器
      *
@@ -360,14 +319,12 @@ public interface RemotingController {
      */
     public void addConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
 
-
     /**
      * 添加连接生命周期监听器
      *
      * @param connectionLifeCycleListener
      */
     public void removeConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
-
 
     /**
      * 移除属性
@@ -378,14 +335,12 @@ public interface RemotingController {
      */
     public Object removeAttribute(String group, String key);
 
-
     /**
      * 获取全局上下文
      *
      * @return
      */
     public RemotingContext getRemotingContext();
-
 
     /**
      * 根据策略从分组中的连接选择一个
@@ -395,7 +350,6 @@ public interface RemotingController {
      * @param request            发送的命令
      * @return
      */
-    public Connection selectConnectionForGroup(String group, ConnectionSelector connectionSelector,
-                                               RequestCommand request) throws NotifyRemotingException;
+    public Connection selectConnectionForGroup(String group, ConnectionSelector connectionSelector, RequestCommand request) throws NotifyRemotingException;
 
 }

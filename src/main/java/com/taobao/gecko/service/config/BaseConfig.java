@@ -19,10 +19,11 @@ import com.taobao.gecko.core.util.SystemUtils;
 
 
 /**
+ * 网络层的基础配置
+ *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:15:01
  */
-
 public class BaseConfig {
 
     public BaseConfig() {
@@ -126,210 +127,129 @@ public class BaseConfig {
     public int getCallBackExecutorPoolSize() {
         return this.callBackExecutorPoolSize;
     }
-
-
     public void setCallBackExecutorPoolSize(final int callBackExecutorPoolSize) {
         this.callBackExecutorPoolSize = callBackExecutorPoolSize;
         this.maxCallBackExecutorPoolSize = 3 * this.callBackExecutorPoolSize;
     }
-
-
     public WireFormatType getWireFormatType() {
         return this.wireFormatType;
     }
-
-
     public void setWireFormatType(final WireFormatType wireFormatType) {
         WireFormatType.registerWireFormatType(wireFormatType);
         this.wireFormatType = wireFormatType;
     }
-
-
     public int getMaxCallBackCount() {
         return this.maxCallBackCount;
     }
-
-
     public void setMaxCallBackCount(final int maxCallBackCountPerConnection) {
         this.maxCallBackCount = maxCallBackCountPerConnection;
     }
-
-
     public int getScanAllConnectionInterval() {
         return this.scanAllConnectionInterval;
     }
-
-
     public void setScanAllConnectionInterval(final int scanInvalidCallBackInterval) {
         this.scanAllConnectionInterval = scanInvalidCallBackInterval;
     }
-
-
     public long getMaxScheduleWrittenBytes() {
         return this.maxScheduleWrittenBytes;
     }
-
-
     public void setMaxScheduleWrittenBytes(final long maxScheduleWrittenBytes) {
         this.maxScheduleWrittenBytes = maxScheduleWrittenBytes;
     }
-
-
     public int getMaxCallBackExecutorPoolSize() {
         return this.maxCallBackExecutorPoolSize;
     }
-
-
     public boolean isKeepAlive() {
         return this.keepAlive;
     }
-
-
     public void setKeepAlive(final boolean keepAlive) {
         this.keepAlive = keepAlive;
     }
-
-
     public void setMaxCallBackExecutorPoolSize(final int maxCallBackExecutorPoolSize) {
         this.maxCallBackExecutorPoolSize = maxCallBackExecutorPoolSize;
     }
-
-
     public int getCallBackExecutorQueueSize() {
         return this.callBackExecutorQueueSize;
     }
-
-
     public void setCallBackExecutorQueueSize(final int callBackExecutorQueueSize) {
         this.callBackExecutorQueueSize = callBackExecutorQueueSize;
     }
-
-
     public boolean isTcpNoDelay() {
         return this.tcpNoDelay;
     }
-
-
     public boolean isReuseAddr() {
         return this.reuseAddr;
     }
-
-
     public void setReuseAddr(final boolean reuseAddr) {
         this.reuseAddr = reuseAddr;
     }
-
-
     public void setTcpNoDelay(final boolean tcpNoDelay) {
         this.tcpNoDelay = tcpNoDelay;
     }
-
-
     public void setSoLinger(final boolean soLinger, final int linger) {
         this.soLinger = soLinger;
         this.linger = linger;
     }
-
-
     public boolean isSoLinger() {
         return this.soLinger;
     }
-
-
     public int getLinger() {
         return this.linger;
     }
-
-
     public int getReadBufferSize() {
         return this.readBufferSize;
     }
-
-
     public void setReadBufferSize(final int readBufferSize) {
         this.readBufferSize = readBufferSize;
     }
-
-
     public int getIdleTime() {
         return this.idleTime;
     }
-
-
     public void setIdleTime(final int idleTime) {
         this.idleTime = idleTime;
     }
-
-
     public int getMaxReadBufferSize() {
         return this.maxReadBufferSize;
     }
-
-
     public void setMaxReadBufferSize(final int maxReadBufferSize) {
         this.maxReadBufferSize = maxReadBufferSize;
     }
-
-
     public int getReadThreadCount() {
         return this.readThreadCount;
     }
-
-
     public void setReadThreadCount(final int readThreadCount) {
         this.readThreadCount = readThreadCount;
     }
-
-
     public int getDispatchMessageThreadCount() {
         return this.dispatchMessageThreadCount;
     }
-
-
     public void setDispatchMessageThreadCount(final int dispatchMessageThreadCount) {
         this.dispatchMessageThreadCount = dispatchMessageThreadCount;
     }
-
-
     public int getWriteThreadCount() {
         return this.writeThreadCount;
     }
-
-
     public void setWriteThreadCount(final int writeThreadCount) {
         this.writeThreadCount = writeThreadCount;
     }
-
-
     public int getRcvBufferSize() {
         return this.rcvBufferSize;
     }
-
-
     public void setRcvBufferSize(final int rcvBufferSize) {
         this.rcvBufferSize = rcvBufferSize;
     }
-
-
     public int getSndBufferSize() {
         return this.sndBufferSize;
     }
-
-
     public void setSndBufferSize(final int sndBufferSize) {
         this.sndBufferSize = sndBufferSize;
     }
-
-
     public int getSelectorPoolSize() {
         return this.selectorPoolSize;
     }
-
-
     public void setSelectorPoolSize(final int selectorPoolSize) {
         this.selectorPoolSize = selectorPoolSize;
     }
-
 
     @Override
     public String toString() {

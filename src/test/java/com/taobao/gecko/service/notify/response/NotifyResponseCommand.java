@@ -15,9 +15,6 @@
  */
 package com.taobao.gecko.service.notify.response;
 
-import java.net.InetSocketAddress;
-import java.util.Arrays;
-
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
@@ -25,9 +22,14 @@ import com.taobao.gecko.service.notify.Constants;
 import com.taobao.gecko.service.notify.NotifyCommand;
 import com.taobao.gecko.service.notify.OpCode;
 
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+
 
 public abstract class NotifyResponseCommand implements ResponseCommand, NotifyCommand {
+
     static final long serialVersionUID = 77788812547386438L;
+
     private static final byte magic = Constants.RESPONSE_MAGIC;
     protected OpCode opCode;
     protected ResponseStatus responseStatus;
@@ -36,12 +38,12 @@ public abstract class NotifyResponseCommand implements ResponseCommand, NotifyCo
     protected byte[] header;
     protected byte[] body;
     protected Integer opaque;
-
     private long responseTime;
-
     private InetSocketAddress responseHost;
 
+    public NotifyResponseCommand() {
 
+    }
     public NotifyResponseCommand(final OpCode opCode) {
         super();
         this.opCode = opCode;
@@ -49,88 +51,65 @@ public abstract class NotifyResponseCommand implements ResponseCommand, NotifyCo
     }
 
 
+    // getter and setter ...
+
     public void setResponseTime(final long responseTime) {
         this.responseTime = responseTime;
     }
-
-
     /**
      * 检测消息是否为boolean类型
      *
      * @return
      */
-
     public boolean isBoolean() {
         return this instanceof BooleanAckCommand;
     }
-
-
     public InetSocketAddress getResponseHost() {
         return this.responseHost;
     }
-
-
     public void setResponseHost(final InetSocketAddress responseHost) {
         this.responseHost = responseHost;
     }
-
-
     public long getResponseTime() {
         return this.responseTime;
     }
-
-
-    public NotifyResponseCommand() {
-
-    }
-
-
     public Integer getOpaque() {
         return this.opaque;
     }
-
-
     public void setOpaque(final Integer opaque) {
         this.opaque = opaque;
     }
-
-
     public byte getMagic() {
         return this.magic;
     }
-
-
     public OpCode getOpCode() {
         return this.opCode;
     }
-
-
     public void setOpCode(final OpCode opCode) {
         this.opCode = opCode;
     }
-
-
     public ResponseStatus getResponseStatus() {
         return this.responseStatus;
     }
-
-
     public void setResponseStatus(final ResponseStatus status) {
         this.responseStatus = status;
     }
-
-
     public short getHeaderLength() {
         return this.headerLength;
     }
-
-
     public void setHeaderLength(final short headerLength) {
         this.totalBodyLength = this.totalBodyLength - this.headerLength + headerLength;
         this.headerLength = headerLength;
     }
-
-
+    public int getTotalBodyLength() {
+        return this.totalBodyLength;
+    }
+    public void setTotalBodyLength(final int totalBodyLength) {
+        this.totalBodyLength = totalBodyLength;
+    }
+    public byte[] getHeader() {
+        return this.header;
+    }
     public void setHeader(final byte[] header) {
         this.header = header;
         if (this.header.length > Short.MAX_VALUE) {
@@ -138,34 +117,15 @@ public abstract class NotifyResponseCommand implements ResponseCommand, NotifyCo
         }
         this.setHeaderLength((short) this.header.length);
     }
-
-
+    public byte[] getBody() {
+        return this.body;
+    }
     public void setBody(final byte[] body) {
         if (body == null) {
             throw new NullPointerException("NUll body");
         }
         this.body = body;
         this.totalBodyLength = this.headerLength + this.body.length;
-    }
-
-
-    public int getTotalBodyLength() {
-        return this.totalBodyLength;
-    }
-
-
-    public void setTotalBodyLength(final int totalBodyLength) {
-        this.totalBodyLength = totalBodyLength;
-    }
-
-
-    public byte[] getHeader() {
-        return this.header;
-    }
-
-
-    public byte[] getBody() {
-        return this.body;
     }
 
 
@@ -182,8 +142,6 @@ public abstract class NotifyResponseCommand implements ResponseCommand, NotifyCo
         result = prime * result + this.totalBodyLength;
         return result;
     }
-
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

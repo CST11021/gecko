@@ -102,6 +102,14 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
      */
     protected Map<SocketOption<?>, Object> socketOptions = new HashMap<SocketOption<?>, Object>();
 
+    /**
+     * Connected session set
+     */
+    private final Set<Session> sessionSet = new HashSet<Session>();
+
+    public AbstractController() {
+        this(new Configuration(), null, null);
+    }
 
     public void setSocketOptions(final Map<SocketOption<?>, Object> socketOptions) {
         if (socketOptions == null) {
@@ -110,16 +118,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.socketOptions = socketOptions;
     }
 
-    /**
-     * Connected session set
-     */
-    private final Set<Session> sessionSet = new HashSet<Session>();
-
-
     public final int getDispatchMessageThreadCount() {
         return this.dispatchMessageThreadCount;
     }
-
 
     public final void setDispatchMessageThreadCount(final int dispatchMessageThreadPoolSize) {
         if (this.started) {
@@ -131,11 +132,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.dispatchMessageThreadCount = dispatchMessageThreadPoolSize;
     }
 
-
     public long getSessionIdleTimeout() {
         return this.configuration.getSessionIdleTimeout();
     }
-
 
     /**
      * Build write queue for session
@@ -146,22 +145,18 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         return new LinkedTransferQueue<WriteMessage>();
     }
 
-
     public void setSessionIdleTimeout(final long sessionIdleTimeout) {
         this.configuration.setSessionIdleTimeout(sessionIdleTimeout);
 
     }
 
-
     public long getSessionTimeout() {
         return this.sessionTimeout;
     }
 
-
     public void setSessionTimeout(final long sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
     }
-
 
     public int getSoTimeout() {
         return this.soTimeout;
@@ -173,40 +168,29 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     }
 
 
-    public AbstractController() {
-        this(new Configuration(), null, null);
-    }
-
-
     public double getReceiveThroughputLimit() {
         return this.statistics.getReceiveThroughputLimit();
     }
-
 
     public void setReceiveThroughputLimit(final double receiveThroughputLimit) {
         this.statistics.setReceiveThroughputLimit(receiveThroughputLimit);
 
     }
 
-
     public AbstractController(final Configuration configuration) {
         this(configuration, null, null);
 
     }
 
-
     public AbstractController(final Configuration configuration, final CodecFactory codecFactory) {
         this(configuration, null, codecFactory);
     }
-
 
     public AbstractController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
         this.init(configuration, handler, codecFactory);
     }
 
-
-    private synchronized void init(final Configuration configuration, final Handler handler,
-                                   final CodecFactory codecFactory) {
+    private synchronized void init(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
         this.setHandler(handler);
         this.setCodecFactory(codecFactory);
         this.setConfiguration(configuration);
@@ -220,11 +204,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.setStarted(false);
     }
 
-
     void setStarted(final boolean started) {
         this.started = started;
     }
-
 
     private void setStatisticsConfig(final Configuration configuration) {
         if (configuration.isStatisticsServer()) {
@@ -237,11 +219,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     public Configuration getConfiguration() {
         return this.configuration;
     }
-
 
     public void setConfiguration(final Configuration configuration) {
         if (configuration == null) {
@@ -250,51 +230,41 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.configuration = configuration;
     }
 
-
     public InetSocketAddress getLocalSocketAddress() {
         return this.localSocketAddress;
     }
-
 
     public void setLocalSocketAddress(final InetSocketAddress inetSocketAddress) {
         this.localSocketAddress = inetSocketAddress;
     }
 
-
     public void onAccept(final SelectionKey sk) throws IOException {
         this.statistics.statisticsAccept();
     }
-
 
     public void onConnect(final SelectionKey key) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-
     public void addStateListener(final ControllerStateListener listener) {
         this.stateListeners.add(listener);
     }
-
 
     public void removeStateListener(final ControllerStateListener listener) {
         this.stateListeners.remove(listener);
     }
 
-
     public boolean isHandleReadWriteConcurrently() {
         return this.handleReadWriteConcurrently;
     }
-
 
     public void setHandleReadWriteConcurrently(final boolean handleReadWriteConcurrently) {
         this.handleReadWriteConcurrently = handleReadWriteConcurrently;
     }
 
-
     public int getReadThreadCount() {
         return this.readThreadCount;
     }
-
 
     public void setReadThreadCount(final int readThreadCount) {
         if (this.started) {
@@ -306,11 +276,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.readThreadCount = readThreadCount;
     }
 
-
     public final int getWriteThreadCount() {
         return this.writeThreadCount;
     }
-
 
     public final void setWriteThreadCount(final int writeThreadCount) {
         if (this.started) {
@@ -322,11 +290,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.writeThreadCount = writeThreadCount;
     }
 
-
     public Handler getHandler() {
         return this.handler;
     }
-
 
     public void setHandler(final Handler handler) {
         if (this.started) {
@@ -335,14 +301,12 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.handler = handler;
     }
 
-
     public int getPort() {
         if (this.localSocketAddress != null) {
             return this.localSocketAddress.getPort();
         }
         throw new NullPointerException("Controller is not binded");
     }
-
 
     public synchronized void start() throws IOException {
         if (this.isStarted()) {
@@ -368,7 +332,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         log.warn("The Controller started at " + this.localSocketAddress + " ...");
     }
 
-
     private void addShutdownHook() {
         this.shutdownHookThread = new Thread() {
             @Override
@@ -384,9 +347,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         Runtime.getRuntime().addShutdownHook(this.shutdownHookThread);
     }
 
-
     protected abstract void start0() throws IOException;
-
 
     void setDispatchMessageDispatcher(final Dispatcher dispatcher) {
         final Dispatcher oldDispatcher = this.dispatchMessageDispatcher;
@@ -396,11 +357,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     Dispatcher getReadEventDispatcher() {
         return this.readEventDispatcher;
     }
-
 
     void setReadEventDispatcher(final Dispatcher dispatcher) {
         final Dispatcher oldDispatcher = this.readEventDispatcher;
@@ -410,7 +369,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     void setWriteEventDispatcher(final Dispatcher dispatcher) {
         final Dispatcher oldDispatcher = this.writeEventDispatcher;
         this.writeEventDispatcher = dispatcher;
@@ -419,11 +377,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     private final void startStatistics() {
         this.statistics.start();
     }
-
 
     public void notifyStarted() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
@@ -431,33 +387,27 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     public boolean isStarted() {
         return this.started;
     }
-
 
     public final Statistics getStatistics() {
         return this.statistics;
     }
 
-
     public final CodecFactory getCodecFactory() {
         return this.codecFactory;
     }
 
-
     public final void setCodecFactory(final CodecFactory codecFactory) {
         this.codecFactory = codecFactory;
     }
-
 
     public void notifyReady() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
             stateListener.onReady(this);
         }
     }
-
 
     public synchronized final void unregisterSession(final Session session) {
         this.sessionSet.remove(session);
@@ -466,14 +416,12 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     public void checkStatisticsForRestart() {
         if (this.statisticsInterval > 0
                 && System.currentTimeMillis() - this.statistics.getStartedTime() > this.statisticsInterval * 1000) {
             this.statistics.restart();
         }
     }
-
 
     public final synchronized void registerSession(final Session session) {
         if (this.started && !session.isClosed()) {
@@ -483,7 +431,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
 
     }
-
 
     public void stop() throws IOException {
         Set<Session> copySet = null;
@@ -510,16 +457,13 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
     }
 
-
     private void removeShutdownHook() {
         if (!this.isHutdownHookCalled && this.shutdownHookThread != null) {
             Runtime.getRuntime().removeShutdownHook(this.shutdownHookThread);
         }
     }
 
-
     protected abstract void stop0() throws IOException;
-
 
     private final void stopDispatcher() {
         if (this.readEventDispatcher != null) {
@@ -533,16 +477,13 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     private final void stopStatistics() {
         this.statistics.stop();
     }
 
-
     private final void clearStateListeners() {
         this.stateListeners.clear();
     }
-
 
     public final void notifyException(final Throwable t) {
         for (final ControllerStateListener stateListener : this.stateListeners) {
@@ -550,13 +491,11 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     public final void notifyStopped() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
             stateListener.onStopped(this);
         }
     }
-
 
     public final void notifyAllSessionClosed() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
@@ -564,11 +503,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
-
     public Set<Session> getSessionSet() {
         return Collections.unmodifiableSet(this.sessionSet);
     }
-
 
     public <T> void setSocketOption(final SocketOption<T> socketOption, final T value) {
         if (socketOption == null) {
@@ -584,12 +521,10 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.socketOptions.put(socketOption, value);
     }
 
-
     @SuppressWarnings("unchecked")
     public <T> T getSocketOption(final SocketOption<T> socketOption) {
         return (T) this.socketOptions.get(socketOption);
     }
-
 
     /**
      * Bind localhost address

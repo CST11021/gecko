@@ -49,9 +49,7 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
     public DefaultRemotingServer(final ServerConfig serverConfig) {
         super(serverConfig);
         this.config = serverConfig;
-
     }
-
 
     public void setServerConfig(final ServerConfig serverConfig) {
         if (this.controller != null && this.controller.isStarted()) {
@@ -60,7 +58,6 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
         this.config = serverConfig;
     }
 
-
     /**
      * 服务端还需要扫描连接是否存活
      */
@@ -68,7 +65,6 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
     protected ScanTask[] getScanTasks() {
         return new ScanTask[]{new InvalidCallBackScanTask(), new InvalidConnectionScanTask()};
     }
-
 
     @Override
     protected void doStart() throws NotifyRemotingException {
@@ -91,7 +87,6 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
         }
     }
 
-
     @Override
     protected void doStop() throws NotifyRemotingException {
         // 关闭所有连接
@@ -102,7 +97,6 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
             }
         }
     }
-
 
     public synchronized URI getConnectURI() {
         final InetSocketAddress socketAddress = this.getInetSocketAddress();
@@ -130,11 +124,9 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
         }
     }
 
-
     public InetSocketAddress getInetSocketAddress() {
         return this.controller == null ? null : this.controller.getLocalSocketAddress();
     }
-
 
     @Override
     protected SocketChannelController initController(final Configuration conf) {

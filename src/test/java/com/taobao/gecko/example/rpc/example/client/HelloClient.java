@@ -17,25 +17,24 @@ package com.taobao.gecko.example.rpc.example.client;
 
 import com.taobao.gecko.example.rpc.client.RpcProxyFactory;
 import com.taobao.gecko.example.rpc.example.Hello;
-import com.taobao.gecko.example.rpc.example.server.HelloImpl;
 
 
 public class HelloClient {
     public static void main(String[] args) throws Exception {
+
+        // RPC代理工厂
         RpcProxyFactory factory = new RpcProxyFactory();
+        // 创建一个服务代理
         Hello hello = factory.proxyRemote("rpc://localhost:8080", "hello", Hello.class);
-        System.out.println(hello.sayHello("庄晓丹", 10000));
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
-            hello.add(1, 300);
-        }
-        System.out.println(System.currentTimeMillis() - start);
-        start = System.currentTimeMillis();
-        HelloImpl helloImpl = new HelloImpl();
-        for (int i = 0; i < 10000; i++) {
-            helloImpl.add(1, 300);
-        }
-        System.out.println(System.currentTimeMillis() - start);
-        System.out.println(hello.getDate());
+
+        // 发起远程服务调用
+        String response = hello.sayHello("庄晓丹", 10000);
+        System.out.println(response);
+
+
+        hello.add(1, 300);
+
+        hello.getDate();
+
     }
 }

@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
  */
 
 public final class ServerConfig extends BaseConfig {
+
     /**
      * 端口
      */
@@ -35,38 +36,27 @@ public final class ServerConfig extends BaseConfig {
 
     private InetSocketAddress localInetSocketAddress;
 
-
-    public InetSocketAddress getLocalInetSocketAddress() {
-        return this.localInetSocketAddress;
-    }
-
-
-    public void setLocalInetSocketAddress(InetSocketAddress localInetSocketAddress) {
-        this.localInetSocketAddress = localInetSocketAddress;
-    }
-
-
     public ServerConfig() {
         super();
         this.setIdleTime(-1);
     }
 
 
+    public InetSocketAddress getLocalInetSocketAddress() {
+        return this.localInetSocketAddress;
+    }
+    public void setLocalInetSocketAddress(InetSocketAddress localInetSocketAddress) {
+        this.localInetSocketAddress = localInetSocketAddress;
+    }
     public int getBacklog() {
         return this.backlog;
     }
-
-
     public void setBacklog(int backlog) {
         this.backlog = backlog;
     }
-
-
     public int getPort() {
         return this.port;
     }
-
-
     public void setPort(int port) {
         this.port = port;
     }

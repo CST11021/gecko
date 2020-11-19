@@ -15,11 +15,6 @@
  */
 package com.taobao.gecko.example.rpc.client;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.command.RpcResponse;
@@ -30,10 +25,17 @@ import com.taobao.gecko.service.RemotingFactory;
 import com.taobao.gecko.service.config.ClientConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
+/**
+ *
+ */
 public class RpcProxyFactory {
-    private final RemotingClient remotingClient;
 
+    private final RemotingClient remotingClient;
 
     public RpcProxyFactory() throws IOException {
         final ClientConfig clientConfig = new ClientConfig();
@@ -46,10 +48,19 @@ public class RpcProxyFactory {
         }
     }
 
-
+    /**
+     * 创建远程服务代理，客户端会通过该方法创建代理服务
+     *
+     * @param uri               调用服务的所有IP地址和端口
+     * @param beanName          调用的目标服务beanName
+     * @param serviceClass      目标服务beanName的类型
+     * @param <T>
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @SuppressWarnings("unchecked")
-    public <T> T proxyRemote(final String uri, final String beanName, Class<T> serviceClass) throws IOException,
-            InterruptedException {
+    public <T> T proxyRemote(final String uri, final String beanName, Class<T> serviceClass) throws IOException, InterruptedException {
         try {
             this.remotingClient.connect(uri);
             this.remotingClient.awaitReadyInterrupt(uri);
@@ -61,13 +72,19 @@ public class RpcProxyFactory {
                 new Class<?>[]{serviceClass}, new InvocationHandler() {
 
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+                        // 1、创建请求对象
                         RpcRequest request = new RpcRequest(beanName, method.getName(), args);
+
+                        // 2、向指定的服务发起请求
                         RpcResponse response = null;
                         try {
                             response = (RpcResponse) RpcProxyFactory.this.remotingClient.invokeToGroup(uri, request);
                         } catch (Exception e) {
                             throw new RpcRuntimeException("Rpc failure", e);
                         }
+
+                        // 3、返回响应结果
                         if (response == null) {
                             throw new RpcRuntimeException("Rpc failure,no response from rpc server");
                         }
@@ -76,6 +93,7 @@ public class RpcProxyFactory {
                         } else {
                             throw new RpcRuntimeException("Rpc failure:" + response.getErrorMsg());
                         }
+
                     }
                 });
 

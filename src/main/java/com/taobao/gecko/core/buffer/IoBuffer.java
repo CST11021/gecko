@@ -1378,7 +1378,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSet(Class<E> enumClass);
 
-
     /**
      * Reads a byte sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1390,7 +1389,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSet(int index, Class<E> enumClass);
 
-
     /**
      * Reads a short sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1400,7 +1398,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetShort(Class<E> enumClass);
-
 
     /**
      * Reads a short sized bit vector and converts it to an {@link EnumSet}.
@@ -1413,7 +1410,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetShort(int index, Class<E> enumClass);
 
-
     /**
      * Reads an int sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1423,7 +1419,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetInt(Class<E> enumClass);
-
 
     /**
      * Reads an int sized bit vector and converts it to an {@link EnumSet}.
@@ -1436,7 +1431,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetInt(int index, Class<E> enumClass);
 
-
     /**
      * Reads a long sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1446,7 +1440,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetLong(Class<E> enumClass);
-
 
     /**
      * Reads a long sized bit vector and converts it to an {@link EnumSet}.
@@ -1459,7 +1452,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetLong(int index, Class<E> enumClass);
 
-
     /**
      * Writes the specified {@link Set} to the buffer as a byte sized bit
      * vector.
@@ -1468,7 +1460,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSet(Set<E> set);
-
 
     /**
      * Writes the specified {@link Set} to the buffer as a byte sized bit
@@ -1480,7 +1471,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSet(int index, Set<E> set);
 
-
     /**
      * Writes the specified {@link Set} to the buffer as a short sized bit
      * vector.
@@ -1489,7 +1479,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetShort(Set<E> set);
-
 
     /**
      * Writes the specified {@link Set} to the buffer as a short sized bit
@@ -1501,7 +1490,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetShort(int index, Set<E> set);
 
-
     /**
      * Writes the specified {@link Set} to the buffer as an int sized bit
      * vector.
@@ -1510,7 +1498,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetInt(Set<E> set);
-
 
     /**
      * Writes the specified {@link Set} to the buffer as an int sized bit
@@ -1522,7 +1509,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetInt(int index, Set<E> set);
 
-
     /**
      * Writes the specified {@link Set} to the buffer as a long sized bit
      * vector.
@@ -1531,7 +1517,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetLong(Set<E> set);
-
 
     /**
      * Writes the specified {@link Set} to the buffer as a long sized bit

@@ -15,16 +15,12 @@
  */
 package com.taobao.gecko.example.rpc.command;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
-import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.CommandHeader;
+import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.util.OpaqueGenerator;
+
+import java.io.*;
 
 
 public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
@@ -33,43 +29,16 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
 
     private Integer opaque;
 
+    /** 表示调用的服务端的目标bean */
     private String beanName;
-
+    /** 表示调用的服务方法 */
     private String methodName;
-
+    /** 方法入参 */
     private Object[] arguments;
 
-
-    public String getBeanName() {
-        return this.beanName;
+    public RpcRequest() {
+        super();
     }
-
-
-    public void setBeanName(final String beanName) {
-        this.beanName = beanName;
-    }
-
-
-    public void setMethodName(final String methodName) {
-        this.methodName = methodName;
-    }
-
-
-    public void setArguments(final Object[] arguments) {
-        this.arguments = arguments;
-    }
-
-
-    public String getMethodName() {
-        return this.methodName;
-    }
-
-
-    public Object[] getArguments() {
-        return this.arguments;
-    }
-
-
     public RpcRequest(final String beanName, final String methodName, final Object[] arguments) {
         super();
         this.opaque = OpaqueGenerator.getNextOpaque();
@@ -79,16 +48,52 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
     }
 
 
-    public void setOpaque(final Integer opaque) {
-        this.opaque = opaque;
+    // 实现：RpcCommand
+
+    /**
+     * 将请求对象进行编码（转为字节）以便后续的序列化操作
+     *
+     * @return
+     */
+    public IoBuffer encode() {
+        byte[] argumentsData = null;
+        if (this.arguments != null && this.arguments.length > 0) {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                final ObjectOutputStream objOut = new ObjectOutputStream(out);
+                for (final Object arg : this.arguments) {
+                    objOut.writeObject(arg);
+                }
+                out.close();
+                argumentsData = out.toByteArray();
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        final IoBuffer buffer =
+                IoBuffer.allocate(1 + 4 + 4 + this.beanName.length() + 4 + this.methodName.length() + 4
+                        + (argumentsData != null ? 4 : 0) + (argumentsData != null ? argumentsData.length : 0));
+        buffer.put((byte) 0x70);
+        buffer.putInt(this.opaque);
+        buffer.putInt(this.beanName.length());
+        buffer.put(this.beanName.getBytes());
+        buffer.putInt(this.methodName.length());
+        buffer.put(this.methodName.getBytes());
+        buffer.putInt(this.arguments == null ? 0 : this.arguments.length);
+        if (argumentsData != null) {
+            buffer.putInt(argumentsData.length);
+            buffer.put(argumentsData);
+        }
+        buffer.flip();
+        return buffer;
     }
-
-
-    public RpcRequest() {
-        super();
-    }
-
-
+    /**
+     * 将字节进行解码
+     *
+     * @param buffer
+     * @return
+     */
     public boolean decode(final IoBuffer buffer) {
         buffer.mark();
         if (buffer.remaining() >= 4) {
@@ -159,51 +164,38 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
             return true;
         }
     }
-
-
-    public IoBuffer encode() {
-        byte[] argumentsData = null;
-        if (this.arguments != null && this.arguments.length > 0) {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            try {
-                final ObjectOutputStream objOut = new ObjectOutputStream(out);
-                for (final Object arg : this.arguments) {
-                    objOut.writeObject(arg);
-                }
-                out.close();
-                argumentsData = out.toByteArray();
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-        final IoBuffer buffer =
-                IoBuffer.allocate(1 + 4 + 4 + this.beanName.length() + 4 + this.methodName.length() + 4
-                        + (argumentsData != null ? 4 : 0) + (argumentsData != null ? argumentsData.length : 0));
-        buffer.put((byte) 0x70);
-        buffer.putInt(this.opaque);
-        buffer.putInt(this.beanName.length());
-        buffer.put(this.beanName.getBytes());
-        buffer.putInt(this.methodName.length());
-        buffer.put(this.methodName.getBytes());
-        buffer.putInt(this.arguments == null ? 0 : this.arguments.length);
-        if (argumentsData != null) {
-            buffer.putInt(argumentsData.length);
-            buffer.put(argumentsData);
-        }
-        buffer.flip();
-        return buffer;
-    }
-
-
-    public Integer getOpaque() {
-        return this.opaque;
-    }
-
-
     public CommandHeader getRequestHeader() {
         return this;
     }
+
+
+    // getter and setter ...
+
+    public void setOpaque(final Integer opaque) {
+        this.opaque = opaque;
+    }
+    public Integer getOpaque() {
+        return this.opaque;
+    }
+    public String getBeanName() {
+        return this.beanName;
+    }
+    public void setBeanName(final String beanName) {
+        this.beanName = beanName;
+    }
+    public void setMethodName(final String methodName) {
+        this.methodName = methodName;
+    }
+    public void setArguments(final Object[] arguments) {
+        this.arguments = arguments;
+    }
+    public String getMethodName() {
+        return this.methodName;
+    }
+    public Object[] getArguments() {
+        return this.arguments;
+    }
+
 
 
     public static void main(final String[] args) {

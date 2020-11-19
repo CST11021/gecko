@@ -46,7 +46,6 @@ public class ResponseCommandEncoder implements CodecFactory.Encoder {
         }
     }
 
-
     private void putContent(final Object message, final NotifyResponseCommand responseCommand, final IoBuffer buffer) {
         if (responseCommand.getHeaderLength() > 0) {
             if (responseCommand.getHeader() == null) {
@@ -61,7 +60,6 @@ public class ResponseCommandEncoder implements CodecFactory.Encoder {
             buffer.put(responseCommand.getBody());
         }
     }
-
 
     private void putHeader(final NotifyResponseCommand responseCommand, final IoBuffer buffer) {
         buffer.put(responseCommand.getMagic());

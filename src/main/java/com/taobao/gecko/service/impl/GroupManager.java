@@ -33,16 +33,13 @@ import com.taobao.gecko.service.Connection;
  * @author boyan
  * @since 1.0, 2009-12-15 下午02:38:09
  */
-
 public class GroupManager implements GroupManagerMBean {
-    private final ConcurrentHashMap<String/* group */, List<Connection>> group2ConnectionMap =
-            new ConcurrentHashMap<String, List<Connection>>();
+    private final ConcurrentHashMap<String/* group */, List<Connection>> group2ConnectionMap = new ConcurrentHashMap<String, List<Connection>>();
 
 
     public GroupManager() {
         MBeanUtils.registerMBeanWithIdPrefix(this, null);
     }
-
 
     public boolean addConnection(final String group, final Connection connection) {
         synchronized (group.intern()) {
@@ -65,7 +62,6 @@ public class GroupManager implements GroupManagerMBean {
         }
     }
 
-
     @Override
     public Map<String, Set<String>> getGroupConnectionInfo() {
         final Map<String, Set<String>> result = new HashMap<String, Set<String>>();
@@ -81,11 +77,9 @@ public class GroupManager implements GroupManagerMBean {
         return result;
     }
 
-
     public void clear() {
         this.group2ConnectionMap.clear();
     }
-
 
     public int getGroupConnectionCount(final String group) {
         synchronized (group.intern()) {
@@ -98,7 +92,6 @@ public class GroupManager implements GroupManagerMBean {
             }
         }
     }
-
 
     public boolean removeConnection(final String group, final Connection connection) {
         synchronized (group.intern()) {
@@ -119,11 +112,9 @@ public class GroupManager implements GroupManagerMBean {
 
     }
 
-
     public Set<String> getGroupSet() {
         return this.group2ConnectionMap.keySet();
     }
-
 
     public List<Connection> getConnectionsByGroup(final String group) {
         return this.group2ConnectionMap.get(group);

@@ -21,6 +21,7 @@ package com.taobao.gecko.core.command;
  * @author dennis
  */
 public interface CommandHeader extends Command {
+
     /**
      * 返回请求的opaque
      *

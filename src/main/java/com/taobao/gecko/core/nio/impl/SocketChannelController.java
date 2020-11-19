@@ -41,34 +41,24 @@ public abstract class SocketChannelController extends NioController {
 
     protected boolean soLingerOn = false;
 
+    public SocketChannelController() {
+        super();
+    }
+    public SocketChannelController(final Configuration configuration) {
+        super(configuration, null, null);
+
+    }
+    public SocketChannelController(final Configuration configuration, final CodecFactory codecFactory) {
+        super(configuration, null, codecFactory);
+    }
+    public SocketChannelController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
+        super(configuration, handler, codecFactory);
+    }
 
     public void setSoLinger(final boolean on, final int value) {
         this.soLingerOn = on;
         this.socketOptions.put(StandardSocketOption.SO_LINGER, value);
     }
-
-
-    public SocketChannelController() {
-        super();
-    }
-
-
-    public SocketChannelController(final Configuration configuration) {
-        super(configuration, null, null);
-
-    }
-
-
-    public SocketChannelController(final Configuration configuration, final CodecFactory codecFactory) {
-        super(configuration, null, codecFactory);
-    }
-
-
-    public SocketChannelController(final Configuration configuration, final Handler handler,
-                                   final CodecFactory codecFactory) {
-        super(configuration, handler, codecFactory);
-    }
-
 
     @Override
     protected final void dispatchReadEvent(final SelectionKey key) {
@@ -79,7 +69,6 @@ public abstract class SocketChannelController extends NioController {
             log.warn("Could not find session for readable event,maybe it is closed");
         }
     }
-
 
     @Override
     protected final void dispatchWriteEvent(final SelectionKey key) {
@@ -92,14 +81,12 @@ public abstract class SocketChannelController extends NioController {
 
     }
 
-
     protected NioSession buildSession(final SocketChannel sc) {
         final Queue<WriteMessage> queue = this.buildQueue();
         final NioSessionConfig sessionConfig = this.buildSessionConfig(sc, queue);
         final NioSession session = new NioTCPSession(sessionConfig, this.configuration.getSessionReadBufferSize());
         return session;
     }
-
 
     protected final void configureSocketChannel(final SocketChannel sc) throws IOException {
         sc.socket().setSoTimeout(this.soTimeout);

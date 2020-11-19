@@ -34,11 +34,9 @@ public class NotifyProtocolCodecFactory implements CodecFactory {
         this.decoder = new NotifyWrapDecoder();
     }
 
-
     public Decoder getDecoder() {
         return this.decoder;
     }
-
 
     public Encoder getEncoder() {
         return this.encoder;

@@ -22,8 +22,9 @@ package com.taobao.gecko.service.notify;
  * @Date 2010-8-9
  */
 public interface NotifyCommand {
+
     void encodeContent();
 
-
     void decodeContent();
+
 }

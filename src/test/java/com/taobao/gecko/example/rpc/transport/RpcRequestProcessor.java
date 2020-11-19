@@ -15,8 +15,6 @@
  */
 package com.taobao.gecko.example.rpc.transport;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.command.RpcResponse;
@@ -25,8 +23,11 @@ import com.taobao.gecko.example.rpc.server.RpcSkeleton;
 import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.RequestProcessor;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 
 public class RpcRequestProcessor implements RequestProcessor<RpcRequest> {
+
     private final ThreadPoolExecutor executor;
     private final BeanLocator beanLocator;
 
@@ -42,19 +43,28 @@ public class RpcRequestProcessor implements RequestProcessor<RpcRequest> {
         return this.executor;
     }
 
-
+    /**
+     * 处理请求
+     *
+     * @param request 请求命令
+     * @param conn    请求来源的连接
+     */
     public void handleRequest(RpcRequest request, Connection conn) {
         Object bean = this.beanLocator.getBean(request.getBeanName());
         if (bean == null) {
             throw new RuntimeException("Could not find bean named " + request.getBeanName());
         }
+
         RpcSkeleton skeleton = new RpcSkeleton(request.getBeanName(), bean);
+        // 调用指定服务的目标方法
         Object result = skeleton.invoke(request.getMethodName(), request.getArguments());
         try {
+            // 回写响应数据
             conn.response(new RpcResponse(request.getOpaque(), ResponseStatus.NO_ERROR, result));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
 }

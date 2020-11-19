@@ -15,11 +15,11 @@
  */
 package com.taobao.gecko.service.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.taobao.gecko.core.command.CommandFactory;
 import com.taobao.gecko.core.core.CodecFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -28,10 +28,9 @@ import com.taobao.gecko.core.core.CodecFactory;
  * @author boyan
  * @since 1.0, 2010-1-27 下午05:46:27
  */
-
 public abstract class WireFormatType {
-    private static Map<String, WireFormatType> registeredWireFormatType = new HashMap<String, WireFormatType>();
 
+    private static Map<String, WireFormatType> registeredWireFormatType = new HashMap<String, WireFormatType>();
 
     /**
      * 注册协议类型
@@ -45,7 +44,6 @@ public abstract class WireFormatType {
         registeredWireFormatType.put(wireFormatType.name(), wireFormatType);
     }
 
-
     /**
      * 取消协议类型的注册
      *
@@ -57,13 +55,6 @@ public abstract class WireFormatType {
         }
         registeredWireFormatType.remove(wireFormatType.name());
     }
-
-
-    @Override
-    public String toString() {
-        return this.name();
-    }
-
 
     public static WireFormatType valueOf(final String name) {
         return registeredWireFormatType.get(name);
@@ -78,14 +69,12 @@ public abstract class WireFormatType {
      */
     public abstract String getScheme();
 
-
     /**
      * 协议的编解码工厂
      *
      * @return
      */
     public abstract CodecFactory newCodecFactory();
-
 
     /**
      * 协议的命令工厂
@@ -94,11 +83,15 @@ public abstract class WireFormatType {
      */
     public abstract CommandFactory newCommandFactory();
 
-
     /**
      * 协议名称
      *
      * @return
      */
     public abstract String name();
+
+    @Override
+    public String toString() {
+        return this.name();
+    }
 }

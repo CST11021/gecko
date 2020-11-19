@@ -25,8 +25,30 @@ import com.taobao.gecko.service.notify.OpCode;
  * @author dennis
  */
 public class NotifyRequestCommandHeader implements CommandHeader {
+
     private Integer opaque;
     private OpCode opCode;
+
+
+    public NotifyRequestCommandHeader(final int opaque, final OpCode opCode) {
+        super();
+        this.opaque = opaque;
+        this.opCode = opCode;
+    }
+
+
+    public Integer getOpaque() {
+        return this.opaque;
+    }
+    public void setOpaque(final int opaque) {
+        this.opaque = opaque;
+    }
+    public OpCode getOpCode() {
+        return this.opCode;
+    }
+    public void setOpCode(final OpCode opCode) {
+        this.opCode = opCode;
+    }
 
 
     @Override
@@ -37,8 +59,6 @@ public class NotifyRequestCommandHeader implements CommandHeader {
         result = prime * result + this.opaque;
         return result;
     }
-
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -62,33 +82,6 @@ public class NotifyRequestCommandHeader implements CommandHeader {
             return false;
         }
         return true;
-    }
-
-
-    public NotifyRequestCommandHeader(final int opaque, final OpCode opCode) {
-        super();
-        this.opaque = opaque;
-        this.opCode = opCode;
-    }
-
-
-    public Integer getOpaque() {
-        return this.opaque;
-    }
-
-
-    public void setOpaque(final int opaque) {
-        this.opaque = opaque;
-    }
-
-
-    public OpCode getOpCode() {
-        return this.opCode;
-    }
-
-
-    public void setOpCode(final OpCode opCode) {
-        this.opCode = opCode;
     }
 
 }

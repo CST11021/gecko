@@ -22,6 +22,7 @@ import com.taobao.gecko.example.rpc.server.RpcServer;
 
 
 public class HelloServer {
+
     public static void main(String[] args) throws Exception {
         RpcServer rpcServer = new RpcServer();
         rpcServer.bind(new BeanLocator() {
@@ -34,4 +35,5 @@ public class HelloServer {
             }
         }, new InetSocketAddress(8080));
     }
+
 }

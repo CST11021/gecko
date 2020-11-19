@@ -27,18 +27,15 @@ public class NotifyWireFormatType extends WireFormatType {
         return "NOTIFY_V1";
     }
 
-
     @Override
     public String getScheme() {
         return "tcp";
     }
 
-
     @Override
     public CodecFactory newCodecFactory() {
         return new NotifyProtocolCodecFactory();
     }
-
 
     @Override
     public CommandFactory newCommandFactory() {

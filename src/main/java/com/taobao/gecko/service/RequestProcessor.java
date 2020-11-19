@@ -21,13 +21,13 @@ import com.taobao.gecko.core.command.RequestCommand;
 
 
 /**
- * 请求处理器
+ * 服务端处理来自客户端请求的请求处理器
  *
  * @author boyan
  * @since 1.0, 2009-12-15 下午02:45:43
  */
-
 public interface RequestProcessor<T extends RequestCommand> {
+
     /**
      * 处理请求
      *

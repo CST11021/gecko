@@ -40,14 +40,12 @@ public interface RemotingContext {
      */
     public abstract boolean addConnectionToGroup(String group, Connection connection);
 
-
     /**
      * 获取当前的网络层配置对象
      *
      * @return
      */
     public abstract BaseConfig getConfig();
-
 
     /**
      * 添加到默认分组
@@ -56,14 +54,12 @@ public interface RemotingContext {
      */
     public abstract void addConnection(Connection connection);
 
-
     /**
      * 从默认分组移除
      *
      * @param connection
      */
     public abstract void removeConnection(Connection connection);
-
 
     /**
      * 根据Group得到connection集合
@@ -72,7 +68,6 @@ public interface RemotingContext {
      * @return
      */
     public abstract List<Connection> getConnectionsByGroup(String group);
-
 
     /**
      * 移除连接
@@ -83,24 +78,17 @@ public interface RemotingContext {
      */
     public abstract boolean removeConnectionFromGroup(String group, Connection connection);
 
-
     public abstract Object getAttribute(Object key, Object defaultValue);
-
 
     public abstract Object getAttribute(Object key);
 
-
     public abstract Set<Object> getAttributeKeys();
-
 
     public abstract Object setAttribute(Object key, Object value);
 
-
     public abstract Object setAttributeIfAbsent(Object key, Object value);
 
-
     public abstract Object setAttributeIfAbsent(Object key);
-
 
     /**
      * 获取当前客户端或者服务器的所有分组名称
@@ -108,7 +96,6 @@ public interface RemotingContext {
      * @return
      */
     public Set<String> getGroupSet();
-
 
     /**
      * 获取当前使用的协议工厂

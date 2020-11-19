@@ -15,16 +15,17 @@
  */
 package com.taobao.gecko.service.notify.request;
 
-import java.util.Arrays;
-
-import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.CommandHeader;
+import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.service.notify.Constants;
 import com.taobao.gecko.service.notify.NotifyCommand;
 import com.taobao.gecko.service.notify.OpCode;
 
+import java.util.Arrays;
+
 
 public abstract class NotifyRequestCommand implements RequestCommand, NotifyCommand {
+
     static final long serialVersionUID = -1L;
 
     private static final byte magic = Constants.REQUEST_MAGIC;
@@ -33,58 +34,45 @@ public abstract class NotifyRequestCommand implements RequestCommand, NotifyComm
     protected byte[] header;
     protected int totalBodyLength;
     protected Integer opaque;
-
+    protected boolean controllCommand;
+    protected byte[] body;
 
     public NotifyRequestCommand() {
         super();
     }
-
-
-    public OpCode getOpCode() {
-        return this.opCode;
-    }
-
-
-    public void setOpaque(final Integer opaque) {
-        this.opaque = opaque;
-    }
-
-
     public NotifyRequestCommand(final OpCode opCode) {
         this.opCode = opCode;
-    }
-
-    protected boolean controllCommand;
-
-    protected byte[] body;
-
-
-    public byte getMagic() {
-        return this.magic;
-    }
-
-
-    public short getHeaderLength() {
-        return this.headerLength;
-    }
-
-
-    public void setHeaderLength(final short headerLength) {
-        this.totalBodyLength = this.totalBodyLength - this.headerLength + headerLength;
-        this.headerLength = headerLength;
-    }
-
-
-    public byte[] getHeader() {
-        return this.header;
     }
 
 
     public CommandHeader getRequestHeader() {
         return new NotifyRequestCommandHeader(this.opaque, this.opCode);
     }
-
-
+    public OpCode getOpCode() {
+        return this.opCode;
+    }
+    public void setOpCode(final OpCode opCode) {
+        this.opCode = opCode;
+    }
+    public Integer getOpaque() {
+        return this.opaque;
+    }
+    public void setOpaque(final Integer opaque) {
+        this.opaque = opaque;
+    }
+    public byte getMagic() {
+        return this.magic;
+    }
+    public short getHeaderLength() {
+        return this.headerLength;
+    }
+    public void setHeaderLength(final short headerLength) {
+        this.totalBodyLength = this.totalBodyLength - this.headerLength + headerLength;
+        this.headerLength = headerLength;
+    }
+    public byte[] getHeader() {
+        return this.header;
+    }
     public void setHeader(final byte[] header) {
         this.header = header;
         if (this.header.length > Short.MAX_VALUE) {
@@ -92,49 +80,27 @@ public abstract class NotifyRequestCommand implements RequestCommand, NotifyComm
         }
         this.setHeaderLength((short) this.header.length);
     }
-
-
     public int getTotalBodyLength() {
         return this.totalBodyLength;
     }
-
-
     public void setTotalBodyLength(final int totalBodyLength) {
         this.totalBodyLength = totalBodyLength;
     }
-
-
     public boolean isControllCommand() {
         return this.controllCommand;
     }
-
-
     public void setControllCommand(final boolean controllCommand) {
         this.controllCommand = controllCommand;
     }
-
-
-    public Integer getOpaque() {
-        return this.opaque;
-    }
-
-
     public byte[] getBody() {
         return this.body;
     }
-
-
     public void setBody(final byte[] body) {
         if (body == null) {
             throw new NullPointerException("Null body");
         }
         this.body = body;
         this.totalBodyLength = this.headerLength + this.body.length;
-    }
-
-
-    public void setOpCode(final OpCode opCode) {
-        this.opCode = opCode;
     }
 
 
@@ -151,8 +117,6 @@ public abstract class NotifyRequestCommand implements RequestCommand, NotifyComm
         result = prime * result + this.totalBodyLength;
         return result;
     }
-
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

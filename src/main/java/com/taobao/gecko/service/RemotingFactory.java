@@ -31,6 +31,18 @@ import com.taobao.gecko.service.impl.DefaultRemotingServer;
 
 public final class RemotingFactory {
 
+
+    // 服务端
+
+    /**
+     * 创建一个服务器对象，不启动
+     *
+     * @param serverConfig
+     * @return
+     */
+    public static RemotingServer newRemotingServer(final ServerConfig serverConfig) {
+        return new DefaultRemotingServer(serverConfig);
+    }
     /**
      * 初始化并启动服务器，绑定到指定IP地址
      *
@@ -45,16 +57,7 @@ public final class RemotingFactory {
     }
 
 
-    /**
-     * 创建一个服务器对象，不启动
-     *
-     * @param serverConfig
-     * @return
-     */
-    public static RemotingServer newRemotingServer(final ServerConfig serverConfig) {
-        return new DefaultRemotingServer(serverConfig);
-    }
-
+    // 客户端
 
     /**
      * 创建一个客户端对象，不启动
@@ -65,8 +68,6 @@ public final class RemotingFactory {
     public static RemotingClient newRemotingClient(final ClientConfig clientConfig) {
         return new DefaultRemotingClient(clientConfig);
     }
-
-
     /**
      * 创建一个客户端对象并启动
      *
@@ -79,4 +80,5 @@ public final class RemotingFactory {
         remotingClient.start();
         return remotingClient;
     }
+
 }

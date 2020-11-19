@@ -64,7 +64,6 @@ public enum OpCode {
         throw new IllegalArgumentException("Unknown OpCode " + this);
     }
 
-
     public static OpCode valueOf(byte value) {
         switch (value) {
             case 0x00:
@@ -92,4 +91,5 @@ public enum OpCode {
         }
         throw new IllegalArgumentException("Unknown OpCode " + value);
     }
+
 }

@@ -25,6 +25,7 @@ import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
  * @author boyan
  */
 public interface CommandFactory {
+
     /**
      * 创建特定于协议的BooleanAckCommand
      *
@@ -33,9 +34,7 @@ public interface CommandFactory {
      * @param errorMsg       错误信息
      * @return
      */
-    public BooleanAckCommand createBooleanAckCommand(CommandHeader request, ResponseStatus responseStatus,
-                                                     String errorMsg);
-
+    public BooleanAckCommand createBooleanAckCommand(CommandHeader request, ResponseStatus responseStatus, String errorMsg);
 
     /**
      * 创建特定于协议的心跳命令

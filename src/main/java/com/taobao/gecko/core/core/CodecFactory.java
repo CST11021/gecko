@@ -26,17 +26,32 @@ import com.taobao.gecko.core.buffer.IoBuffer;
  */
 public interface CodecFactory {
 
+    /**
+     * 编码器的顶级接口
+     */
     interface Encoder {
         public IoBuffer encode(Object message, Session session);
     }
 
+    /**
+     * 解码器的顶级接口
+     */
     interface Decoder {
         public Object decode(IoBuffer buff, Session session);
     }
 
-
+    /**
+     * 获取编码器
+     *
+     * @return
+     */
     Encoder getEncoder();
 
-
+    /**
+     * 获取解码器
+     *
+     * @return
+     */
     Decoder getDecoder();
+
 }

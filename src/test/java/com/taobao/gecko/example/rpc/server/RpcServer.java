@@ -15,11 +15,6 @@
  */
 package com.taobao.gecko.example.rpc.server;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.transport.RpcRequestProcessor;
 import com.taobao.gecko.example.rpc.transport.RpcWireFormatType;
@@ -28,21 +23,34 @@ import com.taobao.gecko.service.RemotingServer;
 import com.taobao.gecko.service.config.ServerConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
 
 public class RpcServer {
+
     private InetSocketAddress serverAddr;
 
     private RemotingServer remotingServer;
 
-
+    /**
+     * 绑定指定的端口，处理请求
+     *
+     * @param beanLocator   提供获取服务的方法：根据请求的中的beanName获取指定的请求处理服务
+     * @param serverAddr    绑定的服务端IP地址和端口
+     * @throws IOException
+     */
     public void bind(BeanLocator beanLocator, InetSocketAddress serverAddr) throws IOException {
         final ServerConfig serverConfig = new ServerConfig();
         serverConfig.setWireFormatType(new RpcWireFormatType());
-        this.serverAddr = serverAddr;
         serverConfig.setLocalInetSocketAddress(serverAddr);
+
+        this.serverAddr = serverAddr;
         this.remotingServer = RemotingFactory.newRemotingServer(serverConfig);
-        this.remotingServer.registerProcessor(RpcRequest.class, new RpcRequestProcessor((ThreadPoolExecutor) Executors
-                .newCachedThreadPool(), beanLocator));
+        this.remotingServer.registerProcessor(RpcRequest.class, new RpcRequestProcessor((ThreadPoolExecutor) Executors.newCachedThreadPool(), beanLocator));
+
         try {
             this.remotingServer.start();
         } catch (NotifyRemotingException e) {

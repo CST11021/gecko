@@ -26,15 +26,11 @@ public interface ControllerLifeCycle {
 
     void notifyReady();
 
-
     void notifyStarted();
-
 
     void notifyAllSessionClosed();
 
-
     void notifyException(Throwable t);
-
 
     void notifyStopped();
 }

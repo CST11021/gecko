@@ -15,15 +15,15 @@
  */
 package com.taobao.gecko.core.core.impl;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.core.CodecFactory;
 import com.taobao.gecko.core.core.Session;
 import com.taobao.gecko.core.util.ByteBufferMatcher;
 import com.taobao.gecko.core.util.ShiftAndByteBufferMatcher;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 
 /**
@@ -42,16 +42,50 @@ public class TextLineCodecFactory implements CodecFactory {
 
     private final Charset charset;
 
+    private final Encoder encoder = new StringEncoder();
+    private final CodecFactory.Decoder decoder = new StringDecoder();
+
 
     public TextLineCodecFactory() {
         this.charset = Charset.forName(DEFAULT_CHARSET_NAME);
     }
-
-
     public TextLineCodecFactory(final String charsetName) {
         this.charset = Charset.forName(charsetName);
     }
 
+
+    public Decoder getDecoder() {
+        return this.decoder;
+
+    }
+
+    public Encoder getEncoder() {
+        return this.encoder;
+    }
+
+    /**
+     * 字符串编码器
+     */
+    class StringEncoder implements Encoder {
+
+        public IoBuffer encode(final Object msg, final Session session) {
+            if (msg == null) {
+                return null;
+            }
+            final String message = (String) msg;
+            final ByteBuffer buff = TextLineCodecFactory.this.charset.encode(message);
+            final IoBuffer resultBuffer = IoBuffer.allocate(buff.remaining() + SPLIT.remaining());
+            resultBuffer.put(buff);
+            resultBuffer.put(SPLIT.slice());
+            resultBuffer.flip();
+            return resultBuffer;
+        }
+
+    }
+
+    /**
+     * 字符串解码器
+     */
     class StringDecoder implements CodecFactory.Decoder {
         public Object decode(final IoBuffer buffer, final Session session) {
             String result = null;
@@ -67,36 +101,6 @@ public class TextLineCodecFactory implements CodecFactory {
             }
             return result;
         }
-    }
-
-    private final CodecFactory.Decoder decoder = new StringDecoder();
-
-
-    public Decoder getDecoder() {
-        return this.decoder;
-
-    }
-
-    class StringEncoder implements Encoder {
-        public IoBuffer encode(final Object msg, final Session session) {
-            if (msg == null) {
-                return null;
-            }
-            final String message = (String) msg;
-            final ByteBuffer buff = TextLineCodecFactory.this.charset.encode(message);
-            final IoBuffer resultBuffer = IoBuffer.allocate(buff.remaining() + SPLIT.remaining());
-            resultBuffer.put(buff);
-            resultBuffer.put(SPLIT.slice());
-            resultBuffer.flip();
-            return resultBuffer;
-        }
-    }
-
-    private final Encoder encoder = new StringEncoder();
-
-
-    public Encoder getEncoder() {
-        return this.encoder;
     }
 
 }

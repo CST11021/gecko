@@ -15,39 +15,31 @@
  */
 package com.taobao.gecko.example.rpc.command;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
 import com.taobao.gecko.service.notify.ResponseStatusCode;
 
+import java.io.*;
+import java.net.InetSocketAddress;
 
+/**
+ * RPC调用的响应结果
+ */
 public class RpcResponse implements ResponseCommand, RpcCommand, BooleanAckCommand {
+
     static final long serialVersionUID = -1L;
     private Integer opaque;
     private InetSocketAddress responseHost;
     private ResponseStatus responseStatus;
     private long responseTime;
     private Object result;
-
-
-    public Object getResult() {
-        return this.result;
-    }
-
+    private String errorMsg;
 
     public RpcResponse() {
         super();
     }
-
-
     public RpcResponse(final Integer opaque, final ResponseStatus responseStatus, final Object result) {
         super();
         this.opaque = opaque;
@@ -55,50 +47,36 @@ public class RpcResponse implements ResponseCommand, RpcCommand, BooleanAckComma
         this.result = result;
     }
 
-    private String errorMsg;
 
 
+    public Object getResult() {
+        return this.result;
+    }
     public String getErrorMsg() {
         return this.errorMsg;
     }
-
-
     public void setErrorMsg(final String errorMsg) {
         this.errorMsg = errorMsg;
 
     }
-
-
     public Integer getOpaque() {
         return this.opaque;
     }
-
-
     public InetSocketAddress getResponseHost() {
         return this.responseHost;
     }
-
-
     public ResponseStatus getResponseStatus() {
         return this.responseStatus;
     }
-
-
     public long getResponseTime() {
         return this.responseTime;
     }
-
-
     public boolean isBoolean() {
         return false;
     }
-
-
     public void setOpaque(final Integer opaque) {
         this.opaque = opaque;
     }
-
-
     public void setResponseHost(final InetSocketAddress address) {
         this.responseHost = address;
 
@@ -139,8 +117,6 @@ public class RpcResponse implements ResponseCommand, RpcCommand, BooleanAckComma
         buffer.reset();
         return false;
     }
-
-
     public IoBuffer encode() {
         byte[] resultData = new byte[0];
         if (resultData != null) {
@@ -165,13 +141,10 @@ public class RpcResponse implements ResponseCommand, RpcCommand, BooleanAckComma
         return buffer;
     }
 
-
     public void setResponseStatus(final ResponseStatus responseStatus) {
         this.responseStatus = responseStatus;
 
     }
-
-
     public void setResponseTime(final long time) {
         this.responseTime = time;
     }
