@@ -27,12 +27,26 @@ import java.net.InetSocketAddress;
  */
 public interface ServerController extends Controller {
 
+    /**
+     * 绑定IP和端口启动服务
+     *
+     * @param localAddress
+     * @throws IOException
+     */
     public void bind(InetSocketAddress localAddress) throws IOException;
 
-
+    /**
+     * 绑定本地指定的端口启动服务
+     * @param port
+     * @throws IOException
+     */
     public void bind(int port) throws IOException;
 
-
+    /**
+     * 关闭服务
+     *
+     * @throws IOException
+     */
     public void unbind() throws IOException;
 
 }

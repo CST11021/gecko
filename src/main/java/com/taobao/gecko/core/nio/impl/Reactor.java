@@ -19,27 +19,6 @@
 
 package com.taobao.gecko.core.nio.impl;
 
-import java.io.IOException;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.ClosedSelectorException;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.config.Configuration;
 import com.taobao.gecko.core.core.EventType;
 import com.taobao.gecko.core.core.Session;
@@ -47,6 +26,17 @@ import com.taobao.gecko.core.core.impl.AbstractSession;
 import com.taobao.gecko.core.nio.NioSession;
 import com.taobao.gecko.core.util.LinkedTransferQueue;
 import com.taobao.gecko.core.util.SystemUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.nio.channels.*;
+import java.util.*;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -55,8 +45,10 @@ import com.taobao.gecko.core.util.SystemUtils;
  * @author boyan
  * @since 1.0, 2009-12-24 下午01:25:19
  */
-
 public final class Reactor extends Thread {
+
+    private static final Log log = LogFactory.getLog(Reactor.class);
+
     /**
      * 定时器队列访问器
      *
@@ -89,8 +81,7 @@ public final class Reactor extends Thread {
         }
     }
 
-    public static final long TIMEOUT_THRESOLD = Long.parseLong(System.getProperty(
-            "notify.remoting.timer.timeout_threshold", "500"));
+    public static final long TIMEOUT_THRESOLD = Long.parseLong(System.getProperty("notify.remoting.timer.timeout_threshold", "500"));
     /**
      * 防止jvm bug
      */
@@ -101,8 +92,6 @@ public final class Reactor extends Thread {
     public static final int MAX_TIMER_COUNT = 500000;
 
     public static final int MAX_TIME_OUT_EVENT_PER_TIME = 2000;
-
-    private static final Log log = LogFactory.getLog(Reactor.class);
 
     // bug等级
     private boolean jvmBug0;
@@ -155,12 +144,11 @@ public final class Reactor extends Thread {
     private volatile int selectTries = 0;
 
     private long nextTimeout = 0;
+    // 上次从timerQueue搬迁到timerHeap的时间戳
+    private long lastMoveTimestamp = 0;
 
-    private long lastMoveTimestamp = 0; // 上次从timerQueue搬迁到timerHeap的时间戳
 
-
-    Reactor(final SelectorManager selectorManager, final Configuration configuration, final int index)
-            throws IOException {
+    Reactor(final SelectorManager selectorManager, final Configuration configuration, final int index) throws IOException {
         super();
         this.reactorIndex = index;
         this.selectorManager = selectorManager;
@@ -171,15 +159,14 @@ public final class Reactor extends Thread {
     }
 
 
+
     final Selector getSelector() {
         return this.selector;
     }
 
-
     public int getReactorIndex() {
         return this.reactorIndex;
     }
-
 
     /**
      * 取最近的超时时间的时间
@@ -204,7 +191,6 @@ public final class Reactor extends Thread {
         }
         return selectionTimeout;
     }
-
 
     /**
      * Select并派发事件
@@ -231,8 +217,7 @@ public final class Reactor extends Thread {
                 final int selected = this.select(wait);
                 if (selected == 0) {
                     /**
-                     * 查看是否发生BUG，参见http://bugs.sun.com/bugdatabase /view_bug
-                     * .do?bug_id=6403933
+                     * 查看是否发生BUG，参见http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6403933
                      */
                     if (before != -1) {
                         this.lookJVMBug(before, selected, wait);
@@ -273,7 +258,6 @@ public final class Reactor extends Thread {
 
     }
 
-
     private void processTimeout() {
         if (!this.timerHeap.isEmpty()) {
             final long now = this.getTime();
@@ -293,7 +277,6 @@ public final class Reactor extends Thread {
         }
     }
 
-
     private Set<SelectionKey> processSelectedKeys() throws IOException {
         final Set<SelectionKey> selectedKeys = this.selector.selectedKeys();
         this.gate.lock();
@@ -307,7 +290,6 @@ public final class Reactor extends Thread {
         return selectedKeys;
     }
 
-
     private void clearCancelKeys() throws IOException {
         if (this.cancelledKeys > CLEANUP_INTERVAL) {
             final Selector selector = this.selector;
@@ -315,7 +297,6 @@ public final class Reactor extends Thread {
             this.cancelledKeys = 0;
         }
     }
-
 
     private int select(final long wait) throws IOException {
         // 这里仍然是有竞争条件的，只能尽量避免
@@ -326,7 +307,6 @@ public final class Reactor extends Thread {
         }
     }
 
-
     public long getTime() {
         final long timeCache = this.timeCache;
         if (timeCache > 0) {
@@ -336,12 +316,10 @@ public final class Reactor extends Thread {
         }
     }
 
-
     /**
      * 插入定时器，返回当前时间
      *
-     * @param timeout
-     * @param runnable
+     * @param timerRef
      */
     public void insertTimer(final TimerRef timerRef) {
         if (timerRef.getTimeout() > 0 && timerRef.getRunnable() != null && !timerRef.isCanceled()) {
@@ -352,7 +330,6 @@ public final class Reactor extends Thread {
             this.timerQueue.add(timerRef);
         }
     }
-
 
     private boolean lookJVMBug(final long before, final int selected, final long wait) throws IOException {
         boolean seeing = false;
@@ -427,11 +404,9 @@ public final class Reactor extends Thread {
         return seeing;
     }
 
-
     private boolean isNeedLookingJVMBug() {
         return SystemUtils.isLinuxPlatform() && !SystemUtils.isAfterJava6u4Version();
     }
-
 
     final void dispatchEvent(final Set<SelectionKey> selectedKeySet) {
         final Iterator<SelectionKey> it = selectedKeySet.iterator();
@@ -509,7 +484,6 @@ public final class Reactor extends Thread {
         }
     }
 
-
     final void unregisterChannel(final SelectableChannel channel) {
         try {
             final Selector selector = this.selector;
@@ -530,7 +504,6 @@ public final class Reactor extends Thread {
         }
         this.wakeup();
     }
-
 
     private final long checkSessionTimeout() {
         long nextTimeout = 0;
@@ -555,14 +528,12 @@ public final class Reactor extends Thread {
         return nextTimeout;
     }
 
-
     private final Session getSessionFromAttchment(final SelectionKey key) {
         if (key.attachment() instanceof Session) {
             return (Session) key.attachment();
         }
         return null;
     }
-
 
     final void registerSession(final Session session, final EventType event) {
         final Selector selector = this.selector;
@@ -574,11 +545,9 @@ public final class Reactor extends Thread {
         }
     }
 
-
     private final boolean isReactorThread() {
         return Thread.currentThread() == this;
     }
-
 
     final void beforeSelect() throws IOException {
         this.controller.checkStatisticsForRestart();
@@ -586,7 +555,6 @@ public final class Reactor extends Thread {
         this.processMoveTimer();
         this.clearCancelKeys();
     }
-
 
     private void processMoveTimer() {
         final long now = this.getTime();
@@ -596,7 +564,6 @@ public final class Reactor extends Thread {
             this.timerQueue.iterateQueue(new TimerQueueVisitor(now));
         }
     }
-
 
     private final void processRegister() {
         Object[] object = null;
@@ -612,11 +579,9 @@ public final class Reactor extends Thread {
         }
     }
 
-
     Configuration getConfiguration() {
         return this.configuration;
     }
-
 
     private final void dispatchSessionEvent(final Session session, final EventType event, final Selector selector) {
         if (EventType.REGISTER.equals(event)) {
@@ -628,7 +593,6 @@ public final class Reactor extends Thread {
             ((NioSession) session).onEvent(event, selector);
         }
     }
-
 
     final void postSelect(final Set<SelectionKey> selectedKeys, final Set<SelectionKey> allKeys) {
         if (this.controller.getSessionTimeout() > 0 || this.controller.getSessionIdleTimeout() > 0) {
@@ -642,7 +606,6 @@ public final class Reactor extends Thread {
             }
         }
     }
-
 
     private long checkExpiredIdle(final SelectionKey key, final Session session) {
         if (session == null) {
@@ -661,7 +624,6 @@ public final class Reactor extends Thread {
         return nextTimeout;
     }
 
-
     private final void checkIdle(final Session session) {
         if (this.controller.getSessionIdleTimeout() > 0) {
             if (session.isIdle()) {
@@ -670,7 +632,6 @@ public final class Reactor extends Thread {
         }
     }
 
-
     private final boolean checkExpired(final SelectionKey key, final Session session) {
         if (session.isExpired()) {
             ((NioSession) session).onEvent(EventType.EXPIRED, this.selector);
@@ -678,7 +639,6 @@ public final class Reactor extends Thread {
         }
         return false;
     }
-
 
     final void registerChannel(final SelectableChannel channel, final int ops, final Object attachment) {
         final Selector selector = this.selector;
@@ -691,9 +651,7 @@ public final class Reactor extends Thread {
 
     }
 
-
-    private void registerChannelNow(final SelectableChannel channel, final int ops, final Object attachment,
-                                    final Selector selector) {
+    private void registerChannelNow(final SelectableChannel channel, final int ops, final Object attachment, final Selector selector) {
         this.gate.lock();
         try {
             if (channel.isOpen()) {
@@ -707,7 +665,6 @@ public final class Reactor extends Thread {
         }
     }
 
-
     final void wakeup() {
         if (this.wakenUp.compareAndSet(false, true)) {
             final Selector selector = this.selector;
@@ -716,7 +673,6 @@ public final class Reactor extends Thread {
             }
         }
     }
-
 
     final void selectNow() throws IOException {
         final Selector selector = this.selector;

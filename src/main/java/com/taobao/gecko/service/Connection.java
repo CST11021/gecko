@@ -15,6 +15,11 @@
  */
 package com.taobao.gecko.service;
 
+import com.taobao.gecko.core.buffer.IoBuffer;
+import com.taobao.gecko.core.command.RequestCommand;
+import com.taobao.gecko.core.command.ResponseCommand;
+import com.taobao.gecko.service.exception.NotifyRemotingException;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
@@ -23,11 +28,6 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import com.taobao.gecko.core.buffer.IoBuffer;
-import com.taobao.gecko.core.command.RequestCommand;
-import com.taobao.gecko.core.command.ResponseCommand;
-import com.taobao.gecko.service.exception.NotifyRemotingException;
 
 
 /**
@@ -46,16 +46,6 @@ public interface Connection {
      */
     public RemotingContext getRemotingContext();
 
-
-    /**
-     * 关闭连接
-     *
-     * @param allowReconnect 如果true，则允许自动重连
-     * @throws NotifyRemotingException
-     */
-    public void close(boolean allowReconnect) throws NotifyRemotingException;
-
-
     /**
      * 连接是否有效
      *
@@ -63,19 +53,6 @@ public interface Connection {
      */
     public boolean isConnected();
 
-
-    /**
-     * 同步调用，指定超时时间
-     *
-     * @param requestCommand
-     * @param timeConnection
-     * @param timeUnit
-     * @return
-     * @throws InterruptedException
-     * @throws TimeoutException
-     */
-    public ResponseCommand invoke(final RequestCommand requestCommand, long time, TimeUnit timeUnit)
-            throws InterruptedException, TimeoutException, NotifyRemotingException;
 
 
     /**
@@ -86,28 +63,18 @@ public interface Connection {
      * @throws InterruptedException
      * @throws TimeoutException
      */
-    public ResponseCommand invoke(final RequestCommand request) throws InterruptedException, TimeoutException,
-            NotifyRemotingException;
-
-
+    public ResponseCommand invoke(final RequestCommand request) throws InterruptedException, TimeoutException, NotifyRemotingException;
     /**
-     * 异步发送，指定回调监听器，默认超时1秒，超时将返回一个超时应答给回调监听器
+     * 同步调用，指定超时时间
      *
      * @param requestCommand
-     * @param listener
+     * @param time
+     * @param timeUnit
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
      */
-    public void send(final RequestCommand requestCommand, SingleRequestCallBackListener listener)
-            throws NotifyRemotingException;
-
-
-    /**
-     * 异步发送，指定回调监听器和超时时间，超时将返回一个超时应答给回调监听器
-     *
-     * @param requestCommand
-     * @param listener
-     */
-    public void send(final RequestCommand requestCommand, SingleRequestCallBackListener listener, long time,
-                     TimeUnit timeUnit) throws NotifyRemotingException;
+    public ResponseCommand invoke(final RequestCommand requestCommand, long time, TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException;
 
 
     /**
@@ -116,7 +83,20 @@ public interface Connection {
      * @param requestCommand
      */
     public void send(final RequestCommand requestCommand) throws NotifyRemotingException;
-
+    /**
+     * 异步发送，指定回调监听器，默认超时1秒，超时将返回一个超时应答给回调监听器
+     *
+     * @param requestCommand
+     * @param listener
+     */
+    public void send(final RequestCommand requestCommand, SingleRequestCallBackListener listener) throws NotifyRemotingException;
+    /**
+     * 异步发送，指定回调监听器和超时时间，超时将返回一个超时应答给回调监听器
+     *
+     * @param requestCommand
+     * @param listener
+     */
+    public void send(final RequestCommand requestCommand, SingleRequestCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
 
     /**
      * 异步发送，并返回可取消的future
@@ -128,6 +108,8 @@ public interface Connection {
     public Future<Boolean> asyncSend(final RequestCommand requestCommand) throws NotifyRemotingException;
 
 
+
+
     /**
      * 单向异步应答
      *
@@ -136,12 +118,15 @@ public interface Connection {
     public void response(final Object responseCommand) throws NotifyRemotingException;
 
 
+
+
+
+    // 连接Attribute相关
+
     /**
      * 清除连接的所有属性
      */
     public void clearAttributes();
-
-
     /**
      * 获取连接上的某个属性
      *
@@ -149,31 +134,12 @@ public interface Connection {
      * @return
      */
     public Object getAttribute(String key);
-
-
-    /**
-     * 获取远端地址
-     *
-     * @return
-     */
-    public InetSocketAddress getRemoteSocketAddress();
-
-
-    /**
-     * 获取本端IP地址
-     *
-     * @return
-     */
-    public InetAddress getLocalAddress();
-
-
     /**
      * 移除属性
      *
      * @param key
      */
     public void removeAttribute(String key);
-
 
     /**
      * 设置属性
@@ -183,7 +149,6 @@ public interface Connection {
      */
     public void setAttribute(String key, Object value);
 
-
     /**
      * 返回属性的key集合
      *
@@ -191,25 +156,6 @@ public interface Connection {
      * @since 1.8.3
      */
     public Set<String> attributeKeySet();
-
-
-    /**
-     * 设置连接的读缓冲区的字节序
-     *
-     * @param byteOrder
-     */
-    public void readBufferOrder(ByteOrder byteOrder);
-
-
-    /**
-     * 获取连接的读缓冲区的字节序
-     *
-     * @param byteOrder
-     * @return TODO
-     */
-    public ByteOrder readBufferOrder();
-
-
     /**
      * 设置属性，类似ConcurrentHashMap.putIfAbsent方法
      *
@@ -220,13 +166,48 @@ public interface Connection {
     public Object setAttributeIfAbsent(String key, Object value);
 
 
+
+
+
+
+
+
+    /**
+     * 获取本端IP地址
+     *
+     * @return
+     */
+    public InetAddress getLocalAddress();
+
+    /**
+     * 获取远端地址
+     *
+     * @return
+     */
+    public InetSocketAddress getRemoteSocketAddress();
+
+    /**
+     * 设置连接的读缓冲区的字节序
+     *
+     * @param byteOrder
+     */
+    public void readBufferOrder(ByteOrder byteOrder);
+
+    /**
+     * 获取连接的读缓冲区的字节序
+     *
+     * @return TODO
+     */
+    public ByteOrder readBufferOrder();
+
+
+
     /**
      * 返回该连接所在的分组集合
      *
      * @return
      */
     public Set<String> getGroupSet();
-
 
     /**
      * 是否启用可中断写入操作，如果启用，则允许在用户线程写入socket
@@ -236,7 +217,6 @@ public interface Connection {
      */
     public void setWriteInterruptibly(boolean writeInterruptibly);
 
-
     /**
      * 单向传输，无超时
      *
@@ -245,17 +225,15 @@ public interface Connection {
      * @param channel
      * @param position
      * @param size
-     * @see #transferFrom(IoBuffer, IoBuffer, FileChannel, long, long, Integer,
-     * SingleRequestCallBackListener, long, TimeUnit)
+     * @see #transferFrom(IoBuffer, IoBuffer, FileChannel, long, long, Integer, SingleRequestCallBackListener, long, TimeUnit)
      * @since 1.8.3
      */
     public void transferFrom(IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size);
 
-
     /**
-     * 从指定FileChannel的position位置开始传输size个字节到socket,
-     * remoting会负责保证将指定大小的数据传输给socket。如果file channel里的数据不足size大小，则以实际大小传输。
-     * 。其中head和tail是指在传输文件之前或者之后需要写入的数据，可以为null，他们和文件数据作为一个整体来发送。
+     * 从指定FileChannel的position位置开始传输size个字节到socket, remoting会负责保证将指定大小的数据传输给socket。
+     * 如果file channel里的数据不足size大小，则以实际大小传输。
+     * 其中head和tail是指在传输文件之前或者之后需要写入的数据，可以为null，他们和文件数据作为一个整体来发送。
      * 超过指定的超时时间则取消传输(如果还没有开始传输的话,已经开始的无法中止)，并通知listener。
      *
      * @param head
@@ -269,8 +247,18 @@ public interface Connection {
      * @param unit
      * @since 1.1.0
      */
-    public void transferFrom(IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size,
-                             Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit)
-            throws NotifyRemotingException;
+    public void transferFrom(IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size, Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit) throws NotifyRemotingException;
+
+
+
+    /**
+     * 关闭连接
+     *
+     * @param allowReconnect 如果true，则允许自动重连
+     * @throws NotifyRemotingException
+     */
+    public void close(boolean allowReconnect) throws NotifyRemotingException;
+
+
 
 }

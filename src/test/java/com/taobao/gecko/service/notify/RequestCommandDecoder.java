@@ -33,7 +33,6 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
 
     private static final Log log = LogFactory.getLog(RequestCommandDecoder.class);
 
-
     public Object decode(final IoBuffer in, final Session session) {
         final DecoderState decoderState = (DecoderState) session.getAttribute(NotifyWrapDecoder.DECODER_STATE_KEY);
         if (decoderState.decodeCommand == null) {
@@ -43,6 +42,7 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
                 this.decodeHeader(in, session, decoderState);
             }
         }
+
         if (decoderState.decodeCommand != null) {
             final NotifyRequestCommand requestCommand = (NotifyRequestCommand) decoderState.decodeCommand;
             if (in.remaining() < requestCommand.getTotalBodyLength()) {
@@ -55,8 +55,7 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
     }
 
 
-    private Object decodeContent(final IoBuffer in, final DecoderState decoderState,
-                                 final NotifyRequestCommand requestCommand) {
+    private Object decodeContent(final IoBuffer in, final DecoderState decoderState, final NotifyRequestCommand requestCommand) {
         if (requestCommand.getTotalBodyLength() > 0) {
             if (requestCommand.getHeaderLength() > 0) {
                 final byte[] header = new byte[requestCommand.getHeaderLength()];
@@ -74,7 +73,6 @@ public class RequestCommandDecoder implements CodecFactory.Decoder {
         decoderState.decodeCommand = null;// reset status
         return requestCommand;
     }
-
 
     private void decodeHeader(final IoBuffer in, final Session session, final DecoderState decoderState) {
         final byte magic = in.get();

@@ -15,10 +15,10 @@
  */
 package com.taobao.gecko.core.core;
 
+import com.taobao.gecko.core.statistics.Statistics;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import com.taobao.gecko.core.statistics.Statistics;
 
 /**
  * 网络层主控接口
@@ -28,64 +28,63 @@ import com.taobao.gecko.core.statistics.Statistics;
  */
 public interface Controller {
 
-    long getSessionTimeout();
-
-    public long getSessionIdleTimeout();
-
-    public void setSessionIdleTimeout(long sessionIdleTimeout);
-
-    void setSessionTimeout(long sessionTimeout);
-
-    int getSoTimeout();
-
-    void setSoTimeout(int timeout);
-
-    void addStateListener(ControllerStateListener listener);
-
-    public void removeStateListener(ControllerStateListener listener);
-
-    boolean isHandleReadWriteConcurrently();
-
-    void setHandleReadWriteConcurrently(boolean handleReadWriteConcurrently);
-
-    int getReadThreadCount();
-
-    void setReadThreadCount(int readThreadCount);
-
-    Handler getHandler();
-
-    void setHandler(Handler handler);
-
+    /**
+     * 应用服务的本地端口，可能是客户端的端口也可能是服务端的端口
+     *
+     * @return
+     */
     int getPort();
-
-    void start() throws IOException;
-
-    boolean isStarted();
+    InetSocketAddress getLocalSocketAddress();
+    void setLocalSocketAddress(InetSocketAddress inetAddress);
 
     Statistics getStatistics();
 
-    CodecFactory getCodecFactory();
+    <T> void setSocketOption(SocketOption<T> socketOption, T value);
 
+    //
+
+    long getSessionTimeout();
+    void setSessionTimeout(long sessionTimeout);
+
+    public long getSessionIdleTimeout();
+    public void setSessionIdleTimeout(long sessionIdleTimeout);
+
+    int getSoTimeout();
+    void setSoTimeout(int timeout);
+
+    void addStateListener(ControllerStateListener listener);
+    public void removeStateListener(ControllerStateListener listener);
+
+    boolean isHandleReadWriteConcurrently();
+    void setHandleReadWriteConcurrently(boolean handleReadWriteConcurrently);
+
+
+
+    /** 会话生命周期处理 */
+    Handler getHandler();
+    void setHandler(Handler handler);
+
+
+
+    CodecFactory getCodecFactory();
     void setCodecFactory(CodecFactory codecFactory);
 
-    void stop() throws IOException;
-
     void setReceiveThroughputLimit(double receivePacketRate);
-
     double getReceiveThroughputLimit();
 
-    InetSocketAddress getLocalSocketAddress();
-
-    void setLocalSocketAddress(InetSocketAddress inetAddress);
-
     int getDispatchMessageThreadCount();
-
     void setDispatchMessageThreadCount(int dispatchMessageThreadPoolSize);
 
-    int getWriteThreadCount();
+    int getReadThreadCount();
+    void setReadThreadCount(int readThreadCount);
 
+    int getWriteThreadCount();
     void setWriteThreadCount(int writeThreadCount);
 
-    <T> void setSocketOption(SocketOption<T> socketOption, T value);
+
+    void start() throws IOException;
+    boolean isStarted();
+
+    void stop() throws IOException;
 
 }

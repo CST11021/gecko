@@ -15,17 +15,16 @@
  */
 package com.taobao.gecko.service.processor;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
 import com.taobao.gecko.core.util.RemotingUtils;
 import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.RequestProcessor;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 /**
@@ -36,23 +35,20 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  */
 
 public class HeartBeatCommandProecssor implements RequestProcessor<HeartBeatRequestCommand> {
-    static final Log logger = LogFactory.getLog(HeartBeatCommandProecssor.class);
 
+    static final Log logger = LogFactory.getLog(HeartBeatCommandProecssor.class);
 
     public HeartBeatCommandProecssor() {
         super();
     }
 
-
     public void handleRequest(final HeartBeatRequestCommand request, final Connection conn) {
         try {
-            conn.response(conn.getRemotingContext().getCommandFactory()
-                    .createBooleanAckCommand(request.getRequestHeader(), ResponseStatus.NO_ERROR, null));
+            conn.response(conn.getRemotingContext().getCommandFactory().createBooleanAckCommand(request.getRequestHeader(), ResponseStatus.NO_ERROR, null));
         } catch (final NotifyRemotingException e) {
             logger.error("发送心跳应答给连接[" + RemotingUtils.getAddrString(conn.getRemoteSocketAddress()) + "]失败", e);
         }
     }
-
 
     public ThreadPoolExecutor getExecutor() {
         return null;

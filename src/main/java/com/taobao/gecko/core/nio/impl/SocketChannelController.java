@@ -15,20 +15,16 @@
  */
 package com.taobao.gecko.core.nio.impl;
 
+import com.taobao.gecko.core.config.Configuration;
+import com.taobao.gecko.core.core.*;
+import com.taobao.gecko.core.core.impl.StandardSocketOption;
+import com.taobao.gecko.core.nio.NioSession;
+import com.taobao.gecko.core.nio.NioSessionConfig;
+
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
-
-import com.taobao.gecko.core.config.Configuration;
-import com.taobao.gecko.core.core.CodecFactory;
-import com.taobao.gecko.core.core.EventType;
-import com.taobao.gecko.core.core.Handler;
-import com.taobao.gecko.core.core.Session;
-import com.taobao.gecko.core.core.WriteMessage;
-import com.taobao.gecko.core.core.impl.StandardSocketOption;
-import com.taobao.gecko.core.nio.NioSession;
-import com.taobao.gecko.core.nio.NioSessionConfig;
 
 
 /**
@@ -81,6 +77,12 @@ public abstract class SocketChannelController extends NioController {
 
     }
 
+    /**
+     * 创建一个NioSession会话对象
+     *
+     * @param sc
+     * @return
+     */
     protected NioSession buildSession(final SocketChannel sc) {
         final Queue<WriteMessage> queue = this.buildQueue();
         final NioSessionConfig sessionConfig = this.buildSessionConfig(sc, queue);
@@ -88,6 +90,12 @@ public abstract class SocketChannelController extends NioController {
         return session;
     }
 
+    /**
+     * 配置socket通道
+     *
+     * @param sc
+     * @throws IOException
+     */
     protected final void configureSocketChannel(final SocketChannel sc) throws IOException {
         sc.socket().setSoTimeout(this.soTimeout);
         sc.configureBlocking(false);

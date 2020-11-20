@@ -13,18 +13,6 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.command.Constants;
 import com.taobao.gecko.core.config.Configuration;
 import com.taobao.gecko.core.extension.ConnectFailListener;
@@ -38,7 +26,17 @@ import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.RemotingClient;
 import com.taobao.gecko.service.config.ClientConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * RemotingClient的默认实现
@@ -46,12 +44,11 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  * @author boyan
  * @since 1.0, 2009-12-16 下午03:42:14
  */
-
 public class DefaultRemotingClient extends BaseRemotingController implements RemotingClient, ConnectFailListener {
 
-    private ReconnectManager reconnectManager;
-
     private static final Log log = LogFactory.getLog(DefaultRemotingClient.class);
+
+    private ReconnectManager reconnectManager;
 
 
     public DefaultRemotingClient(final ClientConfig clientConfig) {
@@ -59,10 +56,16 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.config = clientConfig;
         // 默认分组的最大连接数设置为Integer.MAX_VALUE
         this.setAttribute(Constants.DEFAULT_GROUP, Constants.CONNECTION_COUNT_ATTR, Integer.MAX_VALUE);
-
     }
 
-
+    /**
+     * 根据URL连接服务端，如果连接失败将转入重连模式，但是连接加入的分组将为target group。
+     *
+     * @param url         服务端的URL，形如schema://host:port的字符串
+     * @param targetGroup 连接成功后加入的分组
+     * @param connCount   连接数
+     * @throws IOException
+     */
     @Override
     public void connect(String url, String targetGroup, int connCount) throws NotifyRemotingException {
         if (connCount <= 0) {
@@ -73,10 +76,12 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
             return;
         }
 
+        // 解析group，获取服务地址和端口
         final InetSocketAddress remoteAddress = this.getSocketAddrFromGroup(url);
 
         final Set<String> groupSet = new HashSet<String>();
         groupSet.add(targetGroup);
+
         this.reconnectManager.removeCanceledGroup(targetGroup);
         // 设置连接数属性
         if (this.setAttributeIfAbsent(targetGroup, Constants.CONNECTION_COUNT_ATTR, connCount) != null) {
@@ -89,11 +94,14 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         for (int i = 0; i < connCount; i++) {
             try {
                 final TimerRef timerRef = new TimerRef(((ClientConfig) this.config).getConnectTimeout(), null);
+                // 建立连接
                 final Future<NioSession> future =
-                        ((GeckoTCPConnectorController) this.controller).connect(remoteAddress, groupSet, remoteAddress,
-                                timerRef);
+                        ((GeckoTCPConnectorController) this.controller).connect(remoteAddress, groupSet, remoteAddress, timerRef);
+
+                // 用于检测连接建立是否成功
                 final CheckConnectFutureRunner runnable =
                         new CheckConnectFutureRunner(future, remoteAddress, groupSet, this);
+
                 timerRef.setRunnable(runnable);
                 this.insertTimer(timerRef);
             } catch (final Exception e) {
@@ -117,7 +125,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     public void connect(final String group) throws NotifyRemotingException {
         this.connect(group, 1);
     }
-
     /**
      * 这里需要同步，防止对同一个分组发起多个请求
      *
@@ -147,50 +154,22 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     }
 
     /**
-     * 检测连接建立是否成功
+     * 解析group，获取服务地址和端口
      *
-     * @author boyan
-     * @since 1.0, 2009-12-23 下午01:49:41
+     * @param group
+     * @return
+     * @throws NotifyRemotingException
      */
-    public static final class CheckConnectFutureRunner implements Runnable {
-        final Future<NioSession> future;
-        final InetSocketAddress remoteAddress;
-        final Set<String> groupSet;
-        final DefaultRemotingClient remotingClient;
-
-
-        public CheckConnectFutureRunner(final Future<NioSession> future, final InetSocketAddress remoteAddress,
-                                        final Set<String> groupSet, final DefaultRemotingClient remotingClient) {
-            super();
-            this.future = future;
-            this.remoteAddress = remoteAddress;
-            this.groupSet = groupSet;
-            this.remotingClient = remotingClient;
-        }
-
-
-        @Override
-        public void run() {
-            try {
-                if (!this.future.isDone() && this.future.get(10, TimeUnit.MILLISECONDS) == null) {
-                    final ReconnectManager reconnectManager = this.remotingClient.getReconnectManager();
-                    reconnectManager.addReconnectTask(new ReconnectTask(this.groupSet, this.remoteAddress));
-                }
-            } catch (final Exception e) {
-                log.error("连接" + this.remoteAddress + "失败", e);
-            }
-        }
-
-    }
-
     private InetSocketAddress getSocketAddrFromGroup(String group) throws NotifyRemotingException {
         if (group == null) {
             throw new IllegalArgumentException("Null group");
         }
+
         group = group.trim();
         if (!group.startsWith(this.config.getWireFormatType().getScheme())) {
             throw new NotifyRemotingException("非法的Group格式，没有以" + this.config.getWireFormatType().getScheme() + "开头");
         }
+
         try {
             final URI uri = new URI(group);
             return new InetSocketAddress(uri.getHost(), uri.getPort());
@@ -198,8 +177,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
             throw new NotifyRemotingException("从uri生成服务器地址出错,url=" + group, e);
         }
     }
-
-
 
     @Override
     public void awaitReadyInterrupt(final String group) throws NotifyRemotingException, InterruptedException {
@@ -355,8 +332,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         return notifyTCPConnectorController;
     }
 
-
-
     @Override
     public void close(final String group, final boolean allowReconnect) throws NotifyRemotingException {
         if (!this.started) {
@@ -377,6 +352,48 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
                 if (conn.isConnected()) {
                     conn.close(allowReconnect);
                 }
+            }
+        }
+
+    }
+
+
+    /**
+     * 用于检测连接建立是否成功
+     *
+     * @author boyan
+     * @since 1.0, 2009-12-23 下午01:49:41
+     */
+    public static final class CheckConnectFutureRunner implements Runnable {
+        /** 客户端与服务端建立连接的会话引用 */
+        final Future<NioSession> future;
+        /** 表示服务地址 */
+        final InetSocketAddress remoteAddress;
+        /**  */
+        final Set<String> groupSet;
+        /** 表示发起连接的客户端对象 */
+        final DefaultRemotingClient remotingClient;
+
+        public CheckConnectFutureRunner(final Future<NioSession> future, final InetSocketAddress remoteAddress, final Set<String> groupSet, final DefaultRemotingClient remotingClient) {
+            super();
+            this.future = future;
+            this.remoteAddress = remoteAddress;
+            this.groupSet = groupSet;
+            this.remotingClient = remotingClient;
+        }
+
+        /**
+         * 从future获取会话，如果10毫秒内还未客户端还没有与服务创建连接，则将任务放到重连管理中
+         */
+        @Override
+        public void run() {
+            try {
+                if (!this.future.isDone() && this.future.get(10, TimeUnit.MILLISECONDS) == null) {
+                    final ReconnectManager reconnectManager = this.remotingClient.getReconnectManager();
+                    reconnectManager.addReconnectTask(new ReconnectTask(this.groupSet, this.remoteAddress));
+                }
+            } catch (final Exception e) {
+                log.error("连接" + this.remoteAddress + "失败", e);
             }
         }
 

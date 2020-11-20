@@ -16,10 +16,10 @@
 package com.taobao.gecko.service.config;
 
 /**
+ *
  * @author boyan
  * @since 1.0, 2009-12-15 上午11:22:49
  */
-
 public class ClientConfig extends BaseConfig {
 
     public ClientConfig() {
@@ -32,61 +32,36 @@ public class ClientConfig extends BaseConfig {
         this.setMaxScheduleWrittenBytes(Runtime.getRuntime().maxMemory() / 10);
     }
 
-    /**
-     * Max retries to reconnect connections.If it is less or equal to zero,it
-     * means unlimit.Unlimit by default.
-     */
+    /** Max重试以重新连接。如果小于或等于零，则表示unlimit，默认为Unlimit */
     private int maxReconnectTimes = -1;
-    /**
-     * 连接超时,单位毫秒
-     */
+    /** 连接超时，单位毫秒，这里为80秒 */
     private long connectTimeout = 80000L;
-    /**
-     * 重连间隔，单位毫秒
-     */
+    /** 重连间隔，单位毫秒 */
     private long healConnectionInterval = 2000L;
-
-    /**
-     * 重连管理器的连接池大小
-     */
+    /** 重连管理器的连接池大小 */
     private int healConnectionExecutorPoolSize = 1;
-
 
     public long getConnectTimeout() {
         return this.connectTimeout;
     }
-
-
     public void setConnectTimeout(final long connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
-
-
     public int getMaxReconnectTimes() {
         return this.maxReconnectTimes;
     }
-
-
     public void setMaxReconnectTimes(int maxReconnectTimes) {
         this.maxReconnectTimes = maxReconnectTimes;
     }
-
-
     public int getHealConnectionExecutorPoolSize() {
         return this.healConnectionExecutorPoolSize;
     }
-
-
     public void setHealConnectionExecutorPoolSize(final int healConnectionExecutorPoolSize) {
         this.healConnectionExecutorPoolSize = healConnectionExecutorPoolSize;
     }
-
-
     public long getHealConnectionInterval() {
         return this.healConnectionInterval;
     }
-
-
     public void setHealConnectionInterval(final long healConnectionInterval) {
         this.healConnectionInterval = healConnectionInterval;
     }

@@ -28,14 +28,22 @@ import com.taobao.gecko.service.Connection;
  * @Date 2010-5-26
  */
 public class InvalidConnectionScanTask implements ScanTask {
-    // 对于服务器来说，如果5分钟没有任何操作，那么将断开连接，因为客户端总是会发起心跳检测，因此不会对正常的空闲连接误判。
-    public static long TIMEOUT_THRESHOLD = Long.parseLong(System.getProperty(
-            "notify.remoting.connection.timeout_threshold", "300000"));
+
     static final Log log = LogFactory.getLog(InvalidConnectionScanTask.class);
 
+    /** 对于服务器来说，如果5分钟没有任何操作，那么将断开连接，因为客户端总是会发起心跳检测，因此不会对正常的空闲连接误判。*/
+    public static long TIMEOUT_THRESHOLD = Long.parseLong(System.getProperty("notify.remoting.connection.timeout_threshold", "300000"));
 
+    /**
+     * 5分钟没有任何操作，那么将断开连接
+     *
+     * @param now  扫描触发的时间点
+     * @param conn 当前扫描到的连接
+     */
     public void visit(final long now, final Connection conn) {
+        // 返回连接对象的上一次的操作时间，包括读和写操作
         final long lastOpTimestamp = ((DefaultConnection) conn).getSession().getLastOperationTimeStamp();
+        // 超过5分钟没有请求，则关闭连接
         if (now - lastOpTimestamp > TIMEOUT_THRESHOLD) {
             log.info("无效的连接" + conn.getRemoteSocketAddress() + "被关闭，超过" + TIMEOUT_THRESHOLD + "毫秒没有任何IO操作");
             try {

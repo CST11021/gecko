@@ -15,17 +15,17 @@
  */
 package com.taobao.gecko.service;
 
-import java.nio.channels.FileChannel;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.core.nio.impl.TimerRef;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+
+import java.nio.channels.FileChannel;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -34,7 +34,6 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  * @author boyan
  * @since 1.0, 2009-12-16 下午02:15:02
  */
-
 public interface RemotingController {
 
     /**
@@ -93,7 +92,6 @@ public interface RemotingController {
     /**
      * 批量添加请求处理器
      *
-     * @param <T>
      * @param map
      */
     public void addAllProcessors(Map<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>> map);
@@ -101,9 +99,6 @@ public interface RemotingController {
     /**
      * 添加一个定时器
      *
-     * @param timeout  超时的时间
-     * @param timeUnit 时间单位
-     * @param runnable 超时执行的任务
      */
     public void insertTimer(TimerRef timerRef);
 

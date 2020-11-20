@@ -27,6 +27,11 @@
 
 package com.taobao.gecko.core.nio;
 
+import com.taobao.gecko.core.config.Configuration;
+import com.taobao.gecko.core.core.*;
+import com.taobao.gecko.core.core.impl.StandardSocketOption;
+import com.taobao.gecko.core.nio.impl.SocketChannelController;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
@@ -34,15 +39,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-
-import com.taobao.gecko.core.config.Configuration;
-import com.taobao.gecko.core.core.CodecFactory;
-import com.taobao.gecko.core.core.EventType;
-import com.taobao.gecko.core.core.Handler;
-import com.taobao.gecko.core.core.ServerController;
-import com.taobao.gecko.core.core.Session;
-import com.taobao.gecko.core.core.impl.StandardSocketOption;
-import com.taobao.gecko.core.nio.impl.SocketChannelController;
 
 
 /**
@@ -54,17 +50,31 @@ public class TCPController extends SocketChannelController implements ServerCont
 
     private ServerSocketChannel serverSocketChannel;
 
-    /**
-     * Accept backlog queue size
-     */
-    private int backlog = 500; // default 500
+    /** Accept backlog queue size */
+    private int backlog = 500;
+    private int connectionTime, latency, bandwidth;
+
+    public TCPController() {
+        super();
+    }
+    public TCPController(final Configuration configuration) {
+        super(configuration, null, null);
+
+    }
+    public TCPController(final Configuration configuration, final CodecFactory codecFactory) {
+        super(configuration, null, codecFactory);
+    }
+    public TCPController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
+        super(configuration, handler, codecFactory);
+    }
+
+
+
 
 
     public int getBacklog() {
         return this.backlog;
     }
-
-
     public void setBacklog(final int backlog) {
         if (this.isStarted()) {
             throw new IllegalStateException();
@@ -74,37 +84,11 @@ public class TCPController extends SocketChannelController implements ServerCont
         }
         this.backlog = backlog;
     }
-
-
-    public TCPController() {
-        super();
-    }
-
-
-    public TCPController(final Configuration configuration) {
-        super(configuration, null, null);
-
-    }
-
-
-    public TCPController(final Configuration configuration, final CodecFactory codecFactory) {
-        super(configuration, null, codecFactory);
-    }
-
-
-    public TCPController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
-        super(configuration, handler, codecFactory);
-    }
-
-    private int connectionTime, latency, bandwidth;
-
-
     public void setPerformancePreferences(final int connectionTime, final int latency, final int bandwidth) {
         this.connectionTime = connectionTime;
         this.latency = latency;
         this.bandwidth = bandwidth;
     }
-
 
     @Override
     protected void doStart() throws IOException {
@@ -135,7 +119,6 @@ public class TCPController extends SocketChannelController implements ServerCont
         this.selectorManager.registerChannel(this.serverSocketChannel, SelectionKey.OP_ACCEPT, null);
     }
 
-
     @Override
     public void onAccept(final SelectionKey selectionKey) throws IOException {
         // Server已经关闭，直接返回
@@ -162,7 +145,6 @@ public class TCPController extends SocketChannelController implements ServerCont
         }
     }
 
-
     /**
      *
      * @param sk
@@ -181,25 +163,21 @@ public class TCPController extends SocketChannelController implements ServerCont
         }
     }
 
-
     @Override
     protected void stop0() throws IOException {
         this.closeServerChannel();
         super.stop0();
     }
 
-
     public void closeChannel(final Selector selector) throws IOException {
         this.closeServerChannel();
     }
-
 
     private void closeServerChannel() throws IOException {
         if (this.serverSocketChannel != null && this.serverSocketChannel.isOpen()) {
             this.serverSocketChannel.close();
         }
     }
-
 
     public void unbind() throws IOException {
         this.stop();

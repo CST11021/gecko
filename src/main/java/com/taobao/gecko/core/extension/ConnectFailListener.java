@@ -23,5 +23,10 @@ package com.taobao.gecko.core.extension;
  */
 public interface ConnectFailListener {
 
+    /**
+     * 当客户端与服务端建立连接失败时会调用该方法
+     *
+     * @param args
+     */
     public void onConnectFail(Object... args);
 }

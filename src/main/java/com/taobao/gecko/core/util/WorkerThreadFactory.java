@@ -18,6 +18,9 @@ package com.taobao.gecko.core.util;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 用于创建线程的线程工厂
+ */
 public class WorkerThreadFactory implements ThreadFactory {
     private static final AtomicInteger poolNumber = new AtomicInteger(1);
     private final ThreadGroup group;
@@ -40,21 +43,25 @@ public class WorkerThreadFactory implements ThreadFactory {
                     + "-thread-";
         }
     }
-
     public WorkerThreadFactory(String prefix) {
         this(null, prefix);
     }
-
     public WorkerThreadFactory() {
         this(null, null);
     }
 
+    /**
+     * 创建一个线程
+     *
+     * @param r
+     * @return
+     */
     public Thread newThread(Runnable r) {
-        Thread t = new Thread(this.group, r, this.namePrefix
-                + this.threadNumber.getAndIncrement(), 0);
+        Thread t = new Thread(this.group, r, this.namePrefix + this.threadNumber.getAndIncrement(), 0);
         if (t.isDaemon()) {
             t.setDaemon(false);
         }
+
         if (t.getPriority() != Thread.NORM_PRIORITY) {
             t.setPriority(Thread.NORM_PRIORITY);
         }

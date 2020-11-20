@@ -15,16 +15,6 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.command.Constants;
 import com.taobao.gecko.core.extension.GeckoTCPConnectorController;
 import com.taobao.gecko.core.nio.NioSession;
@@ -33,6 +23,15 @@ import com.taobao.gecko.core.util.ConcurrentHashSet;
 import com.taobao.gecko.core.util.RemotingUtils;
 import com.taobao.gecko.service.config.ClientConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -41,19 +40,16 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  * @author boyan
  * @since 1.0, 2009-12-15 下午03:01:38
  */
-
 public class ReconnectManager {
-    /**
-     * 重连任务队列
-     */
+
+    private static final Log log = LogFactory.getLog(ReconnectManager.class);
+
+    /** 重连任务队列 */
     private final LinkedBlockingQueue<ReconnectTask> tasks = new LinkedBlockingQueue<ReconnectTask>();
-    /**
-     * 取消重连任务的分组
-     */
+    /** 取消重连任务的分组 */
     private final ConcurrentHashSet<String/* group */> canceledGroupSet = new ConcurrentHashSet<String>();
     private volatile boolean started = false;
     private final GeckoTCPConnectorController connector;
-    private static final Log log = LogFactory.getLog(ReconnectManager.class);
     private final ClientConfig clientConfig;
     private final DefaultRemotingClient remotingClient;
     private int maxRetryTimes = -1;
@@ -63,8 +59,9 @@ public class ReconnectManager {
     private final Thread[] healConnectionThreads;
 
     private final class HealConnectionRunner implements Runnable {
-        private long lastConnectTime = -1; // 上次连接所花费的时间
 
+        /** 上次连接所花费的时间 */
+        private long lastConnectTime = -1;
 
         @Override
         public void run() {
@@ -97,8 +94,7 @@ public class ReconnectManager {
                         this.lastConnectTime = System.currentTimeMillis() - start;
                     }
                     if (task != null) {
-                        log.error("Reconnect to " + RemotingUtils.getAddrString(task.getRemoteAddress()) + "失败",
-                                e.getCause());
+                        log.error("Reconnect to " + RemotingUtils.getAddrString(task.getRemoteAddress()) + "失败", e.getCause());
                         this.readdTask(task);
                     }
                 }
@@ -106,26 +102,34 @@ public class ReconnectManager {
             }
         }
 
-
+        /**
+         * 添加重连任务到管理器中
+         *
+         * @param task
+         */
         private void readdTask(ReconnectTask task) {
-            if (ReconnectManager.this.maxRetryTimes <= 0
-                    || task.increaseRetryCounterAndGet() < ReconnectManager.this.maxRetryTimes) {
+            if (ReconnectManager.this.maxRetryTimes <= 0 || task.increaseRetryCounterAndGet() < ReconnectManager.this.maxRetryTimes) {
                 ReconnectManager.this.addReconnectTask(task);
             } else {
-                log.warn("Retry too many times to reconnect to "
-                        + RemotingUtils.getAddrString(task.getRemoteAddress())
-                        + ",we will remove the task.");
+                log.warn("Retry too many times to reconnect to " + RemotingUtils.getAddrString(task.getRemoteAddress()) + ",we will remove the task.");
             }
         }
 
-
+        /**
+         * 执行重连
+         *
+         * @param task
+         * @throws IOException
+         * @throws NotifyRemotingException
+         */
         private void doReconnectTask(final ReconnectTask task) throws IOException, NotifyRemotingException {
             log.info("Try to reconnect to " + RemotingUtils.getAddrString(task.getRemoteAddress()));
+
             final TimerRef timerRef = new TimerRef(ReconnectManager.this.clientConfig.getConnectTimeout(), null);
             try {
-                final Future<NioSession> future =
-                        ReconnectManager.this.connector.connect(task.getRemoteAddress(), task.getGroupSet(),
-                                task.getRemoteAddress(), timerRef);
+                final Future<NioSession> future = ReconnectManager.this.connector.connect(
+                        task.getRemoteAddress(), task.getGroupSet(), task.getRemoteAddress(), timerRef);
+
                 final DefaultRemotingClient.CheckConnectFutureRunner runnable =
                         new DefaultRemotingClient.CheckConnectFutureRunner(future, task.getRemoteAddress(),
                                 task.getGroupSet(), ReconnectManager.this.remotingClient);
@@ -140,8 +144,7 @@ public class ReconnectManager {
     }
 
 
-    public ReconnectManager(final GeckoTCPConnectorController connector, final ClientConfig clientConfig,
-                            final DefaultRemotingClient remotingClient) {
+    public ReconnectManager(final GeckoTCPConnectorController connector, final ClientConfig clientConfig, final DefaultRemotingClient remotingClient) {
         super();
         this.connector = connector;
         this.clientConfig = clientConfig;
@@ -149,9 +152,7 @@ public class ReconnectManager {
         this.started = true;
         this.maxRetryTimes = clientConfig.getMaxReconnectTimes();
         this.healConnectionThreads = new Thread[this.clientConfig.getHealConnectionExecutorPoolSize()];
-
     }
-
 
     public synchronized void start() {
         for (int i = 0; i < this.clientConfig.getHealConnectionExecutorPoolSize(); i++) {
@@ -160,11 +161,9 @@ public class ReconnectManager {
         }
     }
 
-
     public int getReconnectTaskCount() {
         return this.tasks.size();
     }
-
 
     public void addReconnectTask(final ReconnectTask task) {
         if (!this.isValidTask(task)) {
@@ -174,12 +173,16 @@ public class ReconnectManager {
         this.tasks.offer(task);
     }
 
-
+    /**
+     * 判断是否是有效的重连任务
+     *
+     * @param task  重连任务
+     * @return
+     */
     boolean isValidTask(final ReconnectTask task) {
         task.getGroupSet().removeAll(this.canceledGroupSet);
         return this.isValidGroup(task) && !task.isDone();
     }
-
 
     /**
      * 判断是否有效分组
@@ -191,7 +194,6 @@ public class ReconnectManager {
         return !this.hasOnlyDefaultGroup(task) && !this.isEmptyGroupSet(task);
     }
 
-
     /**
      * 分组为空
      *
@@ -201,7 +203,6 @@ public class ReconnectManager {
     private boolean isEmptyGroupSet(final ReconnectTask task) {
         return task.getGroupSet().size() == 0;
     }
-
 
     /**
      * 仅有默认分组
@@ -213,11 +214,9 @@ public class ReconnectManager {
         return task.getGroupSet().size() == 1 && task.getGroupSet().contains(Constants.DEFAULT_GROUP);
     }
 
-
     public void removeCanceledGroup(final String group) {
         this.canceledGroupSet.remove(group);
     }
-
 
     public void cancelReconnectGroup(final String group) {
         this.canceledGroupSet.add(group);
@@ -230,7 +229,6 @@ public class ReconnectManager {
             }
         }
     }
-
 
     public synchronized void stop() {
         if (!this.started) {

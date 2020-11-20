@@ -15,15 +15,6 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
 import com.taobao.gecko.core.command.Constants;
 import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
 import com.taobao.gecko.core.config.Configuration;
@@ -36,6 +27,9 @@ import com.taobao.gecko.service.config.ServerConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
 import com.taobao.gecko.service.processor.HeartBeatCommandProecssor;
 
+import java.io.IOException;
+import java.net.*;
+import java.util.List;
 
 /**
  * RemotingServer，服务器的默认实现
@@ -43,7 +37,6 @@ import com.taobao.gecko.service.processor.HeartBeatCommandProecssor;
  * @author boyan
  * @since 1.0, 2009-12-15 上午11:13:24
  */
-
 public class DefaultRemotingServer extends BaseRemotingController implements RemotingServer {
 
     public DefaultRemotingServer(final ServerConfig serverConfig) {
@@ -68,12 +61,13 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
 
     @Override
     protected void doStart() throws NotifyRemotingException {
-        // 如果没有设置心跳处理器，则使用默认
+
+        // 如果没有设置心跳请求的处理器，则设置一个默认的心跳请求处理
         if (!this.remotingContext.processorMap.containsKey(HeartBeatRequestCommand.class)) {
             this.registerProcessor(HeartBeatRequestCommand.class, new HeartBeatCommandProecssor());
         }
-        try {
 
+        try {
             final ServerConfig serverConfig = (ServerConfig) this.config;
             ((TCPController) this.controller).setBacklog(serverConfig.getBacklog());
             // 优先绑定指定IP地址

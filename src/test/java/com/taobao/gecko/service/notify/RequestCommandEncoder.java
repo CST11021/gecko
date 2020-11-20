@@ -31,7 +31,7 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
     static final IoBuffer EMPTY = IoBuffer.allocate(0);
 
     /**
-     * 对消息进行编码，以便后续的序列化
+     * 对NotifyRequestCommand进行编码，以便后续的序列化
      *
      * @param message
      * @param session
@@ -41,9 +41,10 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
         if (message instanceof NotifyRequestCommand) {
             final NotifyRequestCommand requestCommand = (NotifyRequestCommand) message;
             try {
+
                 requestCommand.encodeContent();
-                final IoBuffer buffer =
-                        IoBuffer.allocate(Constants.REQUEST_HEADER_LENGTH + requestCommand.getTotalBodyLength());
+
+                final IoBuffer buffer = IoBuffer.allocate(Constants.REQUEST_HEADER_LENGTH + requestCommand.getTotalBodyLength());
                 buffer.setAutoExpand(true);
                 this.putHeader(message, requestCommand, buffer);
                 this.putContent(message, requestCommand, buffer);
@@ -67,6 +68,28 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
         }
     }
 
+    /**
+     * 将请求对象的header头信息转为字节放入buffer
+     *
+     * @param message
+     * @param requestCommand
+     * @param buffer
+     */
+    private void putHeader(final Object message, final NotifyRequestCommand requestCommand, final IoBuffer buffer) {
+        buffer.put(requestCommand.getMagic());
+        buffer.put(requestCommand.getOpCode().getValue());
+        buffer.putShort(requestCommand.getHeaderLength());
+        buffer.putInt(requestCommand.getTotalBodyLength());
+        buffer.putInt(requestCommand.getOpaque());
+    }
+
+    /**
+     * 将请求对象的content信息转为字节放入buffer
+     *
+     * @param message
+     * @param requestCommand
+     * @param buffer
+     */
     private void putContent(final Object message, final NotifyRequestCommand requestCommand, final IoBuffer buffer) {
         if (requestCommand.getHeaderLength() > 0) {
             if (requestCommand.getHeader() == null) {
@@ -80,14 +103,6 @@ public class RequestCommandEncoder implements CodecFactory.Encoder {
             }
             buffer.put(requestCommand.getBody());
         }
-    }
-
-    private void putHeader(final Object message, final NotifyRequestCommand requestCommand, final IoBuffer buffer) {
-        buffer.put(requestCommand.getMagic());
-        buffer.put(requestCommand.getOpCode().getValue());
-        buffer.putShort(requestCommand.getHeaderLength());
-        buffer.putInt(requestCommand.getTotalBodyLength());
-        buffer.putInt(requestCommand.getOpaque());
     }
 
 }

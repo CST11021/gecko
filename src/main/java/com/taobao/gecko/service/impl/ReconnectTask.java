@@ -26,18 +26,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:46:58
  */
-
 public final class ReconnectTask {
+
     private Throwable lastException;
     private final InetSocketAddress remoteAddress;
     private volatile boolean done;
+    /** 表示要重连的group */
     private final Set<String> groupSet;
+    /** 表示连接重试的次数 */
     private final AtomicInteger counter = new AtomicInteger();
-
-
-    public long increaseRetryCounterAndGet() {
-        return this.counter.incrementAndGet();
-    }
 
 
     public ReconnectTask(Set<String> groupSet, InetSocketAddress remoteAddress) {
@@ -46,31 +43,33 @@ public final class ReconnectTask {
         this.remoteAddress = remoteAddress;
     }
 
+    /**
+     * 连接重试次数+1
+     * @return
+     */
+    public long increaseRetryCounterAndGet() {
+        return this.counter.incrementAndGet();
+    }
 
     public Set<String> getGroupSet() {
         return this.groupSet;
     }
 
-
     public Throwable getLastException() {
         return this.lastException;
     }
-
 
     public void setLastException(Throwable lastException) {
         this.lastException = lastException;
     }
 
-
     public boolean isDone() {
         return this.done;
     }
 
-
     public void setDone(boolean done) {
         this.done = done;
     }
-
 
     public InetSocketAddress getRemoteAddress() {
         return this.remoteAddress;

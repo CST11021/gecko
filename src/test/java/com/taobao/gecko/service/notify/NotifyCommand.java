@@ -23,8 +23,14 @@ package com.taobao.gecko.service.notify;
  */
 public interface NotifyCommand {
 
+    /**
+     * 将消息对象进行编码（转为字节）并保存到NotifyResponseCommand#header中
+     */
     void encodeContent();
 
+    /**
+     * 将NotifyResponseCommand#header进行解码（转为对象），赋值给对象的消息对象
+     */
     void decodeContent();
 
 }

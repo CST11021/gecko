@@ -26,12 +26,6 @@
  */
 package com.taobao.gecko.core.nio.impl;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.util.Queue;
-
 import com.taobao.gecko.core.config.Configuration;
 import com.taobao.gecko.core.core.CodecFactory;
 import com.taobao.gecko.core.core.Handler;
@@ -42,14 +36,17 @@ import com.taobao.gecko.core.nio.NioSessionConfig;
 import com.taobao.gecko.core.nio.SelectionKeyHandler;
 import com.taobao.gecko.core.util.SystemUtils;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.util.Queue;
 
 public abstract class NioController extends AbstractController implements SelectionKeyHandler {
 
     protected SelectorManager selectorManager;
 
-    /**
-     * 默认selectorPoolSize
-     */
+    /** 表示Selector池大小 */
     protected int selectorPoolSize = SystemUtils.getSystemThreadCount();
 
 
@@ -65,34 +62,6 @@ public abstract class NioController extends AbstractController implements Select
     public NioController(final Configuration configuration) {
         super(configuration);
     }
-
-
-
-
-
-    /**
-     * @see setSelectorPoolSize
-     * @return
-     */
-    public int getSelectorPoolSize() {
-        return this.selectorPoolSize;
-    }
-
-    /**
-     * 设置Selector池大小
-     *
-     * @param selectorPoolSize
-     */
-    public void setSelectorPoolSize(final int selectorPoolSize) {
-        if (this.isStarted()) {
-            throw new IllegalStateException("Controller has been started");
-        }
-        this.selectorPoolSize = selectorPoolSize;
-    }
-
-
-
-
 
 
     /**
@@ -223,20 +192,31 @@ public abstract class NioController extends AbstractController implements Select
     }
 
     /**
-     * Build nio session config
+     * 构建NIO会话配置
      *
      * @param sc
      * @param queue
      * @return
      */
     protected final NioSessionConfig buildSessionConfig(final SelectableChannel sc, final Queue<WriteMessage> queue) {
-        final NioSessionConfig sessionConfig =
-                new NioSessionConfig(sc, this.getHandler(), this.selectorManager, this.getCodecFactory(),
+        final NioSessionConfig sessionConfig = new NioSessionConfig(
+                        sc, this.getHandler(), this.selectorManager, this.getCodecFactory(),
                         this.getStatistics(), queue, this.dispatchMessageDispatcher, this.isHandleReadWriteConcurrently(),
                         this.sessionTimeout, this.configuration.getSessionIdleTimeout());
         return sessionConfig;
     }
 
+
+
+    public int getSelectorPoolSize() {
+        return this.selectorPoolSize;
+    }
+    public void setSelectorPoolSize(final int selectorPoolSize) {
+        if (this.isStarted()) {
+            throw new IllegalStateException("Controller has been started");
+        }
+        this.selectorPoolSize = selectorPoolSize;
+    }
 
 
 

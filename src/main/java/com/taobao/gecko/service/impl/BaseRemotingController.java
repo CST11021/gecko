@@ -118,10 +118,16 @@ public abstract class BaseRemotingController implements RemotingController {
         this.controller.setSocketOptions(this.getSocketOptionsFromConfig(this.config));
         this.controller.setSelectorPoolSize(this.config.getSelectorPoolSize());
 
-        // 4、
+        // 4、创建一个定时任务的线程池：
         this.scanAllConnectionExecutor = Executors.newSingleThreadScheduledExecutor(new WorkerThreadFactory("notify-remoting-ScanAllConnection"));
         if (this.config.getScanAllConnectionInterval() > 0) {
-            this.scanAllConnectionExecutor.scheduleAtFixedRate(new ScanAllConnectionRunner(this, this.getScanTasks()), 1, this.config.getScanAllConnectionInterval(), TimeUnit.SECONDS);
+            this.scanAllConnectionExecutor.scheduleAtFixedRate(
+                    // 定时执行的任务
+                    new ScanAllConnectionRunner(this, this.getScanTasks()),
+                    1,
+                    this.config.getScanAllConnectionInterval(),
+                    TimeUnit.SECONDS
+            );
         }
 
         this.doStart();
@@ -137,6 +143,9 @@ public abstract class BaseRemotingController implements RemotingController {
         return this.controller;
     }
 
+    /**
+     * 添加应用shutdown的钩子
+     */
     private void addShutdownHook() {
         this.shutdownHook = new Thread() {
             @Override
@@ -167,6 +176,10 @@ public abstract class BaseRemotingController implements RemotingController {
 
     protected abstract SocketChannelController initController(Configuration conf);
 
+    /**
+     *
+     * @throws NotifyRemotingException
+     */
     protected abstract void doStart() throws NotifyRemotingException;
 
     protected abstract void doStop() throws NotifyRemotingException;
@@ -211,6 +224,7 @@ public abstract class BaseRemotingController implements RemotingController {
         if (timerRef.getTimeout() <= 0) {
             throw new IllegalArgumentException("timeout必须大于0");
         }
+
         this.controller.getSelectorManager().insertTimer(timerRef);
     }
 
@@ -316,7 +330,7 @@ public abstract class BaseRemotingController implements RemotingController {
     }
 
     /**
-     * 根据策略从分组中的连接选择一个
+     * 根据策略从分组中的连接选择一个连接对象
      *
      * @param group
      * @param connectionSelector 连接选择器
@@ -326,6 +340,7 @@ public abstract class BaseRemotingController implements RemotingController {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
         }
+
         final List<Connection> connnections = this.remotingContext.getConnectionsByGroup(group);
         if (connnections != null) {
             return connectionSelector.select(group, request, connnections);
@@ -395,8 +410,9 @@ public abstract class BaseRemotingController implements RemotingController {
         if (command == null) {
             throw new NotifyRemotingException("Null command");
         }
-        final Connection conn =
-                this.selectConnectionForGroup(group, this.connectionSelector, command);
+
+        // 根据策略从分组中的连接选择一个连接对象
+        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, command);
         if (conn != null) {
             return conn.invoke(command);
         } else {

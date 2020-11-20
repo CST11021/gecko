@@ -29,6 +29,7 @@ import com.taobao.gecko.example.rpc.transport.RpcWireFormatType.RpcHeartBeatComm
  * @Date 2011-2-17
  */
 public class RpcCodecFactory implements CodecFactory {
+
     static final byte REQ_MAGIC = (byte) 0x70;
     static final byte RESP_MAGIC = (byte) 0x71;
 
@@ -83,7 +84,6 @@ public class RpcCodecFactory implements CodecFactory {
     public Decoder getDecoder() {
         return new RpcDecoder();
     }
-
 
     public Encoder getEncoder() {
         return new RpcEncoder();

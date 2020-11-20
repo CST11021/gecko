@@ -26,45 +26,47 @@ import com.taobao.gecko.service.notify.OpCode;
  * @author aoqiong
  */
 public class NotifyDummyRequestCommand extends NotifyRequestCommand implements DummyRequestCommand {
+
     static final long serialVersionUID = 234985443249230L;
+
+    /** 表示消息内容 */
     private String dummy;
-
-
-    public String getDummy() {
-        return this.dummy;
-    }
-
-
-    public void setDummy(final String dummy) {
-        this.dummy = dummy;
-    }
-
 
     public NotifyDummyRequestCommand(final OpCode opCode) {
         super(opCode);
 
     }
-
-
     public NotifyDummyRequestCommand(final String dummy) {
         this.opaque = OpaqueGenerator.getNextOpaque();
         this.opCode = OpCode.DUMMY;
         this.dummy = dummy;
     }
 
-
-    public void decodeContent() {
-        if (this.header != null) {
-            this.dummy = new String(this.header);
-        }
+    public String getDummy() {
+        return this.dummy;
+    }
+    public void setDummy(final String dummy) {
+        this.dummy = dummy;
     }
 
 
+    /**
+     * 将消息对象进行编码（转为字节）并保存到NotifyResponseCommand#header中
+     */
     public void encodeContent() {
         if (this.dummy != null) {
             this.setHeader(this.dummy.getBytes());
         }
 
+    }
+
+    /**
+     * 将NotifyResponseCommand#header进行解码（转为对象），赋值给对象的消息对象
+     */
+    public void decodeContent() {
+        if (this.header != null) {
+            this.dummy = new String(this.header);
+        }
     }
 
 }

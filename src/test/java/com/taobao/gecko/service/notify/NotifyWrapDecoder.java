@@ -29,6 +29,9 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
     private final RequestCommandDecoder requestDecoder;
     private final ResponseCommandDecoder responseDecoder;
 
+    public static final String DECODER_STATE_KEY = NotifyWrapDecoder.class.getName() + ".STATE";
+    public static final String CURRENT_DECODER = NotifyWrapDecoder.class.getName() + ".DECODER";
+
 
     public NotifyWrapDecoder() {
         this.requestDecoder = new RequestCommandDecoder();
@@ -40,13 +43,9 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
         return this.requestDecoder;
     }
 
-
     public ResponseCommandDecoder getResponseDecoder() {
         return this.responseDecoder;
     }
-
-    public static final String DECODER_STATE_KEY = NotifyWrapDecoder.class.getName() + ".STATE";
-    public static final String CURRENT_DECODER = NotifyWrapDecoder.class.getName() + ".DECODER";
 
 
     public Object decode(final IoBuffer buff, final Session session) {
@@ -62,11 +61,9 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
 
     }
 
-
     private Object decodeCurrentCommand(final IoBuffer buff, final Session session) {
         return ((CodecFactory.Decoder) session.getAttribute(CURRENT_DECODER)).decode(buff, session);
     }
-
 
     private Object decodeNewCommand(final IoBuffer buff, final Session session) {
         final byte magic = buff.get(buff.position());
@@ -75,23 +72,19 @@ public class NotifyWrapDecoder implements CodecFactory.Decoder {
         } else if (magic == Constants.RESPONSE_MAGIC) {
             return this.decodeResponseCommand(buff, session);
         } else {
-            throw new RuntimeException("Unknow command magic " + magic + " Buffer: "
-                    + RemotingUtils.dumpBuffer(buff).toString());
+            throw new RuntimeException("Unknow command magic " + magic + " Buffer: " + RemotingUtils.dumpBuffer(buff).toString());
         }
     }
-
 
     private Object decodeResponseCommand(final IoBuffer buff, final Session session) {
         session.setAttribute(CURRENT_DECODER, this.responseDecoder);
         return this.responseDecoder.decode(buff, session);
     }
 
-
     private Object decodeRequestCommand(final IoBuffer buff, final Session session) {
         session.setAttribute(CURRENT_DECODER, this.requestDecoder);
         return this.requestDecoder.decode(buff, session);
     }
-
 
     /**
      * 从连接属性中获取当前的decode状态，如果不存在就创建

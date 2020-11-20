@@ -17,7 +17,6 @@ package com.taobao.gecko.core.nio.impl;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-
 /**
  * 定时器队列，基于双向链表，所有的比较都基于引用
  *
@@ -25,11 +24,25 @@ import java.util.concurrent.locks.ReentrantLock;
  * @Date 2010-5-20
  */
 public class TimerRefQueue {
-    // 哨兵元素
-    private final TimerRef head = new TimerRef(null, this, null, null);
+
     private int size;
     private final ReentrantLock lock = new ReentrantLock();
+    /** 哨兵元素 */
+    private final TimerRef head = new TimerRef(null, this, null, null);
 
+    /**
+     * 访问Queue中元素的visitor
+     *
+     * @author boyan
+     * @Date 2010-5-20
+     */
+    public static interface TimerQueueVisitor {
+        /**
+         * @param timerRef
+         * @return 是否继续访问
+         */
+        public boolean visit(TimerRef timerRef);
+    }
 
     public TimerRefQueue() {
         this.head.prev = this.head.next = this.head;
@@ -61,7 +74,6 @@ public class TimerRefQueue {
         }
     }
 
-
     public boolean remove(TimerRef timerRef) {
         if (timerRef == null) {
             return false;
@@ -89,21 +101,6 @@ public class TimerRefQueue {
 
     }
 
-    /**
-     * 访问Queue中元素的visitor
-     *
-     * @author boyan
-     * @Date 2010-5-20
-     */
-    public static interface TimerQueueVisitor {
-        /**
-         * @param timerRef
-         * @return 是否继续访问
-         */
-        public boolean visit(TimerRef timerRef);
-    }
-
-
     public int size() {
         this.lock.lock();
         try {
@@ -113,7 +110,6 @@ public class TimerRefQueue {
         }
     }
 
-
     public boolean isEmpty() {
         this.lock.lock();
         try {
@@ -122,7 +118,6 @@ public class TimerRefQueue {
             this.lock.unlock();
         }
     }
-
 
     public boolean contains(TimerRef ref) {
         this.lock.lock();
@@ -137,7 +132,6 @@ public class TimerRefQueue {
             this.lock.unlock();
         }
     }
-
 
     public void iterateQueue(TimerQueueVisitor visitor) {
         TimerRef[] snapshot = null;

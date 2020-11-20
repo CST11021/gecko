@@ -25,9 +25,17 @@ import com.taobao.gecko.service.Connection;
  * @Date 2010-5-26
  */
 public class InvalidCallBackScanTask implements ScanTask {
+
+    /**
+     *
+     *
+     * @param now  扫描触发的时间点
+     * @param conn 当前扫描到的连接
+     */
     public void visit(final long now, final Connection conn) {
         if (conn.isConnected()) {
             ((DefaultConnection) conn).removeAllInvalidRequestCallBack();
         }
     }
+
 }

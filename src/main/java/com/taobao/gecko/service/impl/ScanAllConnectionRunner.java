@@ -15,11 +15,11 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.taobao.gecko.core.command.Constants;
 import com.taobao.gecko.service.Connection;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -28,22 +28,11 @@ import com.taobao.gecko.service.Connection;
  * @author boyan
  * @since 1.0, 2009-12-18 下午04:18:10
  */
-
 public class ScanAllConnectionRunner implements Runnable {
+
     private final BaseRemotingController controller;
 
     private final CopyOnWriteArrayList<ScanTask> taskList = new CopyOnWriteArrayList<ScanTask>();
-
-
-    public void addScanTask(final ScanTask task) {
-        this.taskList.add(task);
-    }
-
-
-    public void removeScanTask(final ScanTask task) {
-        this.taskList.remove(task);
-    }
-
 
     public ScanAllConnectionRunner(final BaseRemotingController controller, final ScanTask... tasks) {
         super();
@@ -56,12 +45,19 @@ public class ScanAllConnectionRunner implements Runnable {
 
     }
 
+    public void addScanTask(final ScanTask task) {
+        this.taskList.add(task);
+    }
+
+    public void removeScanTask(final ScanTask task) {
+        this.taskList.remove(task);
+    }
+
 
     public void run() {
         // 获取所有连接并遍历
         final long now = System.currentTimeMillis();
-        final List<Connection> connections =
-                this.controller.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
+        final List<Connection> connections = this.controller.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
         if (connections != null) {
             for (final Connection conn : connections) {
                 for (final ScanTask task : this.taskList) {

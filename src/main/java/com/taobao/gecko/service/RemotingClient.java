@@ -15,11 +15,11 @@
  */
 package com.taobao.gecko.service;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
 import com.taobao.gecko.service.config.ClientConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 
 /**
@@ -28,11 +28,7 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  * @author boyan
  * @since 1.0, 2009-12-16 下午02:04:38
  */
-
 public interface RemotingClient extends RemotingController {
-
-
-
 
     /**
      * 根据URL连接服务端，如果连接失败将转入重连模式
@@ -76,7 +72,6 @@ public interface RemotingClient extends RemotingController {
      * @throws InterruptedException
      */
     public void awaitReadyInterrupt(String url) throws NotifyRemotingException, InterruptedException;
-
     /**
      * 等待连接就绪，可中断，连接就绪的含义如下：是指指定分组的有效连接数达到设定值，并且可用。默认等待超时为连接数乘以连接超时
      *

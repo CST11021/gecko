@@ -15,12 +15,6 @@
  */
 package com.taobao.gecko.core.extension;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-
 import com.taobao.gecko.core.config.Configuration;
 import com.taobao.gecko.core.core.CodecFactory;
 import com.taobao.gecko.core.core.EventType;
@@ -29,6 +23,12 @@ import com.taobao.gecko.core.core.impl.FutureImpl;
 import com.taobao.gecko.core.nio.NioSession;
 import com.taobao.gecko.core.nio.impl.SocketChannelController;
 import com.taobao.gecko.service.RemotingClient;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
 
 
 /**
@@ -40,33 +40,37 @@ import com.taobao.gecko.service.RemotingClient;
 
 public class GeckoTCPConnectorController extends SocketChannelController {
 
-    /**
-     * 连接失败监听器
-     */
+    /** 连接失败监听器 */
     private ConnectFailListener connectFailListener;
-
-
-    public ConnectFailListener getConnectFailListener() {
-        return this.connectFailListener;
-    }
-
-
-    public void setConnectFailListener(final ConnectFailListener connectFailListener) {
-        this.connectFailListener = connectFailListener;
-    }
-
 
     public GeckoTCPConnectorController(final RemotingClient remotingClient) {
         super();
     }
+    public GeckoTCPConnectorController(final Configuration configuration, final CodecFactory codecFactory) {
+        super(configuration, codecFactory);
+    }
+    public GeckoTCPConnectorController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
+        super(configuration, handler, codecFactory);
+    }
+    public GeckoTCPConnectorController(final Configuration configuration) {
+        super(configuration);
+    }
 
-
-    public FutureImpl<NioSession> connect(final InetSocketAddress remoteAddress, final Object... args)
-            throws IOException {
+    /**
+     * 与指定的服务建立连接，并返回一个会话对象
+     *
+     * @param remoteAddress 目标服务地址
+     * @param args
+     * @return
+     * @throws IOException
+     */
+    public FutureImpl<NioSession> connect(final InetSocketAddress remoteAddress, final Object... args) throws IOException {
         SocketChannel socketChannel = null;
         try {
             socketChannel = SocketChannel.open();
+            // 配置socket通道
             this.configureSocketChannel(socketChannel);
+
             final FutureImpl<NioSession> resultFuture = new FutureImpl<NioSession>(args);
             if (!socketChannel.connect(remoteAddress)) {
                 this.selectorManager.registerChannel(socketChannel, SelectionKey.OP_CONNECT, resultFuture);
@@ -74,6 +78,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
                 final NioSession session = this.createSession(socketChannel, args);
                 resultFuture.setResult(session);
             }
+
             return resultFuture;
         } catch (final IOException e) {
             if (socketChannel != null) {
@@ -82,7 +87,6 @@ public class GeckoTCPConnectorController extends SocketChannelController {
             throw e;
         }
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -106,7 +110,6 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         }
     }
 
-
     private void cancelKey(final SelectionKey key) throws IOException {
         try {
             if (key.channel() != null) {
@@ -117,7 +120,13 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         }
     }
 
-
+    /**
+     * 创建Session
+     *
+     * @param socketChannel
+     * @param args
+     * @return
+     */
     protected NioSession createSession(final SocketChannel socketChannel, final Object... args) {
         final NioSession session = this.buildSession(socketChannel);
         this.selectorManager.registerSession(session, EventType.ENABLE_READ);
@@ -127,31 +136,21 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         return session;
     }
 
-
-    public GeckoTCPConnectorController(final Configuration configuration, final CodecFactory codecFactory) {
-        super(configuration, codecFactory);
-    }
-
-
-    public GeckoTCPConnectorController(final Configuration configuration, final Handler handler,
-                                       final CodecFactory codecFactory) {
-        super(configuration, handler, codecFactory);
-    }
-
-
-    public GeckoTCPConnectorController(final Configuration configuration) {
-        super(configuration);
-    }
-
-
     @Override
     protected void doStart() throws IOException {
         // do nothing
     }
 
-
     public void closeChannel(final Selector selector) throws IOException {
 
+    }
+
+
+    public ConnectFailListener getConnectFailListener() {
+        return this.connectFailListener;
+    }
+    public void setConnectFailListener(final ConnectFailListener connectFailListener) {
+        this.connectFailListener = connectFailListener;
     }
 
 }

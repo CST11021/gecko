@@ -15,16 +15,12 @@
  */
 package com.taobao.gecko.core.nio;
 
-import java.nio.channels.SelectableChannel;
-import java.util.Queue;
-
-import com.taobao.gecko.core.core.CodecFactory;
-import com.taobao.gecko.core.core.Dispatcher;
-import com.taobao.gecko.core.core.Handler;
-import com.taobao.gecko.core.core.SessionConfig;
-import com.taobao.gecko.core.core.WriteMessage;
+import com.taobao.gecko.core.core.*;
 import com.taobao.gecko.core.nio.impl.SelectorManager;
 import com.taobao.gecko.core.statistics.Statistics;
+
+import java.nio.channels.SelectableChannel;
+import java.util.Queue;
 
 
 /**
@@ -37,13 +33,11 @@ public class NioSessionConfig extends SessionConfig {
     public final SelectableChannel selectableChannel;
     public final SelectorManager selectorManager;
 
-
     public NioSessionConfig(final SelectableChannel sc, final Handler handler, final SelectorManager reactor,
                             final CodecFactory codecFactory, final Statistics statistics, final Queue<WriteMessage> queue,
                             final Dispatcher dispatchMessageDispatcher, final boolean handleReadWriteConcurrently,
                             final long sessionTimeout, final long sessionIdleTimeout) {
-        super(handler, codecFactory, statistics, queue, dispatchMessageDispatcher, handleReadWriteConcurrently,
-                sessionTimeout, sessionIdleTimeout);
+        super(handler, codecFactory, statistics, queue, dispatchMessageDispatcher, handleReadWriteConcurrently, sessionTimeout, sessionIdleTimeout);
         this.selectableChannel = sc;
         this.selectorManager = reactor;
     }

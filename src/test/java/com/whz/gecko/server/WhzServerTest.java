@@ -1,11 +1,14 @@
-package com.whz.gecko;
+package com.whz.gecko.server;
 
+import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.RemotingFactory;
 import com.taobao.gecko.service.RemotingServer;
 import com.taobao.gecko.service.RequestProcessor;
 import com.taobao.gecko.service.config.ServerConfig;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+import com.whz.gecko.client.WhzRequest;
+import com.whz.gecko.WhzWireFormatType;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -21,7 +24,7 @@ public class WhzServerTest {
     public static void main(String[] args) throws Exception {
 
         final ServerConfig serverConfig = new ServerConfig();
-        // serverConfig.setWireFormatType(new NotifyWireFormatType());
+        serverConfig.setWireFormatType(new WhzWireFormatType());
         serverConfig.setLocalInetSocketAddress(serverAddr);
 
         RemotingServer remotingServer = RemotingFactory.newRemotingServer(serverConfig);
@@ -33,7 +36,8 @@ public class WhzServerTest {
                 System.out.println("接收到请求：" + message);
 
                 try {
-                    WhzResponse response = new WhzResponse();
+                    WhzResponse response = new WhzResponse(message, request.getOpaque(), ResponseStatus.NO_ERROR);
+                    conn.setAttribute(WhzWireFormatType.PARAM_TYPE, WhzResponse.class);
                     conn.response(response);
                 } catch (NotifyRemotingException e) {
                     throw new RuntimeException(e);

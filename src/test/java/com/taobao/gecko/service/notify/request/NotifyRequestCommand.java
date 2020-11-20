@@ -23,18 +23,20 @@ import com.taobao.gecko.service.notify.OpCode;
 
 import java.util.Arrays;
 
-
+/**
+ * Notify请求对象的父类
+ */
 public abstract class NotifyRequestCommand implements RequestCommand, NotifyCommand {
 
     static final long serialVersionUID = -1L;
 
     private static final byte magic = Constants.REQUEST_MAGIC;
+    protected boolean controllCommand;
     protected OpCode opCode;
+    protected Integer opaque;
     protected short headerLength;
     protected byte[] header;
     protected int totalBodyLength;
-    protected Integer opaque;
-    protected boolean controllCommand;
     protected byte[] body;
 
     public NotifyRequestCommand() {

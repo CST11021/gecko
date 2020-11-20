@@ -33,6 +33,8 @@ import com.taobao.gecko.service.notify.request.NotifyRequestCommandHeader;
 public class NotifyBooleanAckCommand extends NotifyResponseCommand implements BooleanAckCommand {
 
     private static final long serialVersionUID = -2729908481782608962L;
+
+    /** 表示相应内容，当相应正常时，该错误消息为空 */
     private String errorMsg;
 
 
@@ -70,6 +72,20 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
     }
 
 
+    /**
+     * 将消息对象进行编码（转为字节）并保存到NotifyResponseCommand#header中
+     */
+    public void encodeContent() {
+        if (this.errorMsg != null) {
+            final NotifyProtos.ErrorMesssage errorMsg =
+                    NotifyProtos.ErrorMesssage.newBuilder().setErrorMessage(this.errorMsg).build();
+            this.setHeader(errorMsg.toByteArray());
+        }
+    }
+
+    /**
+     * 将NotifyResponseCommand#header进行解码（转为对象），赋值给对象的消息对象
+     */
     public void decodeContent() {
         if (this.header != null) {
             try {
@@ -80,13 +96,6 @@ public class NotifyBooleanAckCommand extends NotifyResponseCommand implements Bo
             } catch (final InvalidProtocolBufferException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-    public void encodeContent() {
-        if (this.errorMsg != null) {
-            final NotifyProtos.ErrorMesssage errorMsg =
-                    NotifyProtos.ErrorMesssage.newBuilder().setErrorMessage(this.errorMsg).build();
-            this.setHeader(errorMsg.toByteArray());
         }
     }
 

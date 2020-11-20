@@ -26,13 +26,11 @@ package com.taobao.gecko.core.nio;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
+import com.taobao.gecko.core.nio.impl.TimerRef;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-
-import com.taobao.gecko.core.nio.impl.TimerRef;
-
 
 /**
  * SelectionKey处理器
@@ -42,23 +40,19 @@ import com.taobao.gecko.core.nio.impl.TimerRef;
  *
  */
 public interface SelectionKeyHandler {
+
     public void onAccept(SelectionKey sk) throws IOException;
-
-
-    public void closeSelectionKey(SelectionKey key);
-
 
     public void onWrite(SelectionKey key);
 
-
     public void onRead(SelectionKey key);
-
 
     public void onTimeout(TimerRef timerRef);
 
-
     public void onConnect(SelectionKey key) throws IOException;
 
+    public void closeSelectionKey(SelectionKey key);
 
     public void closeChannel(Selector selector) throws IOException;
+
 }

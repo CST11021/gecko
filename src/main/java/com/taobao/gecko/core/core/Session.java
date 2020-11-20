@@ -247,7 +247,7 @@ public interface Session {
 
 
     /**
-     * Return last operation timestamp,operation include read,write,idle
+     * 返回上一个操作的时间戳，操作包括读，写，空闲
      *
      * @return
      */

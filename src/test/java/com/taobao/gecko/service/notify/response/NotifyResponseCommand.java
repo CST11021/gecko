@@ -25,7 +25,9 @@ import com.taobao.gecko.service.notify.OpCode;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
-
+/**
+ * Notify响应对象的父类
+ */
 public abstract class NotifyResponseCommand implements ResponseCommand, NotifyCommand {
 
     static final long serialVersionUID = 77788812547386438L;

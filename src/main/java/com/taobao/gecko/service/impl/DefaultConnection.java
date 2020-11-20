@@ -15,6 +15,21 @@
  */
 package com.taobao.gecko.service.impl;
 
+import com.taobao.gecko.core.buffer.IoBuffer;
+import com.taobao.gecko.core.command.*;
+import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
+import com.taobao.gecko.core.nio.NioSession;
+import com.taobao.gecko.core.nio.impl.TimerRef;
+import com.taobao.gecko.core.util.ConcurrentHashSet;
+import com.taobao.gecko.core.util.RemotingUtils;
+import com.taobao.gecko.service.Connection;
+import com.taobao.gecko.service.RemotingContext;
+import com.taobao.gecko.service.SingleRequestCallBackListener;
+import com.taobao.gecko.service.callback.SingleRequestCallBack;
+import com.taobao.gecko.service.exception.NotifyRemotingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
@@ -27,26 +42,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.taobao.gecko.core.buffer.IoBuffer;
-import com.taobao.gecko.core.command.CommandHeader;
-import com.taobao.gecko.core.command.Constants;
-import com.taobao.gecko.core.command.RequestCommand;
-import com.taobao.gecko.core.command.ResponseCommand;
-import com.taobao.gecko.core.command.ResponseStatus;
-import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
-import com.taobao.gecko.core.nio.NioSession;
-import com.taobao.gecko.core.nio.impl.TimerRef;
-import com.taobao.gecko.core.util.ConcurrentHashSet;
-import com.taobao.gecko.core.util.RemotingUtils;
-import com.taobao.gecko.service.Connection;
-import com.taobao.gecko.service.RemotingContext;
-import com.taobao.gecko.service.SingleRequestCallBackListener;
-import com.taobao.gecko.service.callback.SingleRequestCallBack;
-import com.taobao.gecko.service.exception.NotifyRemotingException;
-
 
 /**
  * 连接的封装
@@ -56,12 +51,35 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  */
 
 public class DefaultConnection implements Connection {
+
     static final Log log = LogFactory.getLog(DefaultConnection.class);
 
     /**
      * 是否启用可中断写。如果启用，那么就可能在用户线程做IO写入操作，但是用户线程的中断会引起连接断开，请慎重使用。默认不启用。
      */
     private boolean writeInterruptibly = false;
+
+    /**
+     * 是否允许重连
+     */
+    private volatile boolean allowReconnect = true;
+
+    /**
+     * 用来给客户端判断连接是否继续，连接就绪的含义是指RemotingClient.connect调用后，连接成功建立并且加入了指定的分组
+     */
+    private volatile boolean ready;
+
+    /**
+     * 本连接所属的分组集合
+     */
+    private final ConcurrentHashSet<String> groupSet = new ConcurrentHashSet<String>();
+
+    /**
+     * Opaque到group的映射,仅用于多分组发送，标记应答属于哪个分组
+     */
+    private final ConcurrentHashMap<Integer/* opaque */, String/* group */> opaque2group = new ConcurrentHashMap<Integer, String>(128);
+
+    private final ConcurrentHashMap<Integer, RequestCallBack> requestCallBackMap = new ConcurrentHashMap<Integer, RequestCallBack>();
 
     /**
      * 单连接请求的超时任务
@@ -93,6 +111,20 @@ public class DefaultConnection implements Connection {
         }
     }
 
+    private final NioSession session;
+    private final DefaultRemotingContext remotingContext;
+
+    public DefaultConnection(final NioSession ioSession, final DefaultRemotingContext remotingContext) {
+        this.session = ioSession;
+        this.remotingContext = remotingContext;
+        // 设置session的连接属性
+        this.session.setAttribute(Constants.CONNECTION_ATTR, this);
+    }
+
+
+
+
+
 
     private BooleanAckCommand createTimeoutCommand(final CommandHeader header, final InetSocketAddress address) {
         final BooleanAckCommand value =
@@ -104,61 +136,26 @@ public class DefaultConnection implements Connection {
         return value;
     }
 
+    public boolean isConnected() {
+        return !this.session.isClosed();
+    }
 
     public void setWriteInterruptibly(final boolean writeInterruptibly) {
         this.writeInterruptibly = writeInterruptibly;
     }
 
 
-    @Override
-    public String toString() {
-        return RemotingUtils.getAddrString(this.getRemoteSocketAddress());
-    }
-
-    /**
-     * 是否允许重连
-     */
-    private volatile boolean allowReconnect = true;
-
-    /**
-     * 用来给客户端判断连接是否继续，连接就绪的含义是指RemotingClient.connect调用后，连接成功建立并且加入了指定的分组
-     */
-    private volatile boolean ready;
-
-    /**
-     * 本连接所属的分组集合
-     */
-    private final ConcurrentHashSet<String> groupSet = new ConcurrentHashSet<String>();
-
-    /**
-     * Opaque到group的映射,仅用于多分组发送，标记应答属于哪个分组
-     */
-    private final ConcurrentHashMap<Integer/* opaque */, String/* group */> opaque2group =
-            new ConcurrentHashMap<Integer, String>(128);
-
-
-    public boolean isConnected() {
-        return !this.session.isClosed();
-    }
-
-    private final NioSession session;
-    private final DefaultRemotingContext remotingContext;
-
-
     void addGroup(final String group) {
         this.groupSet.add(group);
     }
-
 
     void removeGroup(final String group) {
         this.groupSet.remove(group);
     }
 
-
     public Set<String> getGroupSet() {
         return new HashSet<String>(this.groupSet);
     }
-
 
     // 释放资源，让callback超时
     void dispose() {
@@ -177,28 +174,29 @@ public class DefaultConnection implements Connection {
         }
     }
 
-
     public ByteOrder readBufferOrder() {
         return this.session.getReadBufferByteOrder();
     }
-
 
     public void readBufferOrder(final ByteOrder byteOrder) {
         this.session.setReadBufferByteOrder(byteOrder);
     }
 
-
     /**
      * 移除所有无效的请求回调
      */
     void removeAllInvalidRequestCallBack() {
+
         final Set<Integer> removedOpaqueSet = new HashSet<Integer>();
+
+        // 获取所有回调过期的Opaque
         final long now = System.currentTimeMillis();
         for (final Map.Entry<Integer, RequestCallBack> entry : this.requestCallBackMap.entrySet()) {
             if (entry.getValue().isInvalid(now)) {
                 removedOpaqueSet.add(entry.getKey());
             }
         }
+
         int count = 0;
         for (final Integer opaque : removedOpaqueSet) {
             // 再次确认
@@ -214,32 +212,27 @@ public class DefaultConnection implements Connection {
                 count++;
             }
         }
+
         if (log.isDebugEnabled()) {
             log.debug("移除" + count + "个无效回调");
         }
 
     }
 
-
     boolean isAllowReconnect() {
         return this.allowReconnect;
     }
-
 
     void setAllowReconnect(final boolean allowReconnect) {
         this.allowReconnect = allowReconnect;
     }
 
-
     public boolean isReady() {
         return this.ready;
     }
-
-
     void setReady(final boolean ready) {
         this.ready = ready;
     }
-
 
     private void checkFlow() throws NotifyRemotingException {
         if (this.session.getScheduleWritenBytes() > this.remotingContext.getConfig().getMaxScheduleWrittenBytes()) {
@@ -248,28 +241,6 @@ public class DefaultConnection implements Connection {
         }
     }
 
-
-    public ResponseCommand invoke(final RequestCommand requestCommand, final long time, final TimeUnit timeUnit)
-            throws InterruptedException, TimeoutException, NotifyRemotingException {
-        if (requestCommand == null) {
-            throw new NotifyRemotingException("Null message");
-        }
-        this.checkFlow();
-        final SingleRequestCallBack requestCallBack =
-                new SingleRequestCallBack(requestCommand.getRequestHeader(), TimeUnit.MILLISECONDS.convert(time,
-                        timeUnit));
-        this.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
-        try {
-            requestCallBack.addWriteFuture(this, this.asyncWriteToSession(requestCommand));
-        } catch (final Throwable t) {
-            this.removeRequestCallBack(requestCommand.getOpaque());
-            throw new NotifyRemotingException(t);
-        }
-        return requestCallBack.getResult(time, timeUnit, this);
-    }
-
-    private final ConcurrentHashMap<Integer, RequestCallBack> requestCallBackMap =
-            new ConcurrentHashMap<Integer, RequestCallBack>();
 
 
     void addRequestCallBack(final Integer opaque, final RequestCallBack requestCallBack) throws NotifyRemotingException {
@@ -284,11 +255,9 @@ public class DefaultConnection implements Connection {
         this.requestCallBackMap.put(opaque, requestCallBack);
     }
 
-
     public RequestCallBack getRequestCallBack(final Integer opaque) {
         return this.requestCallBackMap.get(opaque);
     }
-
 
     public RequestCallBack removeRequestCallBack(final Integer opaque) {
         final RequestCallBack removed = this.requestCallBackMap.remove(opaque);
@@ -297,7 +266,6 @@ public class DefaultConnection implements Connection {
         }
         return removed;
     }
-
 
     /**
      * 移除opaque到group的映射，仅用于多分组发送
@@ -309,7 +277,6 @@ public class DefaultConnection implements Connection {
         return this.opaque2group.remove(opaque);
     }
 
-
     /**
      * 添加opaque到group的映射，仅用于多分组发送
      *
@@ -320,21 +287,50 @@ public class DefaultConnection implements Connection {
         this.opaque2group.put(opaque, group);
     }
 
-
-    public ResponseCommand invoke(final RequestCommand request) throws InterruptedException, TimeoutException,
-            NotifyRemotingException {
+    /**
+     * 同步调用，默认超时1秒
+     *
+     * @param request
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
+    public ResponseCommand invoke(final RequestCommand request) throws InterruptedException, TimeoutException, NotifyRemotingException {
         return this.invoke(request, 1000L, TimeUnit.MILLISECONDS);
+    }
+    /**
+     * 同步调用，指定超时时间
+     *
+     * @param requestCommand
+     * @param time
+     * @param timeUnit
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
+    public ResponseCommand invoke(final RequestCommand requestCommand, final long time, final TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException {
+        if (requestCommand == null) {
+            throw new NotifyRemotingException("Null message");
+        }
+
+        this.checkFlow();
+        final SingleRequestCallBack requestCallBack = new SingleRequestCallBack(requestCommand.getRequestHeader(), TimeUnit.MILLISECONDS.convert(time, timeUnit));
+        this.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
+        try {
+            requestCallBack.addWriteFuture(this, this.asyncWriteToSession(requestCommand));
+        } catch (final Throwable t) {
+            this.removeRequestCallBack(requestCommand.getOpaque());
+            throw new NotifyRemotingException(t);
+        }
+        return requestCallBack.getResult(time, timeUnit, this);
     }
 
 
-    public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener)
-            throws NotifyRemotingException {
+    public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener) throws NotifyRemotingException {
         this.send(requestCommand, listener, 1000, TimeUnit.MILLISECONDS);
     }
 
-
-    public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener,
-                     final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
+    public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener, final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
         if (requestCommand == null) {
             throw new NotifyRemotingException("Null message");
         }
@@ -362,14 +358,12 @@ public class DefaultConnection implements Connection {
 
     }
 
-
     public void send(final RequestCommand requestCommand) throws NotifyRemotingException {
         if (requestCommand == null) {
             throw new NotifyRemotingException("Null message");
         }
         this.writeToSession(requestCommand);
     }
-
 
     public Future<Boolean> asyncSend(final RequestCommand requestCommand) throws NotifyRemotingException {
         if (requestCommand == null) {
@@ -379,7 +373,6 @@ public class DefaultConnection implements Connection {
         return this.asyncWriteToSession(requestCommand);
     }
 
-
     private Future<Boolean> asyncWriteToSession(final Object packet) {
         if (this.writeInterruptibly) {
             return this.session.asyncWriteInterruptibly(packet);
@@ -388,24 +381,13 @@ public class DefaultConnection implements Connection {
         }
     }
 
-
-    public DefaultConnection(final NioSession ioSession, final DefaultRemotingContext remotingContext) {
-        this.session = ioSession;
-        this.remotingContext = remotingContext;
-        // 设置session的连接属性
-        this.session.setAttribute(Constants.CONNECTION_ATTR, this);
-    }
-
-
     NioSession getSession() {
         return this.session;
     }
 
-
     public RemotingContext getRemotingContext() {
         return this.remotingContext;
     }
-
 
     public synchronized void close(final boolean allowReconnect) throws NotifyRemotingException {
         if (!this.isConnected()) {
@@ -419,52 +401,42 @@ public class DefaultConnection implements Connection {
         }
     }
 
-
     public void clearAttributes() {
         this.session.clearAttributes();
     }
-
 
     public Object getAttribute(final String key) {
         return this.session.getAttribute(key);
     }
 
-
     public InetSocketAddress getRemoteSocketAddress() {
         return this.session.getRemoteSocketAddress();
     }
-
 
     public InetAddress getLocalAddress() {
         return this.session.getLocalAddress();
     }
 
-
     public void removeAttribute(final String key) {
         this.session.removeAttribute(key);
     }
-
 
     public void setAttribute(final String key, final Object value) {
         this.session.setAttribute(key, value);
     }
 
-
     public Set<String> attributeKeySet() {
         return this.session.attributeKeySet();
     }
-
 
     int getRequstCallBackCount() {
         return this.requestCallBackMap.size();
     }
 
-
     public void response(final Object responseCommand) throws NotifyRemotingException {
         this.checkFlow();
         this.writeToSession(responseCommand);
     }
-
 
     private void writeToSession(final Object packet) throws NotifyRemotingException {
         try {
@@ -478,17 +450,14 @@ public class DefaultConnection implements Connection {
         }
     }
 
-
     public Object setAttributeIfAbsent(final String key, final Object value) {
         return this.session.setAttributeIfAbsent(key, value);
     }
-
 
     public void transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position,
                              final long size) {
         this.session.transferFrom(head, tail, channel, position, size);
     }
-
 
     public void transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position,
                              final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time,
@@ -522,12 +491,19 @@ public class DefaultConnection implements Connection {
         }
     }
 
-
     public void notifyClientException(final RequestCommand requestCommand, final Exception e) {
         final RequestCallBack requestCallBack = this.getRequestCallBack(requestCommand.getOpaque());
         if (requestCallBack != null) {
             requestCallBack.setException(e, this, requestCommand);
         }
+    }
+
+
+
+
+    @Override
+    public String toString() {
+        return RemotingUtils.getAddrString(this.getRemoteSocketAddress());
     }
 
 }

@@ -22,7 +22,9 @@ package com.taobao.gecko.core.nio.impl;
  */
 public class TimerRef implements Comparable<TimerRef> {
     long timeoutTimestamp;
+    /** 连接超时时间 */
     final long timeout;
+    /** 用于检测连接建立是否成功的线程任务 */
     volatile Runnable runnable;
     volatile boolean canceled;
     volatile TimerRefQueue queue;
@@ -30,7 +32,10 @@ public class TimerRef implements Comparable<TimerRef> {
     TimerRef prev;
     volatile long addTimestamp;
 
-
+    public TimerRef(long timeout, Runnable runnable) {
+        this.timeout = timeout;
+        this.runnable = runnable;
+    }
     public TimerRef(Runnable runnable, TimerRefQueue queue, TimerRef next, TimerRef prev) {
         super();
         this.runnable = runnable;
@@ -41,39 +46,32 @@ public class TimerRef implements Comparable<TimerRef> {
     }
 
 
-    public TimerRef(long timeout, Runnable runnable) {
-        this.timeout = timeout;
-        this.runnable = runnable;
+    public void cancel() {
+        this.canceled = true;
+        this.timeoutTimestamp = -1;
+        if (this.queue != null) {
+            this.queue.remove(this);
+        }
     }
 
 
     public void setRunnable(Runnable runnable) {
         this.runnable = runnable;
     }
-
-
     synchronized long getTimeoutTimestamp() {
         return this.timeoutTimestamp;
     }
-
-
     synchronized void setTimeoutTimestamp(long timestamp) {
         if (this.timeoutTimestamp == 0) {
             this.timeoutTimestamp = timestamp;
         }
     }
-
-
     public long getTimeout() {
         return this.timeout;
     }
-
-
     public Runnable getRunnable() {
         return this.runnable;
     }
-
-
     public boolean isCanceled() {
         return this.canceled;
     }
@@ -89,8 +87,6 @@ public class TimerRef implements Comparable<TimerRef> {
         result = prime * result + (int) (this.timeoutTimestamp ^ this.timeoutTimestamp >>> 32);
         return result;
     }
-
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -121,8 +117,6 @@ public class TimerRef implements Comparable<TimerRef> {
         }
         return true;
     }
-
-
     public int compareTo(TimerRef o) {
         if (o == null) {
             return 1;
@@ -140,11 +134,5 @@ public class TimerRef implements Comparable<TimerRef> {
     }
 
 
-    public void cancel() {
-        this.canceled = true;
-        this.timeoutTimestamp = -1;
-        if (this.queue != null) {
-            this.queue.remove(this);
-        }
-    }
+
 }

@@ -25,9 +25,11 @@ import com.taobao.gecko.service.Connection;
  * @Date 2010-5-26
  */
 public interface ScanTask {
+
     /**
      * @param now  扫描触发的时间点
      * @param conn 当前扫描到的连接
      */
     public void visit(long now, Connection conn);
+
 }

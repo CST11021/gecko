@@ -15,17 +15,16 @@
  */
 package com.taobao.gecko.core.nio.impl;
 
-import java.io.IOException;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.config.Configuration;
 import com.taobao.gecko.core.core.EventType;
 import com.taobao.gecko.core.core.Session;
 import com.taobao.gecko.core.util.PositiveAtomicCounter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
 
 
 /**
@@ -35,22 +34,27 @@ import com.taobao.gecko.core.util.PositiveAtomicCounter;
  * @since 1.0, 2009-12-16 下午06:10:59
  */
 public class SelectorManager {
+
+    private static final Log log = LogFactory.getLog(SelectorManager.class);
+
+    public static final String REACTOR_ATTRIBUTE = System.currentTimeMillis() + "_Reactor_Attribute";
     private final Reactor[] reactorSet;
+    /** 递增的统计器 */
     private final PositiveAtomicCounter sets = new PositiveAtomicCounter();
     private final NioController controller;
     private final int dividend;
-
     /**
      * Reactor准备就绪的个数
      */
     private int reactorReadyCount;
+    private volatile boolean started;
 
 
-    public SelectorManager(final int selectorPoolSize, final NioController controller, final Configuration conf)
-            throws IOException {
+    public SelectorManager(final int selectorPoolSize, final NioController controller, final Configuration conf) throws IOException {
         if (selectorPoolSize <= 0) {
             throw new IllegalArgumentException("selectorPoolSize<=0");
         }
+
         log.info("Creating " + selectorPoolSize + " rectors...");
         this.reactorSet = new Reactor[selectorPoolSize];
         this.controller = controller;
@@ -61,13 +65,10 @@ public class SelectorManager {
         this.dividend = this.reactorSet.length - 1;
     }
 
-    private volatile boolean started;
-
 
     public int getSelectorCount() {
         return this.reactorSet == null ? 0 : this.reactorSet.length;
     }
-
 
     public synchronized void start() {
         if (this.started) {
@@ -78,7 +79,6 @@ public class SelectorManager {
             reactor.start();
         }
     }
-
 
     /**
      * 仅用于测试
@@ -93,7 +93,6 @@ public class SelectorManager {
         return this.reactorSet[index];
     }
 
-
     public synchronized void stop() {
         if (!this.started) {
             return;
@@ -103,9 +102,6 @@ public class SelectorManager {
             reactor.interrupt();
         }
     }
-
-    public static final String REACTOR_ATTRIBUTE = System.currentTimeMillis() + "_Reactor_Attribute";
-
 
     /**
      * 注册channel
@@ -134,7 +130,6 @@ public class SelectorManager {
 
     }
 
-
     void awaitReady() {
         synchronized (this) {
             while (!this.started || this.reactorReadyCount != this.reactorSet.length) {
@@ -146,7 +141,6 @@ public class SelectorManager {
             }
         }
     }
-
 
     /**
      * 查找下一个reactor
@@ -160,7 +154,6 @@ public class SelectorManager {
             return this.reactorSet[0];
         }
     }
-
 
     /**
      * 注册连接事件
@@ -176,7 +169,6 @@ public class SelectorManager {
         reactor.registerSession(session, event);
     }
 
-
     Reactor getReactorFromSession(final Session session) {
         Reactor reactor = (Reactor) session.getAttribute(REACTOR_ATTRIBUTE);
 
@@ -190,36 +182,29 @@ public class SelectorManager {
         return reactor;
     }
 
-
     /**
      * 插入定时器到session关联的reactor，返回当前时间
      *
      * @param session
-     * @param timeout
-     * @param runnable
-     * @return 当前时间
+     * @param timerRef
      */
     public final void insertTimer(final Session session, final TimerRef timerRef) {
         final Reactor reactor = this.getReactorFromSession(session);
         reactor.insertTimer(timerRef);
     }
 
-
     /**
      * 插入定时器并返回当前时间，随机选择一个reactor
      *
-     * @param timeout
-     * @param runnable
+     * @param timerRef
      */
     public final void insertTimer(final TimerRef timerRef) {
         this.nextReactor().insertTimer(timerRef);
     }
 
-
     public NioController getController() {
         return this.controller;
     }
-
 
     synchronized void notifyReady() {
         this.reactorReadyCount++;
@@ -229,9 +214,6 @@ public class SelectorManager {
         }
 
     }
-
-    private static final Log log = LogFactory.getLog(SelectorManager.class);
-
 
     public final boolean isStarted() {
         return this.started;

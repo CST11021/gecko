@@ -16,7 +16,7 @@
 package com.taobao.gecko.core.core;
 
 /**
- * 业务处理器
+ * 会话生命周期处理
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午06:00:24
@@ -25,27 +25,19 @@ public interface Handler {
 
     void onSessionCreated(Session session);
 
-
     void onSessionStarted(Session session);
-
 
     void onSessionClosed(Session session);
 
-
     void onMessageReceived(Session session, Object msg);
-
 
     void onMessageSent(Session session, Object msg);
 
-
     void onExceptionCaught(Session session, Throwable throwable);
-
 
     void onSessionExpired(Session session);
 
-
     void onSessionIdle(Session session);
-
 
     void onSessionConnected(Session session, Object... args);
 

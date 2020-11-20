@@ -15,36 +15,22 @@
  */
 package com.taobao.gecko.core.core.impl;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.SelectionKey;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.config.Configuration;
-import com.taobao.gecko.core.core.CodecFactory;
-import com.taobao.gecko.core.core.Controller;
-import com.taobao.gecko.core.core.ControllerLifeCycle;
-import com.taobao.gecko.core.core.ControllerStateListener;
-import com.taobao.gecko.core.core.Dispatcher;
-import com.taobao.gecko.core.core.Handler;
-import com.taobao.gecko.core.core.Session;
-import com.taobao.gecko.core.core.SocketOption;
-import com.taobao.gecko.core.core.WriteMessage;
+import com.taobao.gecko.core.core.*;
 import com.taobao.gecko.core.statistics.Statistics;
 import com.taobao.gecko.core.statistics.impl.DefaultStatistics;
 import com.taobao.gecko.core.statistics.impl.SimpleStatistics;
 import com.taobao.gecko.core.util.DispatcherFactory;
 import com.taobao.gecko.core.util.LinkedTransferQueue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 /**
@@ -55,15 +41,14 @@ import com.taobao.gecko.core.util.LinkedTransferQueue;
  */
 public abstract class AbstractController implements Controller, ControllerLifeCycle {
 
+    protected static final Log log = LogFactory.getLog(AbstractController.class);
+
     protected Statistics statistics = new DefaultStatistics();
     protected long statisticsInterval;
-
-    protected static final Log log = LogFactory.getLog(AbstractController.class);
     /**
      * controller state listener list
      */
-    protected CopyOnWriteArrayList<ControllerStateListener> stateListeners =
-            new CopyOnWriteArrayList<ControllerStateListener>();
+    protected CopyOnWriteArrayList<ControllerStateListener> stateListeners = new CopyOnWriteArrayList<ControllerStateListener>();
     /**
      * Event handler
      */
@@ -71,7 +56,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     /**
      * Codec Factory
      */
-
     protected volatile CodecFactory codecFactory;
     /**
      * Status
@@ -91,25 +75,49 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     protected Dispatcher readEventDispatcher, dispatchMessageDispatcher, writeEventDispatcher;
     protected long sessionTimeout;
     protected volatile boolean handleReadWriteConcurrently = true;
-
     protected int soTimeout;
-
     private Thread shutdownHookThread;
     private volatile boolean isHutdownHookCalled = false;
-
     /**
      * Socket options
      */
     protected Map<SocketOption<?>, Object> socketOptions = new HashMap<SocketOption<?>, Object>();
-
     /**
      * Connected session set
      */
     private final Set<Session> sessionSet = new HashSet<Session>();
 
+
+
+    public AbstractController(final Configuration configuration) {
+        this(configuration, null, null);
+
+    }
     public AbstractController() {
         this(new Configuration(), null, null);
     }
+    public AbstractController(final Configuration configuration, final CodecFactory codecFactory) {
+        this(configuration, null, codecFactory);
+    }
+    public AbstractController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
+        this.init(configuration, handler, codecFactory);
+    }
+
+
+    private synchronized void init(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
+        this.setHandler(handler);
+        this.setCodecFactory(codecFactory);
+        this.setConfiguration(configuration);
+        this.setReadThreadCount(configuration.getReadThreadCount());
+        this.setWriteThreadCount(configuration.getWriteThreadCount());
+        this.setDispatchMessageThreadCount(configuration.getDispatchMessageThreadCount());
+        this.setHandleReadWriteConcurrently(configuration.isHandleReadWriteConcurrently());
+        this.setSoTimeout(configuration.getSoTimeout());
+        this.setStatisticsConfig(configuration);
+        this.setReceiveThroughputLimit(-0.1d);
+        this.setStarted(false);
+    }
+
 
     public void setSocketOptions(final Map<SocketOption<?>, Object> socketOptions) {
         if (socketOptions == null) {
@@ -137,7 +145,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     }
 
     /**
-     * Build write queue for session
+     * 建立会话的写队列
      *
      * @return
      */
@@ -162,11 +170,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         return this.soTimeout;
     }
 
-
     public void setSoTimeout(final int timeout) {
         this.soTimeout = timeout;
     }
-
 
     public double getReceiveThroughputLimit() {
         return this.statistics.getReceiveThroughputLimit();
@@ -177,32 +183,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
     }
 
-    public AbstractController(final Configuration configuration) {
-        this(configuration, null, null);
 
-    }
 
-    public AbstractController(final Configuration configuration, final CodecFactory codecFactory) {
-        this(configuration, null, codecFactory);
-    }
 
-    public AbstractController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
-        this.init(configuration, handler, codecFactory);
-    }
-
-    private synchronized void init(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
-        this.setHandler(handler);
-        this.setCodecFactory(codecFactory);
-        this.setConfiguration(configuration);
-        this.setReadThreadCount(configuration.getReadThreadCount());
-        this.setWriteThreadCount(configuration.getWriteThreadCount());
-        this.setDispatchMessageThreadCount(configuration.getDispatchMessageThreadCount());
-        this.setHandleReadWriteConcurrently(configuration.isHandleReadWriteConcurrently());
-        this.setSoTimeout(configuration.getSoTimeout());
-        this.setStatisticsConfig(configuration);
-        this.setReceiveThroughputLimit(-0.1d);
-        this.setStarted(false);
-    }
 
     void setStarted(final boolean started) {
         this.started = started;
@@ -381,12 +364,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.statistics.start();
     }
 
-    public void notifyStarted() {
-        for (final ControllerStateListener stateListener : this.stateListeners) {
-            stateListener.onStarted(this);
-        }
-    }
-
     public boolean isStarted() {
         return this.started;
     }
@@ -401,12 +378,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
     public final void setCodecFactory(final CodecFactory codecFactory) {
         this.codecFactory = codecFactory;
-    }
-
-    public void notifyReady() {
-        for (final ControllerStateListener stateListener : this.stateListeners) {
-            stateListener.onReady(this);
-        }
     }
 
     public synchronized final void unregisterSession(final Session session) {
@@ -485,24 +456,6 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.stateListeners.clear();
     }
 
-    public final void notifyException(final Throwable t) {
-        for (final ControllerStateListener stateListener : this.stateListeners) {
-            stateListener.onException(this, t);
-        }
-    }
-
-    public final void notifyStopped() {
-        for (final ControllerStateListener stateListener : this.stateListeners) {
-            stateListener.onStopped(this);
-        }
-    }
-
-    public final void notifyAllSessionClosed() {
-        for (final ControllerStateListener stateListener : this.stateListeners) {
-            stateListener.onAllSessionClosed(this);
-        }
-    }
-
     public Set<Session> getSessionSet() {
         return Collections.unmodifiableSet(this.sessionSet);
     }
@@ -539,4 +492,44 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         this.setLocalSocketAddress(inetSocketAddress);
         this.start();
     }
+
+
+
+
+
+
+    // ------------------------
+    // 实现Controller生命周期接口
+    // ------------------------
+
+    public void notifyReady() {
+        for (final ControllerStateListener stateListener : this.stateListeners) {
+            stateListener.onReady(this);
+        }
+    }
+
+    public void notifyStarted() {
+        for (final ControllerStateListener stateListener : this.stateListeners) {
+            stateListener.onStarted(this);
+        }
+    }
+
+    public final void notifyAllSessionClosed() {
+        for (final ControllerStateListener stateListener : this.stateListeners) {
+            stateListener.onAllSessionClosed(this);
+        }
+    }
+
+    public final void notifyException(final Throwable t) {
+        for (final ControllerStateListener stateListener : this.stateListeners) {
+            stateListener.onException(this, t);
+        }
+    }
+
+    public final void notifyStopped() {
+        for (final ControllerStateListener stateListener : this.stateListeners) {
+            stateListener.onStopped(this);
+        }
+    }
+
 }
