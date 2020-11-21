@@ -36,12 +36,7 @@ import java.util.concurrent.TimeoutException;
  */
 public interface RemotingController {
 
-    /**
-     * 设置连接选择器，默认为随机选择器
-     *
-     * @param selector
-     */
-    public void setConnectionSelector(ConnectionSelector selector);
+    // 启动关闭
 
     /**
      * 启动Remoting控制器
@@ -63,6 +58,9 @@ public interface RemotingController {
      * @return
      */
     public boolean isStarted();
+
+
+    // 请求处理器
 
     /**
      * 注册请求处理器：当服务端接收到<T>类型的请求时，将请求分派给对应的处理器处理
@@ -96,11 +94,68 @@ public interface RemotingController {
      */
     public void addAllProcessors(Map<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>> map);
 
+
+    // ConnectionLifeCycleListener
+
     /**
-     * 添加一个定时器
+     * 添加连接生命周期监听器
      *
+     * @param connectionLifeCycleListener
      */
-    public void insertTimer(TimerRef timerRef);
+    public void addConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
+
+    /**
+     * 添加连接生命周期监听器
+     *
+     * @param connectionLifeCycleListener
+     */
+    public void removeConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
+
+
+    // attribute
+
+    /**
+     * 设置属性
+     *
+     * @param group
+     * @param key
+     * @param value
+     */
+    public void setAttribute(String group, String key, Object value);
+
+    /**
+     * 设置属性，类似ConcurrentHashMap.putIfAbsent
+     *
+     * @param group
+     * @param key
+     * @param value
+     * @return
+     */
+    public Object setAttributeIfAbsent(String group, String key, Object value);
+
+    /**
+     * 获取属性
+     *
+     * @param group
+     * @param key
+     * @return
+     */
+    public Object getAttribute(String group, String key);
+
+    /**
+     * 移除属性
+     *
+     * @param group
+     * @param key
+     * @return
+     */
+    public Object removeAttribute(String group, String key);
+
+
+
+
+
+    // 服务调用
 
     /**
      * 异步发送消息给多个分组，每个分组根据策略选一个连接发送，指定回调处理器和超时时间，超时将返回一个超时应答给回调监听器
@@ -264,6 +319,23 @@ public interface RemotingController {
      */
     public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
 
+
+
+
+    // 其他
+
+    /**
+     * 设置连接选择器，默认为随机选择器
+     *
+     * @param selector
+     */
+    public void setConnectionSelector(ConnectionSelector selector);
+    /**
+     * 添加一个定时器
+     *
+     */
+    public void insertTimer(TimerRef timerRef);
+
     /**
      * 获取group对应的连接数
      *
@@ -278,57 +350,6 @@ public interface RemotingController {
      * @return
      */
     public Set<String> getGroupSet();
-
-    /**
-     * 设置属性
-     *
-     * @param group
-     * @param key
-     * @param value
-     */
-    public void setAttribute(String group, String key, Object value);
-
-    /**
-     * 设置属性，类似ConcurrentHashMap.putIfAbsent
-     *
-     * @param group
-     * @param key
-     * @param value
-     * @return
-     */
-    public Object setAttributeIfAbsent(String group, String key, Object value);
-
-    /**
-     * 获取属性
-     *
-     * @param group
-     * @param key
-     * @return
-     */
-    public Object getAttribute(String group, String key);
-
-    /**
-     * 添加连接生命周期监听器
-     *
-     * @param connectionLifeCycleListener
-     */
-    public void addConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
-
-    /**
-     * 添加连接生命周期监听器
-     *
-     * @param connectionLifeCycleListener
-     */
-    public void removeConnectionLifeCycleListener(ConnectionLifeCycleListener connectionLifeCycleListener);
-
-    /**
-     * 移除属性
-     *
-     * @param group
-     * @param key
-     * @return
-     */
-    public Object removeAttribute(String group, String key);
 
     /**
      * 获取全局上下文

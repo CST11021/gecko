@@ -15,17 +15,16 @@
  */
 package com.taobao.gecko.service.callback;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.CommandHeader;
+import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.SingleRequestCallBackListener;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 针对单个连接或者单个分组的请求回调
@@ -33,27 +32,32 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  * @author boyan
  * @since 1.0, 2009-12-15 下午04:04:2
  */
-
 public final class SingleRequestCallBack extends AbstractRequestCallBack {
+
+    /** 请求ID */
     private final CommandHeader requestCommandHeader;
+    /** 服务端的响应对象 */
     private ResponseCommand responseCommand;
+    /** 回调监听 */
     private SingleRequestCallBackListener requestCallBackListener;
+    /** 服务调用异常时的异常堆栈 */
     private Exception exception;
+    /** 表示服务端是否已响应 */
     private boolean responsed = false;
-
-
-    public SingleRequestCallBack(final CommandHeader requestCommandHeader, final long timeout,
-                                 final SingleRequestCallBackListener requestCallBackListener) {
-        super(new CountDownLatch(1), timeout, System.currentTimeMillis());
-        this.requestCommandHeader = requestCommandHeader;
-        this.requestCallBackListener = requestCallBackListener;
-    }
 
 
     public SingleRequestCallBack(final CommandHeader requestCommandHeader, final long timeout) {
         super(new CountDownLatch(1), timeout, System.currentTimeMillis());
         this.requestCommandHeader = requestCommandHeader;
     }
+    public SingleRequestCallBack(final CommandHeader requestCommandHeader, final long timeout, final SingleRequestCallBackListener requestCallBackListener) {
+        super(new CountDownLatch(1), timeout, System.currentTimeMillis());
+        this.requestCommandHeader = requestCommandHeader;
+        this.requestCallBackListener = requestCallBackListener;
+    }
+
+
+
 
 
     public Exception getException() {
@@ -72,45 +76,15 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
         }
     }
 
-
     @Override
     public void complete() {
         this.responsed = true;
     }
 
-
     @Override
     public boolean isComplete() {
         return this.responsed;
     }
-
-
-    public ResponseCommand getResult() throws InterruptedException, TimeoutException, NotifyRemotingException {
-        if (!this.await(1000, TimeUnit.MILLISECONDS)) {
-            throw new TimeoutException("Operation timeout(1 second)");
-        }
-        if (this.exception != null) {
-            throw new NotifyRemotingException("同步调用失败", this.exception);
-        }
-        synchronized (this) {
-            return this.responseCommand;
-        }
-    }
-
-
-    public CommandHeader getRequestCommandHeader() {
-        return this.requestCommandHeader;
-    }
-
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.taobao.gecko.service.impl.RequestCallBack#setResponseCommand
-     * (com.taobao.gecko.core.command.ResponseCommand,
-     * java.lang.String)
-     */
     @Override
     public void onResponse0(final String group, final ResponseCommand responseCommand, final Connection connection) {
         synchronized (this) {
@@ -138,8 +112,19 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
     }
 
 
-    public ResponseCommand getResult(final long time, final TimeUnit timeUnit, final Connection conn)
-            throws InterruptedException, TimeoutException, NotifyRemotingException {
+
+    public ResponseCommand getResult() throws InterruptedException, TimeoutException, NotifyRemotingException {
+        if (!this.await(1000, TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("Operation timeout(1 second)");
+        }
+        if (this.exception != null) {
+            throw new NotifyRemotingException("同步调用失败", this.exception);
+        }
+        synchronized (this) {
+            return this.responseCommand;
+        }
+    }
+    public ResponseCommand getResult(final long time, final TimeUnit timeUnit, final Connection conn) throws InterruptedException, TimeoutException, NotifyRemotingException {
         if (!this.await(time, timeUnit)) {
             this.cancelWrite(conn);
             // 切记移除回调
@@ -156,5 +141,14 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
             return this.responseCommand;
         }
     }
+
+
+    public CommandHeader getRequestCommandHeader() {
+        return this.requestCommandHeader;
+    }
+
+
+
+
 
 }

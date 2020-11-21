@@ -242,16 +242,23 @@ public class DefaultConnection implements Connection {
     }
 
 
-
+    /**
+     * 添加请求id对应的回调映射关系
+     *
+     * @param opaque
+     * @param requestCallBack
+     * @throws NotifyRemotingException
+     */
     void addRequestCallBack(final Integer opaque, final RequestCallBack requestCallBack) throws NotifyRemotingException {
         if (!this.remotingContext.aquire()) {
-            throw new NotifyRemotingException("超过允许的最大CallBack个数["
-                    + this.remotingContext.getConfig().getMaxCallBackCount() + "]");
+            throw new NotifyRemotingException("超过允许的最大CallBack个数[" + this.remotingContext.getConfig().getMaxCallBackCount() + "]");
         }
+
         if (this.requestCallBackMap.containsKey(opaque)) {
             this.remotingContext.release();
             throw new NotifyRemotingException("请不要重复发送同一个命令到同一个连接");
         }
+
         this.requestCallBackMap.put(opaque, requestCallBack);
     }
 
@@ -314,6 +321,7 @@ public class DefaultConnection implements Connection {
         }
 
         this.checkFlow();
+        // 创建单次请求的回调对象
         final SingleRequestCallBack requestCallBack = new SingleRequestCallBack(requestCommand.getRequestHeader(), TimeUnit.MILLISECONDS.convert(time, timeUnit));
         this.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
         try {

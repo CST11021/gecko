@@ -27,7 +27,7 @@ public class TimerRefQueue {
 
     private int size;
     private final ReentrantLock lock = new ReentrantLock();
-    /** 哨兵元素 */
+    /** 哨兵元素：表示TimerRef双向链表的第一个元素 */
     private final TimerRef head = new TimerRef(null, this, null, null);
 
     /**
@@ -37,22 +37,31 @@ public class TimerRefQueue {
      * @Date 2010-5-20
      */
     public static interface TimerQueueVisitor {
+
         /**
+         * 访问当前的TimerRef
+         *
          * @param timerRef
          * @return 是否继续访问
          */
         public boolean visit(TimerRef timerRef);
+
     }
 
     public TimerRefQueue() {
         this.head.prev = this.head.next = this.head;
     }
 
-
+    /**
+     * 将当前TimerRef设置为哨兵，即添加到TimerRef双向链表的头一个
+     *
+     * @param timerRef
+     */
     public void add(TimerRef timerRef) {
         if (timerRef == null) {
             throw new NullPointerException("Null timer");
         }
+
         this.lock.lock();
         try {
             if (timerRef.isCanceled()) {
@@ -63,6 +72,7 @@ public class TimerRefQueue {
             } else {
                 timerRef.queue = this;
             }
+
             timerRef.prev = this.head.prev;
             timerRef.next = this.head;
             this.head.prev.next = timerRef;
@@ -74,6 +84,12 @@ public class TimerRefQueue {
         }
     }
 
+    /**
+     * 将timerRef从timerRef链表中移除
+     *
+     * @param timerRef
+     * @return
+     */
     public boolean remove(TimerRef timerRef) {
         if (timerRef == null) {
             return false;
@@ -101,6 +117,11 @@ public class TimerRefQueue {
 
     }
 
+    /**
+     * 获取链表中的timerRef个数
+     *
+     * @return
+     */
     public int size() {
         this.lock.lock();
         try {
@@ -110,6 +131,11 @@ public class TimerRefQueue {
         }
     }
 
+    /**
+     * 判断timerRef链表是否为空
+     *
+     * @return
+     */
     public boolean isEmpty() {
         this.lock.lock();
         try {
@@ -119,6 +145,12 @@ public class TimerRefQueue {
         }
     }
 
+    /**
+     * 判断timerRef链表中是否包含ref
+     *
+     * @param ref
+     * @return
+     */
     public boolean contains(TimerRef ref) {
         this.lock.lock();
         try {
@@ -133,6 +165,11 @@ public class TimerRefQueue {
         }
     }
 
+    /**
+     * 遍历并访问链表中的每个timerRef
+     *
+     * @param visitor
+     */
     public void iterateQueue(TimerQueueVisitor visitor) {
         TimerRef[] snapshot = null;
         this.lock.lock();

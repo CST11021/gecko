@@ -28,8 +28,11 @@ public class TimerRef implements Comparable<TimerRef> {
     volatile Runnable runnable;
     volatile boolean canceled;
     volatile TimerRefQueue queue;
+    /** TimerRef是一个双向链表的结构，next表示下一个TimerRef */
     TimerRef next;
+    /** TimerRef是一个双向链表的结构，next表示上一个TimerRef */
     TimerRef prev;
+    /** 表示当前TimerRef的添加到链表的时间 */
     volatile long addTimestamp;
 
     public TimerRef(long timeout, Runnable runnable) {

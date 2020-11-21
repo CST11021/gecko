@@ -30,14 +30,12 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
-
 /**
  * Gecko的连接管理器，扩展SocketChannelController，提供单个Controller管理多个客户端连接功能
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:56:50
  */
-
 public class GeckoTCPConnectorController extends SocketChannelController {
 
     /** 连接失败监听器 */
@@ -54,6 +52,12 @@ public class GeckoTCPConnectorController extends SocketChannelController {
     }
     public GeckoTCPConnectorController(final Configuration configuration) {
         super(configuration);
+    }
+
+
+    @Override
+    protected void doStart() throws IOException {
+        // do nothing
     }
 
     /**
@@ -75,6 +79,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
             if (!socketChannel.connect(remoteAddress)) {
                 this.selectorManager.registerChannel(socketChannel, SelectionKey.OP_CONNECT, resultFuture);
             } else {
+                // 创建Session
                 final NioSession session = this.createSession(socketChannel, args);
                 resultFuture.setResult(session);
             }
@@ -110,16 +115,6 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         }
     }
 
-    private void cancelKey(final SelectionKey key) throws IOException {
-        try {
-            if (key.channel() != null) {
-                key.channel().close();
-            }
-        } finally {
-            key.cancel();
-        }
-    }
-
     /**
      * 创建Session
      *
@@ -136,15 +131,27 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         return session;
     }
 
-    @Override
-    protected void doStart() throws IOException {
-        // do nothing
-    }
-
     public void closeChannel(final Selector selector) throws IOException {
 
     }
 
+    /**
+     * 关闭SelectionKey
+     *
+     * @param key
+     * @throws IOException
+     */
+    private void cancelKey(final SelectionKey key) throws IOException {
+        try {
+            if (key.channel() != null) {
+                key.channel().close();
+            }
+        } finally {
+            key.cancel();
+        }
+    }
+
+    // getter and setter ...
 
     public ConnectFailListener getConnectFailListener() {
         return this.connectFailListener;

@@ -15,17 +15,6 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.command.Constants;
 import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.ResponseCommand;
@@ -37,14 +26,19 @@ import com.taobao.gecko.core.nio.NioSession;
 import com.taobao.gecko.core.nio.impl.TimerRef;
 import com.taobao.gecko.core.util.ExceptionMonitor;
 import com.taobao.gecko.core.util.RemotingUtils;
-import com.taobao.gecko.service.Connection;
-import com.taobao.gecko.service.ConnectionLifeCycleListener;
-import com.taobao.gecko.service.RemotingController;
-import com.taobao.gecko.service.RemotingServer;
-import com.taobao.gecko.service.RequestProcessor;
-import com.taobao.gecko.service.SingleRequestCallBackListener;
+import com.taobao.gecko.service.*;
 import com.taobao.gecko.service.exception.IllegalMessageException;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -53,8 +47,9 @@ import com.taobao.gecko.service.exception.NotifyRemotingException;
  * @author boyan
  * @since 1.0, 2009-12-15 上午11:14:51
  */
-
 public class GeckoHandler implements Handler {
+
+    private static final Log log = LogFactory.getLog(GeckoHandler.class);
 
     /**
      * 请求处理器的任务包装
@@ -132,31 +127,9 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    private ReconnectManager reconnectManager;
     private final DefaultRemotingContext remotingContext;
     private final RemotingController remotingController;
-    private ReconnectManager reconnectManager;
-    private static final Log log = LogFactory.getLog(GeckoHandler.class);
-
-
-    public void setReconnectManager(final ReconnectManager reconnectManager) {
-        this.reconnectManager = reconnectManager;
-    }
-
-
-    private void responseThreadPoolBusy(final Session session, final Object msg,
-                                        final DefaultConnection defaultConnection) {
-        if (defaultConnection != null && msg instanceof RequestCommand) {
-            try {
-                defaultConnection.response(defaultConnection
-                        .getRemotingContext()
-                        .getCommandFactory()
-                        .createBooleanAckCommand(((RequestCommand) msg).getRequestHeader(), ResponseStatus.THREADPOOL_BUSY,
-                                "线程池繁忙"));
-            } catch (final NotifyRemotingException e) {
-                this.onExceptionCaught(session, e);
-            }
-        }
-    }
 
 
     public GeckoHandler(final RemotingController remotingController) {
@@ -172,7 +145,6 @@ public class GeckoHandler implements Handler {
             ExceptionMonitor.getInstance().exceptionCaught(throwable);
         }
     }
-
 
     public void onMessageReceived(final Session session, final Object message) {
         final DefaultConnection defaultConnection = this.remotingContext.getConnectionBySession((NioSession) session);
@@ -190,161 +162,6 @@ public class GeckoHandler implements Handler {
         }
 
     }
-
-
-    private void processResponse(final Object message, final DefaultConnection defaultConnection) {
-        final ResponseCommand responseCommand = (ResponseCommand) message;
-        responseCommand.setResponseHost(defaultConnection.getRemoteSocketAddress());
-        responseCommand.setResponseTime(System.currentTimeMillis());
-        final RequestCallBack requestCallBack = defaultConnection.getRequestCallBack(responseCommand.getOpaque());
-        if (requestCallBack != null) {
-            requestCallBack.onResponse(null, responseCommand, defaultConnection);
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private <T extends RequestCommand> void processRequest(final Session session, final Object message,
-                                                           final DefaultConnection defaultConnection) {
-        final RequestProcessor<T> processor = this.getProcessorByMessage(message);
-        if (processor == null) {
-            log.error("未找到" + message.getClass().getCanonicalName() + "对应的处理器");
-            this.responseNoProcessor(session, message, defaultConnection);
-            return;
-        } else {
-            this.executeProcessor(session, (T) message, defaultConnection, processor);
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private <T extends RequestCommand> RequestProcessor<T> getProcessorByMessage(final Object message) {
-        final RequestProcessor<T> processor;
-        if (message instanceof HeartBeatRequestCommand) {
-            processor = (RequestProcessor<T>) this.remotingContext.processorMap.get(HeartBeatRequestCommand.class);
-        } else {
-            processor = (RequestProcessor<T>) this.remotingContext.processorMap.get(message.getClass());
-        }
-        return processor;
-    }
-
-
-    /**
-     * 执行实际的Processor
-     *
-     * @param session
-     * @param message
-     * @param defaultConnection
-     * @param processor
-     */
-    private <T extends RequestCommand> void executeProcessor(final Session session, final T message,
-                                                             final DefaultConnection defaultConnection, final RequestProcessor<T> processor) {
-        if (processor.getExecutor() == null) {
-            processor.handleRequest(message, defaultConnection);
-        } else {
-            try {
-                processor.getExecutor().execute(new ProcessorRunner<T>(defaultConnection, processor, message));
-            } catch (final RejectedExecutionException e) {
-                this.responseThreadPoolBusy(session, message, defaultConnection);
-            }
-        }
-    }
-
-
-    private void responseNoProcessor(final Session session, final Object message,
-                                     final DefaultConnection defaultConnection) {
-        if (defaultConnection != null && message instanceof RequestCommand) {
-            try {
-                defaultConnection.response(defaultConnection
-                        .getRemotingContext()
-                        .getCommandFactory()
-                        .createBooleanAckCommand(((RequestCommand) message).getRequestHeader(),
-                                ResponseStatus.NO_PROCESSOR, "未注册请求处理器，请求处理器类为" + message.getClass().getCanonicalName()));
-            } catch (final NotifyRemotingException e) {
-                this.onExceptionCaught(session, e);
-            }
-        }
-    }
-
-
-    public void onMessageSent(final Session session, final Object msg) {
-
-    }
-
-
-    public void onSessionClosed(final Session session) {
-        final InetSocketAddress remoteSocketAddress = session.getRemoteSocketAddress();
-        final DefaultConnection conn = this.remotingContext.getConnectionBySession((NioSession) session);
-
-        if (conn == null) {
-            session.close();
-            return;
-        }
-
-        log.debug("远端连接" + RemotingUtils.getAddrString(remoteSocketAddress) + "断开,分组信息" + conn.getGroupSet());
-
-        // 允许重连，并且是客户端，加入重连任务
-        if (conn.isAllowReconnect() && this.reconnectManager != null) {
-            this.waitForReady(conn);
-            this.addReconnectTask(remoteSocketAddress, conn);
-        }
-        // 从分组中移除
-        this.removeFromGroups(conn);
-        // 处理剩余的callBack
-        conn.dispose();
-        // 移除session到connection映射
-        this.remotingContext.removeSession2ConnectionMapping((NioSession) session);
-        this.adjustMaxScheduleWrittenBytes();
-        this.remotingContext.notifyConnectionClosed(conn);
-    }
-
-
-    private void removeFromGroups(final DefaultConnection conn) {
-        // 从所有分组中移除
-        for (final String group : conn.getGroupSet()) {
-            this.remotingContext.removeConnectionFromGroup(group, conn);
-
-        }
-    }
-
-
-    private void addReconnectTask(final InetSocketAddress remoteSocketAddress, final DefaultConnection conn) {
-        // make a copy
-        final Set<String> groupSet = conn.getGroupSet();
-        log.info("远端连接" + RemotingUtils.getAddrString(remoteSocketAddress) + "关闭，启动重连任务");
-        // 重新检查
-        synchronized (conn) {
-            if (!groupSet.isEmpty() && !this.hasOnlyDefaultGroup(groupSet) && conn.isAllowReconnect()) {
-                this.reconnectManager.addReconnectTask(new ReconnectTask(groupSet, remoteSocketAddress));
-                // 不允许发起重连任务，防止重复
-                conn.setAllowReconnect(false);
-            }
-        }
-    }
-
-
-    private boolean hasOnlyDefaultGroup(final Set<String> groupSet) {
-        return groupSet.size() == 1 && groupSet.contains(Constants.DEFAULT_GROUP);
-    }
-
-
-    private void waitForReady(final DefaultConnection conn) {
-        /**
-         * 此处做同步保护，等待连接就绪，防止重连的时候遗漏分组信息
-         */
-        synchronized (conn) {
-            int count = 0;
-            while (!conn.isReady() && conn.isAllowReconnect() && count++ < 3) {
-                try {
-                    conn.wait(5000);
-                } catch (final InterruptedException e) {
-                    // 重设中断状态给上层处理
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
-    }
-
 
     @SuppressWarnings("unchecked")
     public void onSessionConnected(final Session session, final Object... args) {
@@ -373,6 +190,195 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    public void onSessionCreated(final Session session) {
+        log.debug("连接建立，远端信息:" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()));
+        final DefaultConnection connection = new DefaultConnection((NioSession) session, this.remotingContext);
+        // 加入默认分组
+        this.remotingContext.addConnection(connection);
+        // 加入session到connection的映射
+        this.remotingContext.addSession2ConnectionMapping((NioSession) session, connection);
+        this.remotingContext.notifyConnectionCreated(connection);
+        this.adjustMaxScheduleWrittenBytes();
+    }
+
+    public void onSessionExpired(final Session session) {
+
+    }
+
+    public void onSessionIdle(final Session session) {
+        final Connection conn = this.remotingContext.getConnectionBySession((NioSession) session);
+        try {
+            conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(
+                    conn), 5000, TimeUnit.MILLISECONDS);
+        } catch (final NotifyRemotingException e) {
+            log.error("发送心跳命令失败", e);
+        }
+
+    }
+
+    public void onSessionStarted(final Session session) {
+
+    }
+
+    public void onMessageSent(final Session session, final Object msg) {
+
+    }
+
+    public void onSessionClosed(final Session session) {
+        final InetSocketAddress remoteSocketAddress = session.getRemoteSocketAddress();
+        final DefaultConnection conn = this.remotingContext.getConnectionBySession((NioSession) session);
+
+        if (conn == null) {
+            session.close();
+            return;
+        }
+
+        log.debug("远端连接" + RemotingUtils.getAddrString(remoteSocketAddress) + "断开,分组信息" + conn.getGroupSet());
+
+        // 允许重连，并且是客户端，加入重连任务
+        if (conn.isAllowReconnect() && this.reconnectManager != null) {
+            this.waitForReady(conn);
+            this.addReconnectTask(remoteSocketAddress, conn);
+        }
+        // 从分组中移除
+        this.removeFromGroups(conn);
+        // 处理剩余的callBack
+        conn.dispose();
+        // 移除session到connection映射
+        this.remotingContext.removeSession2ConnectionMapping((NioSession) session);
+        this.adjustMaxScheduleWrittenBytes();
+        this.remotingContext.notifyConnectionClosed(conn);
+    }
+
+
+
+    public void setReconnectManager(final ReconnectManager reconnectManager) {
+        this.reconnectManager = reconnectManager;
+    }
+
+    private void responseThreadPoolBusy(final Session session, final Object msg, final DefaultConnection defaultConnection) {
+        if (defaultConnection != null && msg instanceof RequestCommand) {
+            try {
+                defaultConnection.response(defaultConnection
+                        .getRemotingContext()
+                        .getCommandFactory()
+                        .createBooleanAckCommand(((RequestCommand) msg).getRequestHeader(), ResponseStatus.THREADPOOL_BUSY,
+                                "线程池繁忙"));
+            } catch (final NotifyRemotingException e) {
+                this.onExceptionCaught(session, e);
+            }
+        }
+    }
+
+    private void processResponse(final Object message, final DefaultConnection defaultConnection) {
+        final ResponseCommand responseCommand = (ResponseCommand) message;
+        responseCommand.setResponseHost(defaultConnection.getRemoteSocketAddress());
+        responseCommand.setResponseTime(System.currentTimeMillis());
+        final RequestCallBack requestCallBack = defaultConnection.getRequestCallBack(responseCommand.getOpaque());
+        if (requestCallBack != null) {
+            requestCallBack.onResponse(null, responseCommand, defaultConnection);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends RequestCommand> void processRequest(final Session session, final Object message, final DefaultConnection defaultConnection) {
+        final RequestProcessor<T> processor = this.getProcessorByMessage(message);
+        if (processor == null) {
+            log.error("未找到" + message.getClass().getCanonicalName() + "对应的处理器");
+            this.responseNoProcessor(session, message, defaultConnection);
+            return;
+        } else {
+            this.executeProcessor(session, (T) message, defaultConnection, processor);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends RequestCommand> RequestProcessor<T> getProcessorByMessage(final Object message) {
+        final RequestProcessor<T> processor;
+        if (message instanceof HeartBeatRequestCommand) {
+            processor = (RequestProcessor<T>) this.remotingContext.processorMap.get(HeartBeatRequestCommand.class);
+        } else {
+            processor = (RequestProcessor<T>) this.remotingContext.processorMap.get(message.getClass());
+        }
+        return processor;
+    }
+
+    /**
+     * 执行实际的Processor
+     *
+     * @param session
+     * @param message
+     * @param defaultConnection
+     * @param processor
+     */
+    private <T extends RequestCommand> void executeProcessor(final Session session, final T message, final DefaultConnection defaultConnection, final RequestProcessor<T> processor) {
+        if (processor.getExecutor() == null) {
+            processor.handleRequest(message, defaultConnection);
+        } else {
+            try {
+                processor.getExecutor().execute(new ProcessorRunner<T>(defaultConnection, processor, message));
+            } catch (final RejectedExecutionException e) {
+                this.responseThreadPoolBusy(session, message, defaultConnection);
+            }
+        }
+    }
+
+    private void responseNoProcessor(final Session session, final Object message, final DefaultConnection defaultConnection) {
+        if (defaultConnection != null && message instanceof RequestCommand) {
+            try {
+                defaultConnection.response(defaultConnection
+                        .getRemotingContext()
+                        .getCommandFactory()
+                        .createBooleanAckCommand(((RequestCommand) message).getRequestHeader(),
+                                ResponseStatus.NO_PROCESSOR, "未注册请求处理器，请求处理器类为" + message.getClass().getCanonicalName()));
+            } catch (final NotifyRemotingException e) {
+                this.onExceptionCaught(session, e);
+            }
+        }
+    }
+
+    private void removeFromGroups(final DefaultConnection conn) {
+        // 从所有分组中移除
+        for (final String group : conn.getGroupSet()) {
+            this.remotingContext.removeConnectionFromGroup(group, conn);
+
+        }
+    }
+
+    private void addReconnectTask(final InetSocketAddress remoteSocketAddress, final DefaultConnection conn) {
+        // make a copy
+        final Set<String> groupSet = conn.getGroupSet();
+        log.info("远端连接" + RemotingUtils.getAddrString(remoteSocketAddress) + "关闭，启动重连任务");
+        // 重新检查
+        synchronized (conn) {
+            if (!groupSet.isEmpty() && !this.hasOnlyDefaultGroup(groupSet) && conn.isAllowReconnect()) {
+                this.reconnectManager.addReconnectTask(new ReconnectTask(groupSet, remoteSocketAddress));
+                // 不允许发起重连任务，防止重复
+                conn.setAllowReconnect(false);
+            }
+        }
+    }
+
+    private boolean hasOnlyDefaultGroup(final Set<String> groupSet) {
+        return groupSet.size() == 1 && groupSet.contains(Constants.DEFAULT_GROUP);
+    }
+
+    private void waitForReady(final DefaultConnection conn) {
+        /**
+         * 此处做同步保护，等待连接就绪，防止重连的时候遗漏分组信息
+         */
+        synchronized (conn) {
+            int count = 0;
+            while (!conn.isReady() && conn.isAllowReconnect() && count++ < 3) {
+                try {
+                    conn.wait(5000);
+                } catch (final InterruptedException e) {
+                    // 重设中断状态给上层处理
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
 
     private void addConnection2Group(final DefaultConnection conn, final Set<String> groupSet) {
         if (groupSet.isEmpty() || this.hasOnlyDefaultGroup(groupSet)) {
@@ -411,7 +417,6 @@ public class GeckoHandler implements Handler {
         }
     }
 
-
     private void closeConnectionWithoutReconnect(final DefaultConnection conn) {
         try {
             conn.close(false);
@@ -419,7 +424,6 @@ public class GeckoHandler implements Handler {
             log.error("关闭连接失败", e);
         }
     }
-
 
     private void notifyConnectionReady(final DefaultConnection conn) {
         // 通知连接已经就绪，断开连接的时候将自动将此连接加入该分组
@@ -438,7 +442,6 @@ public class GeckoHandler implements Handler {
             }
         }
     }
-
 
     private boolean removeDisconnectedConnection(final String group) {
         // 超过最大数目限制，遍历所有连接，移除断开的connection（可能没有被及时移除)
@@ -471,7 +474,6 @@ public class GeckoHandler implements Handler {
         }
     }
 
-
     private void addConnectionToGroup(final DefaultConnection conn, final String group, final int maxConnCount) {
         conn.getRemotingContext().addConnectionToGroup(group, conn);
         // 获取分组连接就绪锁
@@ -486,19 +488,6 @@ public class GeckoHandler implements Handler {
         }
     }
 
-
-    public void onSessionCreated(final Session session) {
-        log.debug("连接建立，远端信息:" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()));
-        final DefaultConnection connection = new DefaultConnection((NioSession) session, this.remotingContext);
-        // 加入默认分组
-        this.remotingContext.addConnection(connection);
-        // 加入session到connection的映射
-        this.remotingContext.addSession2ConnectionMapping((NioSession) session, connection);
-        this.remotingContext.notifyConnectionCreated(connection);
-        this.adjustMaxScheduleWrittenBytes();
-    }
-
-
     private void adjustMaxScheduleWrittenBytes() {
         // Server根据连接数自动调整最大发送流量参数
         if (this.remotingController instanceof RemotingServer) {
@@ -510,27 +499,4 @@ public class GeckoHandler implements Handler {
             }
         }
     }
-
-
-    public void onSessionExpired(final Session session) {
-
-    }
-
-
-    public void onSessionIdle(final Session session) {
-        final Connection conn = this.remotingContext.getConnectionBySession((NioSession) session);
-        try {
-            conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(
-                    conn), 5000, TimeUnit.MILLISECONDS);
-        } catch (final NotifyRemotingException e) {
-            log.error("发送心跳命令失败", e);
-        }
-
-    }
-
-
-    public void onSessionStarted(final Session session) {
-
-    }
-
 }

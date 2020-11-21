@@ -17,7 +17,6 @@ package com.taobao.gecko.core.statistics.impl;
 
 import com.taobao.gecko.core.statistics.Statistics;
 
-
 /**
  * 默认统计类
  *
@@ -25,6 +24,7 @@ import com.taobao.gecko.core.statistics.Statistics;
  * @since 1.0, 2009-12-16 下午06:18:55
  */
 public class DefaultStatistics implements Statistics {
+
     public void start() {
 
     }

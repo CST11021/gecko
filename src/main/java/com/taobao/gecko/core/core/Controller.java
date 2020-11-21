@@ -28,13 +28,29 @@ import java.net.InetSocketAddress;
  */
 public interface Controller {
 
+    void start() throws IOException;
+    boolean isStarted();
+
+    void stop() throws IOException;
+
+
     /**
      * 应用服务的本地端口，可能是客户端的端口也可能是服务端的端口
      *
      * @return
      */
     int getPort();
+    /**
+     * 获取绑定的本地InetSocketAddress
+     *
+     * @return
+     */
     InetSocketAddress getLocalSocketAddress();
+    /**
+     * 设置本地InetSocketAddress
+     *
+     * @param inetAddress
+     */
     void setLocalSocketAddress(InetSocketAddress inetAddress);
 
     Statistics getStatistics();
@@ -82,9 +98,6 @@ public interface Controller {
     void setWriteThreadCount(int writeThreadCount);
 
 
-    void start() throws IOException;
-    boolean isStarted();
 
-    void stop() throws IOException;
 
 }

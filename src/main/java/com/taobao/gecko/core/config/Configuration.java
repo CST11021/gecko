@@ -34,6 +34,7 @@ package com.taobao.gecko.core.config;
  */
 public class Configuration {
 
+    /** 从会话读取信息的缓存区大小 */
     private int sessionReadBufferSize = 32 * 1024;
 
     private int soTimeout = 0;
@@ -56,6 +57,7 @@ public class Configuration {
 
     protected long statisticsInterval = 5 * 60 * 1000L;
 
+    /** session空闲超时时间，默认5秒 */
     private volatile long sessionIdleTimeout = 5000L;
 
 

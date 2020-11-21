@@ -24,8 +24,8 @@ import java.net.InetSocketAddress;
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:55:15
  */
-
 public interface ResponseCommand extends CommandHeader {
+
     static final long serialVersionUID = 77788812547386438L;
 
 
@@ -36,14 +36,12 @@ public interface ResponseCommand extends CommandHeader {
      */
     public ResponseStatus getResponseStatus();
 
-
     /**
      * 设置响应状态
      *
      * @param responseStatus
      */
     public void setResponseStatus(ResponseStatus responseStatus);
-
 
     /**
      * 是否为BooleanAckCommand
@@ -52,14 +50,12 @@ public interface ResponseCommand extends CommandHeader {
      */
     public boolean isBoolean();
 
-
     /**
      * 返回响应的远端地址
      *
      * @return
      */
     public InetSocketAddress getResponseHost();
-
 
     /**
      * 设置响应的远端地址
@@ -68,7 +64,6 @@ public interface ResponseCommand extends CommandHeader {
      */
     public void setResponseHost(InetSocketAddress address);
 
-
     /**
      * 返回响应的时间戳
      *
@@ -76,14 +71,12 @@ public interface ResponseCommand extends CommandHeader {
      */
     public long getResponseTime();
 
-
     /**
      * 设置响应时间戳
      *
      * @param time
      */
     public void setResponseTime(long time);
-
 
     /**
      * 设置响应的opaque

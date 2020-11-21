@@ -97,9 +97,14 @@ public final class Reactor extends Thread {
     private boolean jvmBug0;
     private boolean jvmBug1;
 
+    /** 表示当前reactor的索引 */
     private final int reactorIndex;
 
+    /** 表示该Reactor归属的SelectorManager */
     private final SelectorManager selectorManager;
+
+    /** 对应#selectorManager#controller */
+    private final NioController controller;
 
     // bug产生次数
     private final AtomicInteger jvmBug = new AtomicInteger(0);
@@ -109,17 +114,16 @@ public final class Reactor extends Thread {
 
     private volatile Selector selector;
 
-    private final NioController controller;
+
 
     private final Configuration configuration;
 
     private final AtomicBoolean wakenUp = new AtomicBoolean(false);
 
-    /**
-     * 注册的事件列表
-     */
+    /** 注册的事件列表 */
     private final Queue<Object[]> register = new LinkedTransferQueue<Object[]>();
 
+    /** 用于存放TimerRef对象的队列 */
     private final TimerRefQueue timerQueue = new TimerRefQueue();
 
     /**
@@ -158,40 +162,6 @@ public final class Reactor extends Thread {
         this.setName("notify-remoting-reactor-" + index);
     }
 
-
-
-    final Selector getSelector() {
-        return this.selector;
-    }
-
-    public int getReactorIndex() {
-        return this.reactorIndex;
-    }
-
-    /**
-     * 取最近的超时时间的时间
-     *
-     * @return
-     */
-    private long timeoutNext() {
-        long selectionTimeout = TIMEOUT_THRESOLD;
-        TimerRef timerRef = this.timerHeap.peek();
-        while (timerRef != null && timerRef.isCanceled()) {
-            this.timerHeap.poll();
-            timerRef = this.timerHeap.peek();
-        }
-        if (timerRef != null) {
-            final long now = this.getTime();
-            // 已经有事件超时，返回-1，不进行select，及时处理超时
-            if (timerRef.getTimeoutTimestamp() < now) {
-                selectionTimeout = -1L;
-            } else {
-                selectionTimeout = timerRef.getTimeoutTimestamp() - now;
-            }
-        }
-        return selectionTimeout;
-    }
-
     /**
      * Select并派发事件
      */
@@ -207,18 +177,18 @@ public final class Reactor extends Thread {
                 if (this.isNeedLookingJVMBug()) {
                     before = System.currentTimeMillis();
                 }
+
                 long wait = this.timeoutNext();
                 if (this.nextTimeout > 0 && this.nextTimeout < wait) {
                     wait = this.nextTimeout;
                 }
+
                 // 清空时间缓存
                 this.timeCache = 0;
                 this.wakenUp.set(false);
                 final int selected = this.select(wait);
                 if (selected == 0) {
-                    /**
-                     * 查看是否发生BUG，参见http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6403933
-                     */
+                    /** 查看是否发生BUG，参见http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6403933 */
                     if (before != -1) {
                         this.lookJVMBug(before, selected, wait);
                     }
@@ -228,6 +198,7 @@ public final class Reactor extends Thread {
                 } else {
                     this.selectTries = 0;
                 }
+
                 // 缓存时间，那么后续的处理超时和添加timer的获取的时间都是缓存的时间，降低开销
                 this.timeCache = this.getTime();
                 this.processTimeout();
@@ -243,6 +214,7 @@ public final class Reactor extends Thread {
                 }
             }
         }
+
         if (this.selector != null) {
             if (this.selector.isOpen()) {
                 try {
@@ -258,53 +230,8 @@ public final class Reactor extends Thread {
 
     }
 
-    private void processTimeout() {
-        if (!this.timerHeap.isEmpty()) {
-            final long now = this.getTime();
-            TimerRef timerRef = null;
-            while ((timerRef = this.timerHeap.peek()) != null) {
-                if (timerRef.isCanceled()) {
-                    this.timerHeap.poll();
-                    continue;
-                }
-                // 没有超时，break掉
-                if (timerRef.getTimeoutTimestamp() > now) {
-                    break;
-                }
-                // 移除并处理
-                this.controller.onTimeout(this.timerHeap.poll());
-            }
-        }
-    }
-
-    private Set<SelectionKey> processSelectedKeys() throws IOException {
-        final Set<SelectionKey> selectedKeys = this.selector.selectedKeys();
-        this.gate.lock();
-        try {
-            this.postSelect(selectedKeys, this.selector.keys());
-            this.dispatchEvent(selectedKeys);
-        } finally {
-            this.gate.unlock();
-        }
-        this.clearCancelKeys();
-        return selectedKeys;
-    }
-
-    private void clearCancelKeys() throws IOException {
-        if (this.cancelledKeys > CLEANUP_INTERVAL) {
-            final Selector selector = this.selector;
-            selector.selectNow();
-            this.cancelledKeys = 0;
-        }
-    }
-
-    private int select(final long wait) throws IOException {
-        // 这里仍然是有竞争条件的，只能尽量避免
-        if (wait > 0 && !this.wakenUp.get()) {
-            return this.selector.select(wait);
-        } else {
-            return this.selector.selectNow();
-        }
+    public int getReactorIndex() {
+        return this.reactorIndex;
     }
 
     public long getTime() {
@@ -317,7 +244,7 @@ public final class Reactor extends Thread {
     }
 
     /**
-     * 插入定时器，返回当前时间
+     * 添加TimerRef
      *
      * @param timerRef
      */
@@ -331,81 +258,12 @@ public final class Reactor extends Thread {
         }
     }
 
-    private boolean lookJVMBug(final long before, final int selected, final long wait) throws IOException {
-        boolean seeing = false;
-        final long now = System.currentTimeMillis();
-        /**
-         * Bug判断条件,(1)select为0 (2)select阻塞时间小于某个阀值 (3)非线程中断引起 (4)非wakenup引起
-         */
-        if (JVMBUG_THRESHHOLD > 0 && selected == 0 && wait > JVMBUG_THRESHHOLD && now - before < wait / 4
-                && !this.wakenUp.get() /* waken up */
-                && !Thread.currentThread().isInterrupted()/* Interrupted */) {
-            this.jvmBug.incrementAndGet();
-            // 严重等级1，重新创建selector
-            if (this.jvmBug.get() >= JVMBUG_THRESHHOLD2) {
-                this.gate.lock();
-                try {
-                    this.lastJVMBug = now;
-                    log.warn("JVM bug occured at " + new Date(this.lastJVMBug)
-                            + ",http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6403933,reactIndex="
-                            + this.reactorIndex);
-                    if (this.jvmBug1) {
-                        log.debug("seeing JVM BUG(s) - recreating selector,reactIndex=" + this.reactorIndex);
-                    } else {
-                        this.jvmBug1 = true;
-                        log.info("seeing JVM BUG(s) - recreating selector,reactIndex=" + this.reactorIndex);
-                    }
-                    seeing = true;
-                    // 创建新的selector
-                    final Selector new_selector = SystemUtils.openSelector();
-
-                    for (final SelectionKey k : this.selector.keys()) {
-                        if (!k.isValid() || k.interestOps() == 0) {
-                            continue;
-                        }
-
-                        final SelectableChannel channel = k.channel();
-                        final Object attachment = k.attachment();
-                        // 将不是无效，并且interestOps>0的channel继续注册
-                        channel.register(new_selector, k.interestOps(), attachment);
-                    }
-
-                    this.selector.close();
-                    this.selector = new_selector;
-
-                } finally {
-                    this.gate.unlock();
-                }
-                this.jvmBug.set(0);
-
-            } else if (this.jvmBug.get() == JVMBUG_THRESHHOLD || this.jvmBug.get() == JVMBUG_THRESHHOLD1) {
-                // BUG严重等级0，取消所有interestedOps==0的key
-                if (this.jvmBug0) {
-                    log.debug("seeing JVM BUG(s) - cancelling interestOps==0,reactIndex=" + this.reactorIndex);
-                } else {
-                    this.jvmBug0 = true;
-                    log.info("seeing JVM BUG(s) - cancelling interestOps==0,reactIndex=" + this.reactorIndex);
-                }
-                this.gate.lock();
-                seeing = true;
-                try {
-                    for (final SelectionKey k : this.selector.keys()) {
-                        if (k.isValid() && k.interestOps() == 0) {
-                            k.cancel();
-                        }
-                    }
-                } finally {
-                    this.gate.unlock();
-                }
-            }
-        } else {
-            this.jvmBug.set(0);
-        }
-        return seeing;
+    Configuration getConfiguration() {
+        return this.configuration;
     }
 
-    private boolean isNeedLookingJVMBug() {
-        return SystemUtils.isLinuxPlatform() && !SystemUtils.isAfterJava6u4Version();
+    final Selector getSelector() {
+        return this.selector;
     }
 
     final void dispatchEvent(final Set<SelectionKey> selectedKeySet) {
@@ -505,6 +363,217 @@ public final class Reactor extends Thread {
         this.wakeup();
     }
 
+    final void beforeSelect() throws IOException {
+        this.controller.checkStatisticsForRestart();
+        this.processRegister();
+        this.processMoveTimer();
+        this.clearCancelKeys();
+    }
+
+    final void registerSession(final Session session, final EventType event) {
+        final Selector selector = this.selector;
+        if (this.isReactorThread() && selector != null) {
+            this.dispatchSessionEvent(session, event, selector);
+        } else {
+            this.register.offer(new Object[]{session, event});
+            this.wakeup();
+        }
+    }
+
+    final void wakeup() {
+        if (this.wakenUp.compareAndSet(false, true)) {
+            final Selector selector = this.selector;
+            if (selector != null) {
+                selector.wakeup();
+            }
+        }
+    }
+
+    final void selectNow() throws IOException {
+        final Selector selector = this.selector;
+        if (selector != null) {
+            selector.selectNow();
+        }
+    }
+
+    final void postSelect(final Set<SelectionKey> selectedKeys, final Set<SelectionKey> allKeys) {
+        if (this.controller.getSessionTimeout() > 0 || this.controller.getSessionIdleTimeout() > 0) {
+            for (final SelectionKey key : allKeys) {
+                // 没有触发的key检测是否超时或者idle
+                if (!selectedKeys.contains(key)) {
+                    if (key.attachment() != null) {
+                        this.checkExpiredIdle(key, this.getSessionFromAttchment(key));
+                    }
+                }
+            }
+        }
+    }
+
+    final void registerChannel(final SelectableChannel channel, final int ops, final Object attachment) {
+        final Selector selector = this.selector;
+        if (this.isReactorThread() && selector != null) {
+            this.registerChannelNow(channel, ops, attachment, selector);
+        } else {
+            this.register.offer(new Object[]{channel, ops, attachment});
+            this.wakeup();
+        }
+
+    }
+
+
+
+
+
+    /**
+     * 取最近的超时时间的时间
+     *
+     * @return
+     */
+    private long timeoutNext() {
+        long selectionTimeout = TIMEOUT_THRESOLD;
+        TimerRef timerRef = this.timerHeap.peek();
+        while (timerRef != null && timerRef.isCanceled()) {
+            this.timerHeap.poll();
+            timerRef = this.timerHeap.peek();
+        }
+        if (timerRef != null) {
+            final long now = this.getTime();
+            // 已经有事件超时，返回-1，不进行select，及时处理超时
+            if (timerRef.getTimeoutTimestamp() < now) {
+                selectionTimeout = -1L;
+            } else {
+                selectionTimeout = timerRef.getTimeoutTimestamp() - now;
+            }
+        }
+        return selectionTimeout;
+    }
+
+    private void processTimeout() {
+        if (!this.timerHeap.isEmpty()) {
+            final long now = this.getTime();
+            TimerRef timerRef = null;
+            while ((timerRef = this.timerHeap.peek()) != null) {
+                if (timerRef.isCanceled()) {
+                    this.timerHeap.poll();
+                    continue;
+                }
+                // 没有超时，break掉
+                if (timerRef.getTimeoutTimestamp() > now) {
+                    break;
+                }
+                // 移除并处理
+                this.controller.onTimeout(this.timerHeap.poll());
+            }
+        }
+    }
+
+    private Set<SelectionKey> processSelectedKeys() throws IOException {
+        final Set<SelectionKey> selectedKeys = this.selector.selectedKeys();
+        this.gate.lock();
+        try {
+            this.postSelect(selectedKeys, this.selector.keys());
+            this.dispatchEvent(selectedKeys);
+        } finally {
+            this.gate.unlock();
+        }
+        this.clearCancelKeys();
+        return selectedKeys;
+    }
+
+    private void clearCancelKeys() throws IOException {
+        if (this.cancelledKeys > CLEANUP_INTERVAL) {
+            final Selector selector = this.selector;
+            selector.selectNow();
+            this.cancelledKeys = 0;
+        }
+    }
+
+    private int select(final long wait) throws IOException {
+        // 这里仍然是有竞争条件的，只能尽量避免
+        if (wait > 0 && !this.wakenUp.get()) {
+            return this.selector.select(wait);
+        } else {
+            return this.selector.selectNow();
+        }
+    }
+
+    private boolean lookJVMBug(final long before, final int selected, final long wait) throws IOException {
+        boolean seeing = false;
+        final long now = System.currentTimeMillis();
+        /**
+         * Bug判断条件,(1)select为0 (2)select阻塞时间小于某个阀值 (3)非线程中断引起 (4)非wakenup引起
+         */
+        if (JVMBUG_THRESHHOLD > 0 && selected == 0 && wait > JVMBUG_THRESHHOLD && now - before < wait / 4
+                && !this.wakenUp.get() /* waken up */
+                && !Thread.currentThread().isInterrupted()/* Interrupted */) {
+            this.jvmBug.incrementAndGet();
+            // 严重等级1，重新创建selector
+            if (this.jvmBug.get() >= JVMBUG_THRESHHOLD2) {
+                this.gate.lock();
+                try {
+                    this.lastJVMBug = now;
+                    log.warn("JVM bug occured at " + new Date(this.lastJVMBug)
+                            + ",http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6403933,reactIndex="
+                            + this.reactorIndex);
+                    if (this.jvmBug1) {
+                        log.debug("seeing JVM BUG(s) - recreating selector,reactIndex=" + this.reactorIndex);
+                    } else {
+                        this.jvmBug1 = true;
+                        log.info("seeing JVM BUG(s) - recreating selector,reactIndex=" + this.reactorIndex);
+                    }
+                    seeing = true;
+                    // 创建新的selector
+                    final Selector new_selector = SystemUtils.openSelector();
+
+                    for (final SelectionKey k : this.selector.keys()) {
+                        if (!k.isValid() || k.interestOps() == 0) {
+                            continue;
+                        }
+
+                        final SelectableChannel channel = k.channel();
+                        final Object attachment = k.attachment();
+                        // 将不是无效，并且interestOps>0的channel继续注册
+                        channel.register(new_selector, k.interestOps(), attachment);
+                    }
+
+                    this.selector.close();
+                    this.selector = new_selector;
+
+                } finally {
+                    this.gate.unlock();
+                }
+                this.jvmBug.set(0);
+
+            } else if (this.jvmBug.get() == JVMBUG_THRESHHOLD || this.jvmBug.get() == JVMBUG_THRESHHOLD1) {
+                // BUG严重等级0，取消所有interestedOps==0的key
+                if (this.jvmBug0) {
+                    log.debug("seeing JVM BUG(s) - cancelling interestOps==0,reactIndex=" + this.reactorIndex);
+                } else {
+                    this.jvmBug0 = true;
+                    log.info("seeing JVM BUG(s) - cancelling interestOps==0,reactIndex=" + this.reactorIndex);
+                }
+                this.gate.lock();
+                seeing = true;
+                try {
+                    for (final SelectionKey k : this.selector.keys()) {
+                        if (k.isValid() && k.interestOps() == 0) {
+                            k.cancel();
+                        }
+                    }
+                } finally {
+                    this.gate.unlock();
+                }
+            }
+        } else {
+            this.jvmBug.set(0);
+        }
+        return seeing;
+    }
+
+    private boolean isNeedLookingJVMBug() {
+        return SystemUtils.isLinuxPlatform() && !SystemUtils.isAfterJava6u4Version();
+    }
+
     private final long checkSessionTimeout() {
         long nextTimeout = 0;
         if (this.configuration.getCheckSessionTimeoutInterval() > 0) {
@@ -535,25 +604,8 @@ public final class Reactor extends Thread {
         return null;
     }
 
-    final void registerSession(final Session session, final EventType event) {
-        final Selector selector = this.selector;
-        if (this.isReactorThread() && selector != null) {
-            this.dispatchSessionEvent(session, event, selector);
-        } else {
-            this.register.offer(new Object[]{session, event});
-            this.wakeup();
-        }
-    }
-
     private final boolean isReactorThread() {
         return Thread.currentThread() == this;
-    }
-
-    final void beforeSelect() throws IOException {
-        this.controller.checkStatisticsForRestart();
-        this.processRegister();
-        this.processMoveTimer();
-        this.clearCancelKeys();
     }
 
     private void processMoveTimer() {
@@ -561,6 +613,7 @@ public final class Reactor extends Thread {
         // 距离上一次检测时间超过1秒
         if (now - this.lastMoveTimestamp >= TIMEOUT_THRESOLD && !this.timerQueue.isEmpty()) {
             this.lastMoveTimestamp = now;
+            // 遍历并访问链表中的每个TimerRef
             this.timerQueue.iterateQueue(new TimerQueueVisitor(now));
         }
     }
@@ -579,10 +632,6 @@ public final class Reactor extends Thread {
         }
     }
 
-    Configuration getConfiguration() {
-        return this.configuration;
-    }
-
     private final void dispatchSessionEvent(final Session session, final EventType event, final Selector selector) {
         if (EventType.REGISTER.equals(event)) {
             this.controller.registerSession(session);
@@ -591,19 +640,6 @@ public final class Reactor extends Thread {
             this.unregisterChannel(((NioSession) session).channel());
         } else {
             ((NioSession) session).onEvent(event, selector);
-        }
-    }
-
-    final void postSelect(final Set<SelectionKey> selectedKeys, final Set<SelectionKey> allKeys) {
-        if (this.controller.getSessionTimeout() > 0 || this.controller.getSessionIdleTimeout() > 0) {
-            for (final SelectionKey key : allKeys) {
-                // 没有触发的key检测是否超时或者idle
-                if (!selectedKeys.contains(key)) {
-                    if (key.attachment() != null) {
-                        this.checkExpiredIdle(key, this.getSessionFromAttchment(key));
-                    }
-                }
-            }
         }
     }
 
@@ -640,17 +676,6 @@ public final class Reactor extends Thread {
         return false;
     }
 
-    final void registerChannel(final SelectableChannel channel, final int ops, final Object attachment) {
-        final Selector selector = this.selector;
-        if (this.isReactorThread() && selector != null) {
-            this.registerChannelNow(channel, ops, attachment, selector);
-        } else {
-            this.register.offer(new Object[]{channel, ops, attachment});
-            this.wakeup();
-        }
-
-    }
-
     private void registerChannelNow(final SelectableChannel channel, final int ops, final Object attachment, final Selector selector) {
         this.gate.lock();
         try {
@@ -665,19 +690,6 @@ public final class Reactor extends Thread {
         }
     }
 
-    final void wakeup() {
-        if (this.wakenUp.compareAndSet(false, true)) {
-            final Selector selector = this.selector;
-            if (selector != null) {
-                selector.wakeup();
-            }
-        }
-    }
 
-    final void selectNow() throws IOException {
-        final Selector selector = this.selector;
-        if (selector != null) {
-            selector.selectNow();
-        }
-    }
+
 }

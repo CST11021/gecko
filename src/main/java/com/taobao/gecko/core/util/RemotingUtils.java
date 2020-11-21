@@ -15,19 +15,11 @@
  */
 package com.taobao.gecko.core.util;
 
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.service.config.WireFormatType;
+
+import java.net.*;
+import java.util.Enumeration;
 
 
 /**
@@ -38,10 +30,17 @@ import com.taobao.gecko.service.config.WireFormatType;
  */
 public class RemotingUtils {
 
+    /**
+     * 返回hostName:port
+     *
+     * @param address
+     * @return
+     */
     public static final String getAddrString(final SocketAddress address) {
         if (address == null) {
             return null;
         }
+
         if (address instanceof InetSocketAddress) {
             final InetSocketAddress socketAddr = (InetSocketAddress) address;
             final InetAddress inetAddr = socketAddr.getAddress();

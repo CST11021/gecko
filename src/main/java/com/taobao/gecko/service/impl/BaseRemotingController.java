@@ -40,35 +40,40 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
 /**
  * Remoting Controller基础实现类，实现了一些server、client共有的功能，如发送请求等
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午02:16:29
  */
-
 public abstract class BaseRemotingController implements RemotingController {
 
     private static final Log log = LogFactory.getLog(BaseRemotingController.class);
 
-    protected ConcurrentHashMap<String/* group */, ConcurrentHashMap<String/* key */, Object>> attributes = new ConcurrentHashMap<String, ConcurrentHashMap<String, Object>>();
+    /** 网络层的基础配置 */
+    protected BaseConfig config;
     /** 通讯层的全局上下文 */
     protected DefaultRemotingContext remotingContext;
+    /** Map<group, Map<key, object>> */
+    protected ConcurrentHashMap<String, ConcurrentHashMap<String, Object>> attributes = new ConcurrentHashMap<String, ConcurrentHashMap<String, Object>>();
+    /** 选择连接策略：从分组的连接列表中选择想要的连接 */
     protected ConnectionSelector connectionSelector = new RoundRobinConnectionSelector();
-    /**
-     * 用于扫描所有连接的定时线程池，可以设定一些全局性的任务，如扫描无效的连接，或者连接上的无效的callBack
-     */
+    /** 用于扫描所有连接的定时线程池，可以设定一些全局性的任务，如扫描无效的连接，或者连接上的无效的callBack */
     protected ScheduledExecutorService scanAllConnectionExecutor;
+    /** BaseRemotingController内部通过该controller建立连接 */
     protected SocketChannelController controller;
-    protected BaseConfig config;
-    protected volatile boolean started;
-    private Thread shutdownHook;
-    private volatile boolean isHutdownHookCalled;
-    /**
-     * 默认调用超时时间，1秒
-     */
+
+
+    /** 服务调用默认的超时时间，默认1秒 */
     protected long opTimeout = 1000L;
+    /** 标记服务是否启动 */
+    protected volatile boolean started;
+    /** 服务关闭对应的钩子 */
+    private Thread shutdownHook;
+    /** 是否开始执行钩子 */
+    private volatile boolean isHutdownHookCalled;
+
+
 
 
     public BaseRemotingController(final BaseConfig baseConfig) {
@@ -85,6 +90,10 @@ public abstract class BaseRemotingController implements RemotingController {
         this.remotingContext = new DefaultRemotingContext(this.config, this.config.getWireFormatType().newCommandFactory());
     }
 
+
+
+
+    // 启动关闭
 
     public final synchronized void start() throws NotifyRemotingException {
         // 1、设置启动标记
@@ -133,57 +142,9 @@ public abstract class BaseRemotingController implements RemotingController {
         this.doStart();
         this.addShutdownHook();
     }
-
-    /**
-     * 本方法暴露内部实现，用户切勿使用此方法
-     *
-     * @return
-     */
-    public SocketChannelController getController() {
-        return this.controller;
+    public boolean isStarted() {
+        return this.controller != null && this.controller.isStarted();
     }
-
-    /**
-     * 添加应用shutdown的钩子
-     */
-    private void addShutdownHook() {
-        this.shutdownHook = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    BaseRemotingController.this.isHutdownHookCalled = true;
-                    BaseRemotingController.this.stop();
-                } catch (final NotifyRemotingException e) {
-                    log.error("Shutdown remoting failed", e);
-                }
-            }
-        };
-        Runtime.getRuntime().addShutdownHook(this.shutdownHook);
-    }
-
-    /**
-     * 本控制器所需要的全局扫描任务，默认只有扫描无效callback的任务，子类可覆盖此方法
-     *
-     * @return
-     */
-    protected ScanTask[] getScanTasks() {
-        return new ScanTask[]{new InvalidCallBackScanTask()};
-    }
-
-    public DefaultRemotingContext getRemotingContext() {
-        return this.remotingContext;
-    }
-
-    protected abstract SocketChannelController initController(Configuration conf);
-
-    /**
-     *
-     * @throws NotifyRemotingException
-     */
-    protected abstract void doStart() throws NotifyRemotingException;
-
-    protected abstract void doStop() throws NotifyRemotingException;
-
     public synchronized final void stop() throws NotifyRemotingException {
         if (!this.started) {
             return;
@@ -207,30 +168,15 @@ public abstract class BaseRemotingController implements RemotingController {
         this.attributes.clear();
         this.removeShutdownHook();
     }
+    /**
+     *
+     * @throws NotifyRemotingException
+     */
+    protected abstract void doStart() throws NotifyRemotingException;
+    protected abstract void doStop() throws NotifyRemotingException;
 
-    private void removeShutdownHook() {
-        if (!this.isHutdownHookCalled && this.shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
-        }
-    }
 
-    public void insertTimer(final TimerRef timerRef) {
-        if (timerRef == null) {
-            throw new IllegalArgumentException("无效的timerRef,不能为null");
-        }
-        if (timerRef.getRunnable() == null) {
-            throw new IllegalArgumentException("runnable不能为null，请指定超时运行的任务");
-        }
-        if (timerRef.getTimeout() <= 0) {
-            throw new IllegalArgumentException("timeout必须大于0");
-        }
-
-        this.controller.getSelectorManager().insertTimer(timerRef);
-    }
-
-    public boolean isStarted() {
-        return this.controller != null && this.controller.isStarted();
-    }
+    // 请求处理器
 
     /**
      * 注册请求处理器RequestProcessor：用于处理来自客户端的请求
@@ -249,27 +195,71 @@ public abstract class BaseRemotingController implements RemotingController {
 
         this.remotingContext.processorMap.put(commandClazz, processor);
     }
-
     public RequestProcessor<? extends RequestCommand> getProcessor(final Class<? extends RequestCommand> clazz) {
         return this.remotingContext.processorMap.get(clazz);
     }
-
     public RequestProcessor<? extends RequestCommand> unreigsterProcessor(final Class<? extends RequestCommand> clazz) {
         return this.remotingContext.processorMap.remove(clazz);
     }
-
     public void addAllProcessors(final Map<Class<? extends RequestCommand>, RequestProcessor<? extends RequestCommand>> map) {
         this.remotingContext.processorMap.putAll(map);
     }
+
+    // ConnectionLifeCycleListener
 
     public void addConnectionLifeCycleListener(final ConnectionLifeCycleListener connectionLifeCycleListener) {
         this.remotingContext.connectionLifeCycleListenerList.add(connectionLifeCycleListener);
 
     }
-
     public void removeConnectionLifeCycleListener(final ConnectionLifeCycleListener connectionLifeCycleListener) {
         this.remotingContext.connectionLifeCycleListenerList.remove(connectionLifeCycleListener);
     }
+
+
+    // attribute
+
+    public Object getAttribute(final String url, final String key) {
+        final ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
+        if (subAttr == null) {
+            return null;
+        }
+        return subAttr.get(key);
+    }
+    public Object removeAttribute(final String url, final String key) {
+        final ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
+        if (subAttr == null) {
+            return null;
+        }
+        return subAttr.remove(key);
+    }
+    public void setAttribute(final String url, final String key, final Object value) {
+        ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
+        if (subAttr == null) {
+            subAttr = new ConcurrentHashMap<String, Object>();
+            final ConcurrentHashMap<String, Object> oldSubAttr =
+                    this.attributes.putIfAbsent(url, subAttr);
+            if (oldSubAttr != null) {
+                subAttr = oldSubAttr;
+            }
+        }
+        subAttr.put(key, value);
+
+    }
+    public Object setAttributeIfAbsent(final String url, final String key, final Object value) {
+        ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
+        if (subAttr == null) {
+            subAttr = new ConcurrentHashMap<String, Object>();
+            final ConcurrentHashMap<String, Object> oldSubAttr =
+                    this.attributes.putIfAbsent(url, subAttr);
+            if (oldSubAttr != null) {
+                subAttr = oldSubAttr;
+            }
+        }
+        return subAttr.putIfAbsent(key, value);
+    }
+
+
+    // 服务调用
 
     public void sendToAllConnections(final RequestCommand command) throws NotifyRemotingException {
         if (command == null) {
@@ -286,33 +276,6 @@ public abstract class BaseRemotingController implements RemotingController {
         }
 
     }
-
-    protected Configuration getConfigurationFromConfig(final BaseConfig config) {
-        final Configuration conf = new Configuration();
-        conf.setSessionReadBufferSize(config.getReadBufferSize());
-        conf.setSessionIdleTimeout(config.getIdleTime() * 1000);
-        conf.setStatisticsServer(false);
-        conf.setHandleReadWriteConcurrently(true);
-        conf.setDispatchMessageThreadCount(config.getDispatchMessageThreadCount());
-        conf.setReadThreadCount(config.getReadThreadCount());
-        conf.setWriteThreadCount(config.getWriteThreadCount());
-        return conf;
-    }
-
-    protected Map<SocketOption<?>, Object> getSocketOptionsFromConfig(final BaseConfig config) {
-        final Map<SocketOption<?>, Object> result = new HashMap<SocketOption<?>, Object>();
-
-        result.put(StandardSocketOption.SO_SNDBUF, config.getSndBufferSize());
-        result.put(StandardSocketOption.SO_KEEPALIVE, config.isKeepAlive());
-        if (config.isSoLinger()) {
-            result.put(StandardSocketOption.SO_LINGER, config.getLinger());
-        }
-        result.put(StandardSocketOption.SO_RCVBUF, config.getRcvBufferSize());
-        result.put(StandardSocketOption.SO_REUSEADDR, config.isReuseAddr());
-        result.put(StandardSocketOption.TCP_NODELAY, config.isTcpNoDelay());
-        return result;
-    }
-
     public void sendToGroup(final String group, final RequestCommand command) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -328,7 +291,6 @@ public abstract class BaseRemotingController implements RemotingController {
             throw new NotifyRemotingException("分组" + group + "没有可用的连接");
         }
     }
-
     /**
      * 根据策略从分组中的连接选择一个连接对象
      *
@@ -348,11 +310,9 @@ public abstract class BaseRemotingController implements RemotingController {
             return null;
         }
     }
-
     public void sendToGroup(final String group, final RequestCommand command, final SingleRequestCallBackListener listener) throws NotifyRemotingException {
         this.sendToGroup(group, command, listener, this.opTimeout, TimeUnit.MILLISECONDS);
     }
-
     public void sendToGroup(final String group, final RequestCommand request, final SingleRequestCallBackListener listener, final long time, final TimeUnit timeunut) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -390,19 +350,6 @@ public abstract class BaseRemotingController implements RemotingController {
         }
 
     }
-
-    private BooleanAckCommand createNoConnectionResponseCommand(final CommandHeader requestHeader) {
-        return this.createCommErrorResponseCommand(requestHeader, "无可用连接");
-    }
-
-    private BooleanAckCommand createCommErrorResponseCommand(final CommandHeader requestHeader, final String message) {
-        final BooleanAckCommand responseCommand =
-                this.remotingContext.getCommandFactory().createBooleanAckCommand(requestHeader,
-                        ResponseStatus.ERROR_COMM, message);
-        responseCommand.setResponseTime(System.currentTimeMillis());
-        return responseCommand;
-    }
-
     public ResponseCommand invokeToGroup(final String group, final RequestCommand command) throws InterruptedException, TimeoutException, NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -419,7 +366,6 @@ public abstract class BaseRemotingController implements RemotingController {
             return this.createNoConnectionResponseCommand(command.getRequestHeader());
         }
     }
-
     public ResponseCommand invokeToGroup(final String group, final RequestCommand command, final long time, final TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -438,7 +384,6 @@ public abstract class BaseRemotingController implements RemotingController {
             return this.createNoConnectionResponseCommand(command.getRequestHeader());
         }
     }
-
     public void sendToGroupAllConnections(final String group, final RequestCommand command) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -455,7 +400,6 @@ public abstract class BaseRemotingController implements RemotingController {
             }
         }
     }
-
     public void sendToGroupAllConnections(final String group, final RequestCommand command, final GroupAllConnectionCallBackListener listener, final long timeout, final TimeUnit timeUnit) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -517,7 +461,6 @@ public abstract class BaseRemotingController implements RemotingController {
         }
 
     }
-
     public Map<Connection, ResponseCommand> invokeToGroupAllConnections(final String group, final RequestCommand command, final long time, final TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -572,27 +515,14 @@ public abstract class BaseRemotingController implements RemotingController {
             return null;
         }
     }
-
-    private BooleanAckCommand createTimeoutCommand(final CommandHeader requestHeader, final InetSocketAddress address) {
-        final BooleanAckCommand value =
-                this.remotingContext.getCommandFactory().createBooleanAckCommand(requestHeader,
-                        ResponseStatus.TIMEOUT, "等待响应超时");
-        value.setResponseStatus(ResponseStatus.TIMEOUT);
-        value.setResponseTime(System.currentTimeMillis());
-        value.setResponseHost(address);
-        return value;
-    }
-
     public Map<Connection, ResponseCommand> invokeToGroupAllConnections(final String group, final RequestCommand command) throws InterruptedException, NotifyRemotingException {
         return this.invokeToGroupAllConnections(group, command, this.opTimeout,
                 TimeUnit.MILLISECONDS);
     }
-
     public void sendToGroupAllConnections(final String group, final RequestCommand command, final GroupAllConnectionCallBackListener listener) throws NotifyRemotingException {
         this.sendToGroupAllConnections(group, command, listener, this.opTimeout,
                 TimeUnit.MILLISECONDS);
     }
-
     public void sendToGroups(final Map<String, RequestCommand> groupObjects, final MultiGroupCallBackListener listener, final long timeout, final TimeUnit timeUnit, final Object... args) throws NotifyRemotingException {
         if (groupObjects == null || groupObjects.size() == 0) {
             throw new NotifyRemotingException("groupObject为空");
@@ -664,6 +594,189 @@ public abstract class BaseRemotingController implements RemotingController {
         // 插入定时器
         this.insertTimer(timerRef);
     }
+    public void sendToGroups(final Map<String, RequestCommand> groupObjects) throws NotifyRemotingException {
+        if (groupObjects == null || groupObjects.size() == 0) {
+            throw new NotifyRemotingException("groupObjects为空");
+        }
+        for (final Map.Entry<String, RequestCommand> entry : groupObjects.entrySet()) {
+            final RequestCommand requestCommand = entry.getValue();
+            final String group = entry.getKey();
+            final Connection conn =
+                    this.selectConnectionForGroup(group, this.connectionSelector, requestCommand);
+            if (conn != null) {
+                conn.send(requestCommand);
+            }
+        }
+
+    }
+    public void transferToGroup(final String group, final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position, final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time, final TimeUnit unit) throws NotifyRemotingException {
+        if (group == null) {
+            throw new NotifyRemotingException("Null group");
+        }
+        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, null);
+        if (conn != null) {
+            conn.transferFrom(head, tail, channel, position, size, opaque, listener, time, unit);
+        } else {
+            throw new NotifyRemotingException("分组" + group + "没有可用的连接");
+        }
+
+    }
+    public void transferToGroup(final String group, final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position, final long size) throws NotifyRemotingException {
+        if (group == null) {
+            throw new NotifyRemotingException("Null group");
+        }
+        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, null);
+        if (conn != null) {
+            conn.transferFrom(head, tail, channel, position, size);
+        } else {
+            throw new NotifyRemotingException("分组" + group + "没有可用的连接");
+        }
+
+    }
+
+
+
+
+    public DefaultRemotingContext getRemotingContext() {
+        return this.remotingContext;
+    }
+    public void setConnectionSelector(final ConnectionSelector selector) {
+        if (selector == null) {
+            throw new IllegalArgumentException("Null selector");
+        }
+        this.connectionSelector = selector;
+
+    }
+    public int getConnectionCount(final String group) {
+        final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
+        return connections == null ? 0 : connections.size();
+    }
+    public Set<String> getGroupSet() {
+        return this.remotingContext.getGroupSet();
+    }
+    public void insertTimer(final TimerRef timerRef) {
+        if (timerRef == null) {
+            throw new IllegalArgumentException("无效的timerRef,不能为null");
+        }
+        if (timerRef.getRunnable() == null) {
+            throw new IllegalArgumentException("runnable不能为null，请指定超时运行的任务");
+        }
+        if (timerRef.getTimeout() <= 0) {
+            throw new IllegalArgumentException("timeout必须大于0");
+        }
+
+        this.controller.getSelectorManager().insertTimer(timerRef);
+    }
+
+
+
+    /**
+     * 本方法暴露内部实现，用户切勿使用此方法
+     *
+     * @return
+     */
+    public SocketChannelController getController() {
+        return this.controller;
+    }
+
+    /**
+     * 添加应用shutdown的钩子
+     */
+    private void addShutdownHook() {
+        this.shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    BaseRemotingController.this.isHutdownHookCalled = true;
+                    BaseRemotingController.this.stop();
+                } catch (final NotifyRemotingException e) {
+                    log.error("Shutdown remoting failed", e);
+                }
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+    }
+
+    /**
+     * 本控制器所需要的全局扫描任务，默认只有扫描无效callback的任务，子类可覆盖此方法
+     *
+     * @return
+     */
+    protected ScanTask[] getScanTasks() {
+        return new ScanTask[]{new InvalidCallBackScanTask()};
+    }
+
+    /**
+     * 根据conf创建一个SocketChannelController实例，即用于通信的通道的控制器
+     *
+     * @param conf
+     * @return
+     */
+    protected abstract SocketChannelController initController(Configuration conf);
+
+    /**
+     * 根据BaseConfig创建一个Configuration实例
+     *
+     * @param config
+     * @return
+     */
+    protected Configuration getConfigurationFromConfig(final BaseConfig config) {
+        final Configuration conf = new Configuration();
+        conf.setSessionReadBufferSize(config.getReadBufferSize());
+        conf.setSessionIdleTimeout(config.getIdleTime() * 1000);
+        conf.setStatisticsServer(false);
+        conf.setHandleReadWriteConcurrently(true);
+        conf.setDispatchMessageThreadCount(config.getDispatchMessageThreadCount());
+        conf.setReadThreadCount(config.getReadThreadCount());
+        conf.setWriteThreadCount(config.getWriteThreadCount());
+        return conf;
+    }
+
+    protected Map<SocketOption<?>, Object> getSocketOptionsFromConfig(final BaseConfig config) {
+        final Map<SocketOption<?>, Object> result = new HashMap<SocketOption<?>, Object>();
+
+        result.put(StandardSocketOption.SO_SNDBUF, config.getSndBufferSize());
+        result.put(StandardSocketOption.SO_KEEPALIVE, config.isKeepAlive());
+        if (config.isSoLinger()) {
+            result.put(StandardSocketOption.SO_LINGER, config.getLinger());
+        }
+        result.put(StandardSocketOption.SO_RCVBUF, config.getRcvBufferSize());
+        result.put(StandardSocketOption.SO_REUSEADDR, config.isReuseAddr());
+        result.put(StandardSocketOption.TCP_NODELAY, config.isTcpNoDelay());
+        return result;
+    }
+
+    private BooleanAckCommand createNoConnectionResponseCommand(final CommandHeader requestHeader) {
+        return this.createCommErrorResponseCommand(requestHeader, "无可用连接");
+    }
+
+    private BooleanAckCommand createCommErrorResponseCommand(final CommandHeader requestHeader, final String message) {
+        final BooleanAckCommand responseCommand =
+                this.remotingContext.getCommandFactory().createBooleanAckCommand(requestHeader,
+                        ResponseStatus.ERROR_COMM, message);
+        responseCommand.setResponseTime(System.currentTimeMillis());
+        return responseCommand;
+    }
+
+    private void removeShutdownHook() {
+        if (!this.isHutdownHookCalled && this.shutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
+        }
+    }
+
+    private BooleanAckCommand createTimeoutCommand(final CommandHeader requestHeader, final InetSocketAddress address) {
+        final BooleanAckCommand value =
+                this.remotingContext.getCommandFactory().createBooleanAckCommand(requestHeader,
+                        ResponseStatus.TIMEOUT, "等待响应超时");
+        value.setResponseStatus(ResponseStatus.TIMEOUT);
+        value.setResponseTime(System.currentTimeMillis());
+        value.setResponseHost(address);
+        return value;
+    }
+
+
+
+
 
     /**
      * 单分组所有连接的回调执行线程
@@ -756,106 +869,5 @@ public abstract class BaseRemotingController implements RemotingController {
 
     }
 
-    public void sendToGroups(final Map<String, RequestCommand> groupObjects) throws NotifyRemotingException {
-        if (groupObjects == null || groupObjects.size() == 0) {
-            throw new NotifyRemotingException("groupObjects为空");
-        }
-        for (final Map.Entry<String, RequestCommand> entry : groupObjects.entrySet()) {
-            final RequestCommand requestCommand = entry.getValue();
-            final String group = entry.getKey();
-            final Connection conn =
-                    this.selectConnectionForGroup(group, this.connectionSelector, requestCommand);
-            if (conn != null) {
-                conn.send(requestCommand);
-            }
-        }
-
-    }
-
-    public void transferToGroup(final String group, final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position, final long size, final Integer opaque, final SingleRequestCallBackListener listener, final long time, final TimeUnit unit) throws NotifyRemotingException {
-        if (group == null) {
-            throw new NotifyRemotingException("Null group");
-        }
-        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, null);
-        if (conn != null) {
-            conn.transferFrom(head, tail, channel, position, size, opaque, listener, time, unit);
-        } else {
-            throw new NotifyRemotingException("分组" + group + "没有可用的连接");
-        }
-
-    }
-
-    public void transferToGroup(final String group, final IoBuffer head, final IoBuffer tail, final FileChannel channel, final long position, final long size) throws NotifyRemotingException {
-        if (group == null) {
-            throw new NotifyRemotingException("Null group");
-        }
-        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, null);
-        if (conn != null) {
-            conn.transferFrom(head, tail, channel, position, size);
-        } else {
-            throw new NotifyRemotingException("分组" + group + "没有可用的连接");
-        }
-
-    }
-
-    public void setConnectionSelector(final ConnectionSelector selector) {
-        if (selector == null) {
-            throw new IllegalArgumentException("Null selector");
-        }
-        this.connectionSelector = selector;
-
-    }
-
-    public Object getAttribute(final String url, final String key) {
-        final ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
-        if (subAttr == null) {
-            return null;
-        }
-        return subAttr.get(key);
-    }
-
-    public Object removeAttribute(final String url, final String key) {
-        final ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
-        if (subAttr == null) {
-            return null;
-        }
-        return subAttr.remove(key);
-    }
-
-    public void setAttribute(final String url, final String key, final Object value) {
-        ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
-        if (subAttr == null) {
-            subAttr = new ConcurrentHashMap<String, Object>();
-            final ConcurrentHashMap<String, Object> oldSubAttr =
-                    this.attributes.putIfAbsent(url, subAttr);
-            if (oldSubAttr != null) {
-                subAttr = oldSubAttr;
-            }
-        }
-        subAttr.put(key, value);
-
-    }
-
-    public Object setAttributeIfAbsent(final String url, final String key, final Object value) {
-        ConcurrentHashMap<String, Object> subAttr = this.attributes.get(url);
-        if (subAttr == null) {
-            subAttr = new ConcurrentHashMap<String, Object>();
-            final ConcurrentHashMap<String, Object> oldSubAttr =
-                    this.attributes.putIfAbsent(url, subAttr);
-            if (oldSubAttr != null) {
-                subAttr = oldSubAttr;
-            }
-        }
-        return subAttr.putIfAbsent(key, value);
-    }
-
-    public int getConnectionCount(final String group) {
-        final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
-        return connections == null ? 0 : connections.size();
-    }
-
-    public Set<String> getGroupSet() {
-        return this.remotingContext.getGroupSet();
-    }
 
 }

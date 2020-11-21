@@ -30,6 +30,8 @@ import java.net.InetSocketAddress;
  */
 public interface RemotingClient extends RemotingController {
 
+    // 与服务端建立连接
+
     /**
      * 根据URL连接服务端，如果连接失败将转入重连模式
      *
@@ -63,6 +65,7 @@ public interface RemotingClient extends RemotingController {
     public void connect(String url, String targetGroup) throws NotifyRemotingException;
 
 
+    // 等待连接就绪
 
     /**
      * 等待连接就绪，可中断，连接就绪的含义如下：是指指定分组的有效连接数达到设定值，并且可用。默认等待超时为连接数乘以连接超时
@@ -82,7 +85,7 @@ public interface RemotingClient extends RemotingController {
     public void awaitReadyInterrupt(String url, long time) throws NotifyRemotingException, InterruptedException;
 
 
-
+    // 其他相关接口
 
 
     /**
@@ -110,6 +113,13 @@ public interface RemotingClient extends RemotingController {
     public boolean isConnected(String url);
 
     /**
+     * 设置客户端配置，只能在启动前设置，启动后设置无效
+     *
+     * @param clientConfig
+     */
+    public void setClientConfig(ClientConfig clientConfig);
+
+    /**
      * 关闭url对应的连接
      *
      * @param url            服务端的url，形如schema:://host:port的字符串
@@ -117,12 +127,5 @@ public interface RemotingClient extends RemotingController {
      * @throws NotifyRemotingException
      */
     public void close(String url, boolean allowReconnect) throws NotifyRemotingException;
-
-    /**
-     * 设置客户端配置，只能在启动前设置，启动后设置无效
-     *
-     * @param clientConfig
-     */
-    public void setClientConfig(ClientConfig clientConfig);
 
 }

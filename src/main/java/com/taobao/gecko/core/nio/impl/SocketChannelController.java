@@ -53,6 +53,8 @@ public abstract class SocketChannelController extends NioController {
 
     public void setSoLinger(final boolean on, final int value) {
         this.soLingerOn = on;
+        // SO_LINGER选项用来设置延迟关闭的时间，等待套接字发送缓冲区中的数据发送完成。没有设置该选项时，在调用close()后，
+        // 在发送完FIN后会立即进行一些清理工作并返回。如果设置了SO_LINGER选项，并且等待时间为正值，则在清理之前会等待一段时间。
         this.socketOptions.put(StandardSocketOption.SO_LINGER, value);
     }
 
@@ -60,6 +62,7 @@ public abstract class SocketChannelController extends NioController {
     protected final void dispatchReadEvent(final SelectionKey key) {
         final Session session = (Session) key.attachment();
         if (session != null) {
+            // 派发IO事件
             ((NioSession) session).onEvent(EventType.READABLE, key.selector());
         } else {
             log.warn("Could not find session for readable event,maybe it is closed");
@@ -70,6 +73,7 @@ public abstract class SocketChannelController extends NioController {
     protected final void dispatchWriteEvent(final SelectionKey key) {
         final Session session = (Session) key.attachment();
         if (session != null) {
+            // 派发IO事件
             ((NioSession) session).onEvent(EventType.WRITEABLE, key.selector());
         } else {
             log.warn("Could not find session for writable event,maybe it is closed");

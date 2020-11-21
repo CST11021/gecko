@@ -44,8 +44,8 @@ import com.taobao.gecko.core.nio.impl.TimerRef;
  *
  */
 public interface NioSession extends Session {
-    /*
-     * 派发事件
+    /**
+     * 派发IO事件
      *
      * @param event
      *

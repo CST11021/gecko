@@ -15,10 +15,10 @@
  */
 package com.taobao.gecko.service;
 
-import java.util.List;
-
 import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.service.exception.NotifyRemotingException;
+
+import java.util.List;
 
 
 /**
@@ -37,6 +37,5 @@ public interface ConnectionSelector {
      * @param connectionList 分组的连接列表
      * @return
      */
-    public Connection select(String targetGroup, RequestCommand request, List<Connection> connectionList)
-            throws NotifyRemotingException;
+    public Connection select(String targetGroup, RequestCommand request, List<Connection> connectionList) throws NotifyRemotingException;
 }

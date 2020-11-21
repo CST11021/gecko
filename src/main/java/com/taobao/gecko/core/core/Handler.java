@@ -16,7 +16,7 @@
 package com.taobao.gecko.core.core;
 
 /**
- * 会话生命周期处理
+ * 会话生命周期处理器
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午06:00:24

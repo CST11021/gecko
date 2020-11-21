@@ -37,17 +37,29 @@ public class SelectorManager {
 
     private static final Log log = LogFactory.getLog(SelectorManager.class);
 
+    /** Reactor保存在session中的key */
     public static final String REACTOR_ATTRIBUTE = System.currentTimeMillis() + "_Reactor_Attribute";
-    private final Reactor[] reactorSet;
+
+
     /** 递增的统计器 */
     private final PositiveAtomicCounter sets = new PositiveAtomicCounter();
-    private final NioController controller;
-    private final int dividend;
+
+
     /**
      * Reactor准备就绪的个数
      */
     private int reactorReadyCount;
+
     private volatile boolean started;
+
+    /** 表示为reactorSet.length - 1 */
+    private final int dividend;
+    /** 在SelectorManager的构造器中初始化该组件 */
+    private final Reactor[] reactorSet;
+
+    private final NioController controller;
+
+
 
 
     public SelectorManager(final int selectorPoolSize, final NioController controller, final Configuration conf) throws IOException {
@@ -66,10 +78,6 @@ public class SelectorManager {
     }
 
 
-    public int getSelectorCount() {
-        return this.reactorSet == null ? 0 : this.reactorSet.length;
-    }
-
     public synchronized void start() {
         if (this.started) {
             return;
@@ -79,6 +87,24 @@ public class SelectorManager {
             reactor.start();
         }
     }
+
+    public synchronized void stop() {
+        if (!this.started) {
+            return;
+        }
+        this.started = false;
+        for (final Reactor reactor : this.reactorSet) {
+            reactor.interrupt();
+        }
+    }
+
+
+
+    public int getSelectorCount() {
+        return this.reactorSet == null ? 0 : this.reactorSet.length;
+    }
+
+
 
     /**
      * 仅用于测试
@@ -93,15 +119,7 @@ public class SelectorManager {
         return this.reactorSet[index];
     }
 
-    public synchronized void stop() {
-        if (!this.started) {
-            return;
-        }
-        this.started = false;
-        for (final Reactor reactor : this.reactorSet) {
-            reactor.interrupt();
-        }
-    }
+
 
     /**
      * 注册channel
@@ -169,6 +187,12 @@ public class SelectorManager {
         reactor.registerSession(session, event);
     }
 
+    /**
+     * 从session的属性获取Reactor对象，如果为null，则创建一个Reactor对象
+     *
+     * @param session
+     * @return
+     */
     Reactor getReactorFromSession(final Session session) {
         Reactor reactor = (Reactor) session.getAttribute(REACTOR_ATTRIBUTE);
 

@@ -22,14 +22,23 @@ package com.taobao.gecko.core.command;
  * @since 1.0, 2009-12-16 下午05:55:23
  */
 public enum ResponseStatus {
-    NO_ERROR(null), // 正常成功
-    ERROR("Error by user"), // 错误，响应端主动设置
-    EXCEPTION("Exception occured"), // 异常
-    UNKNOWN("Unknow error"), // 没有注册Listener，包括CheckMessageListener和MessageListener
-    THREADPOOL_BUSY("Thread pool is busy"), // 响应段线程繁忙
-    ERROR_COMM("Communication error"), // 通讯错误，如编码错误
-    NO_PROCESSOR("There is no processor to handle this request"), // 没有该请求命令的处理器
-    TIMEOUT("Operation timeout"); // 响应超时
+
+    /** 正常成功 */
+    NO_ERROR(null),
+    /** 错误，响应端主动设置 */
+    ERROR("Error by user"),
+    /** 异常 */
+    EXCEPTION("Exception occured"),
+    /** 没有注册Listener，包括CheckMessageListener和MessageListener */
+    UNKNOWN("Unknow error"),
+    /** 响应端线程繁忙 */
+    THREADPOOL_BUSY("Thread pool is busy"),
+    /** 通讯错误，如编码错误 */
+    ERROR_COMM("Communication error"),
+    /** 没有该请求命令的处理器 */
+    NO_PROCESSOR("There is no processor to handle this request"),
+    /** 响应超时 */
+    TIMEOUT("Operation timeout");
 
     private String errorMessage;
 
@@ -37,7 +46,6 @@ public enum ResponseStatus {
     private ResponseStatus(final String errorMessage) {
         this.errorMessage = errorMessage;
     }
-
 
     public String getErrorMessage() {
         return this.errorMessage;
