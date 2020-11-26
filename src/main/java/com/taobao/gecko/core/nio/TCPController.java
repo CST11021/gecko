@@ -40,9 +40,8 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-
 /**
- * Controller for tcp server
+ * TCP服务器控制器
  *
  * @author dennis
  */

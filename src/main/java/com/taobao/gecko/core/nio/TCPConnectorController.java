@@ -27,6 +27,13 @@ package com.taobao.gecko.core.nio;
  * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
 
+import com.taobao.gecko.core.config.Configuration;
+import com.taobao.gecko.core.core.CodecFactory;
+import com.taobao.gecko.core.core.EventType;
+import com.taobao.gecko.core.core.impl.FutureImpl;
+import com.taobao.gecko.core.nio.impl.NioTCPSession;
+import com.taobao.gecko.core.nio.impl.SocketChannelController;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -36,16 +43,8 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import com.taobao.gecko.core.config.Configuration;
-import com.taobao.gecko.core.core.CodecFactory;
-import com.taobao.gecko.core.core.EventType;
-import com.taobao.gecko.core.core.impl.FutureImpl;
-import com.taobao.gecko.core.nio.impl.NioTCPSession;
-import com.taobao.gecko.core.nio.impl.SocketChannelController;
-
-
 /**
- * Controller for client connecting
+ * 客户端连接控制器
  *
  * @author dennis
  *
@@ -184,7 +183,12 @@ public class TCPConnectorController extends SocketChannelController implements S
         }
     }
 
-
+    /**
+     * 当客户端与服务端建立连接后，会调用该方法
+     *
+     * @param key
+     * @throws IOException
+     */
     @Override
     public void onConnect(final SelectionKey key) throws IOException {
         key.interestOps(key.interestOps() & ~SelectionKey.OP_CONNECT);
@@ -214,6 +218,12 @@ public class TCPConnectorController extends SocketChannelController implements S
     }
 
 
+    /**
+     * 当客户端与服务端建立连接后，会调用该方法创建session
+     *
+     * @param socketChannel
+     * @param args
+     */
     protected void createSession(final SocketChannel socketChannel, final Object... args) {
         this.session = (NioTCPSession) this.buildSession(socketChannel);
         this.selectorManager.registerSession(this.session, EventType.ENABLE_READ);

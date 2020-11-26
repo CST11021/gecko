@@ -146,6 +146,12 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /**
+     * 处理接收到的消息
+     *
+     * @param session
+     * @param message
+     */
     public void onMessageReceived(final Session session, final Object message) {
         final DefaultConnection defaultConnection = this.remotingContext.getConnectionBySession((NioSession) session);
         if (defaultConnection == null) {
@@ -153,9 +159,12 @@ public class GeckoHandler implements Handler {
             session.close();
             return;
         }
+
         if (message instanceof RequestCommand) {
+            // 当消息是请求类型时，发送请求
             this.processRequest(session, message, defaultConnection);
         } else if (message instanceof ResponseCommand) {
+            // 当消息类型是响应类型时，触发回调逻辑
             this.processResponse(message, defaultConnection);
         } else {
             throw new IllegalMessageException("未知的消息类型" + message);
@@ -163,6 +172,12 @@ public class GeckoHandler implements Handler {
 
     }
 
+    /**
+     * 当建立了连接时会调用该方法
+     *
+     * @param session
+     * @param args
+     */
     @SuppressWarnings("unchecked")
     public void onSessionConnected(final Session session, final Object... args) {
         final Set<String> groupSet = (Set<String>) args[0];
@@ -270,16 +285,33 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /**
+     * 当监听到响应事件时，会调用该方法，触发回调逻辑
+     *
+     * @param message
+     * @param defaultConnection
+     */
     private void processResponse(final Object message, final DefaultConnection defaultConnection) {
         final ResponseCommand responseCommand = (ResponseCommand) message;
         responseCommand.setResponseHost(defaultConnection.getRemoteSocketAddress());
         responseCommand.setResponseTime(System.currentTimeMillis());
+
+        // 获取请求ID对应的回调
         final RequestCallBack requestCallBack = defaultConnection.getRequestCallBack(responseCommand.getOpaque());
         if (requestCallBack != null) {
+            // 触发回调逻辑
             requestCallBack.onResponse(null, responseCommand, defaultConnection);
         }
     }
 
+    /**
+     * 会话接收到的消息是请求类型时，则调用该方法发送请求
+     *
+     * @param session
+     * @param message
+     * @param defaultConnection
+     * @param <T>
+     */
     @SuppressWarnings("unchecked")
     private <T extends RequestCommand> void processRequest(final Session session, final Object message, final DefaultConnection defaultConnection) {
         final RequestProcessor<T> processor = this.getProcessorByMessage(message);
@@ -292,6 +324,13 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /**
+     * 获取请求对象对应的处理器
+     *
+     * @param message
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private <T extends RequestCommand> RequestProcessor<T> getProcessorByMessage(final Object message) {
         final RequestProcessor<T> processor;
@@ -380,43 +419,6 @@ public class GeckoHandler implements Handler {
         }
     }
 
-    private void addConnection2Group(final DefaultConnection conn, final Set<String> groupSet) {
-        if (groupSet.isEmpty() || this.hasOnlyDefaultGroup(groupSet)) {
-            this.closeConnectionWithoutReconnect(conn);
-            return;
-        }
-        // 将建立的连接加入分组
-        for (final String group : groupSet) {
-            final Object attribute = this.remotingController.getAttribute(group, Constants.CONNECTION_COUNT_ATTR);
-            if (attribute == null) {
-                // 没有发起连接请求并且不是默认分组，强制关闭
-                log.info("连接被强制断开，由于分组" + group + "没有发起过连接请求");
-                this.closeConnectionWithoutReconnect(conn);
-                return;
-            } else {
-                final int maxConnCount = (Integer) attribute;
-                /**
-                 * 判断分组连接数和加入分组放入同一个同步块，防止竞争条件
-                 */
-                synchronized (this) {
-                    // 加入分组
-                    if (this.remotingController.getConnectionCount(group) < maxConnCount) {
-                        this.addConnectionToGroup(conn, group, maxConnCount);
-                    } else {
-                        // 尝试移除断开的连接，再次加入
-                        if (this.removeDisconnectedConnection(group)) {
-                            this.addConnectionToGroup(conn, group, maxConnCount);
-                        } else {
-                            // 确认是多余的，关闭
-                            log.warn("连接数(" + conn.getRemoteSocketAddress() + ")超过设定值" + maxConnCount + "，连接将被关闭");
-                            this.closeConnectionWithoutReconnect(conn);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private void closeConnectionWithoutReconnect(final DefaultConnection conn) {
         try {
             conn.close(false);
@@ -474,6 +476,55 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /**
+     * 将连接添加到指定的分组：一个连接可以被多个分组共享
+     *
+     * @param conn
+     * @param groupSet
+     */
+    private void addConnection2Group(final DefaultConnection conn, final Set<String> groupSet) {
+        if (groupSet.isEmpty() || this.hasOnlyDefaultGroup(groupSet)) {
+            this.closeConnectionWithoutReconnect(conn);
+            return;
+        }
+
+        // 将建立的连接加入分组
+        for (final String group : groupSet) {
+            final Object attribute = this.remotingController.getAttribute(group, Constants.CONNECTION_COUNT_ATTR);
+            if (attribute == null) {
+                // 没有发起连接请求并且不是默认分组，强制关闭
+                log.info("连接被强制断开，由于分组" + group + "没有发起过连接请求");
+                this.closeConnectionWithoutReconnect(conn);
+                return;
+            } else {
+                final int maxConnCount = (Integer) attribute;
+                // 判断分组连接数和加入分组放入同一个同步块，防止竞争条件
+                synchronized (this) {
+                    // 加入分组
+                    if (this.remotingController.getConnectionCount(group) < maxConnCount) {
+                        this.addConnectionToGroup(conn, group, maxConnCount);
+                    } else {
+                        // 尝试移除断开的连接，再次加入
+                        if (this.removeDisconnectedConnection(group)) {
+                            this.addConnectionToGroup(conn, group, maxConnCount);
+                        } else {
+                            // 确认是多余的，关闭
+                            log.warn("连接数(" + conn.getRemoteSocketAddress() + ")超过设定值" + maxConnCount + "，连接将被关闭");
+                            this.closeConnectionWithoutReconnect(conn);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 将连接添加到所属的分组
+     *
+     * @param conn          连接对象
+     * @param group         所属分组
+     * @param maxConnCount  分组最大连接数
+     */
     private void addConnectionToGroup(final DefaultConnection conn, final String group, final int maxConnCount) {
         conn.getRemotingContext().addConnectionToGroup(group, conn);
         // 获取分组连接就绪锁

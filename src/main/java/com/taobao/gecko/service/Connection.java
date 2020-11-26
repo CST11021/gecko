@@ -54,6 +54,7 @@ public interface Connection {
     public boolean isConnected();
 
 
+    // 同步调用
 
     /**
      * 同步调用，默认超时1秒
@@ -76,6 +77,7 @@ public interface Connection {
      */
     public ResponseCommand invoke(final RequestCommand requestCommand, long time, TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException;
 
+    // 异步调用
 
     /**
      * 异步单向发送
@@ -97,7 +99,6 @@ public interface Connection {
      * @param listener
      */
     public void send(final RequestCommand requestCommand, SingleRequestCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
-
     /**
      * 异步发送，并返回可取消的future
      *

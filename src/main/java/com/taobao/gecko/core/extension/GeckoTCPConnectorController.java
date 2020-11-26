@@ -77,6 +77,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
 
             final FutureImpl<NioSession> resultFuture = new FutureImpl<NioSession>(args);
             if (!socketChannel.connect(remoteAddress)) {
+                // 将channel注册到selector
                 this.selectorManager.registerChannel(socketChannel, SelectionKey.OP_CONNECT, resultFuture);
             } else {
                 // 创建Session
@@ -93,6 +94,16 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         }
     }
 
+    public void closeChannel(final Selector selector) throws IOException {
+
+    }
+
+    /**
+     * 当通道注册到selector后，客户端与服务端建立连接时（即：SelectionKey.OP_CONNECT事件发生时）调用该方法
+     *
+     * @param key
+     * @throws IOException
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void onConnect(final SelectionKey key) throws IOException {
@@ -103,6 +114,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
             if (!((SocketChannel) key.channel()).finishConnect()) {
                 throw new IOException("Connect Fail");
             }
+
             future.setResult(this.createSession((SocketChannel) key.channel(), future.getArgs()));
         } catch (final Exception e) {
             this.cancelKey(key);
@@ -116,7 +128,7 @@ public class GeckoTCPConnectorController extends SocketChannelController {
     }
 
     /**
-     * 创建Session
+     * 当客户端与服务端建立连接手，调用该方法创建Session
      *
      * @param socketChannel
      * @param args
@@ -129,10 +141,6 @@ public class GeckoTCPConnectorController extends SocketChannelController {
         session.start();
         this.handler.onSessionConnected(session, args);
         return session;
-    }
-
-    public void closeChannel(final Selector selector) throws IOException {
-
     }
 
     /**

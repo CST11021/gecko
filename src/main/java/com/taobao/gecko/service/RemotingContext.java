@@ -15,11 +15,11 @@
  */
 package com.taobao.gecko.service;
 
-import java.util.List;
-import java.util.Set;
-
 import com.taobao.gecko.core.command.CommandFactory;
 import com.taobao.gecko.service.config.BaseConfig;
+
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -30,6 +30,13 @@ import com.taobao.gecko.service.config.BaseConfig;
  */
 
 public interface RemotingContext {
+
+    /**
+     * 将连接添加到默认分组
+     *
+     * @param connection
+     */
+    public abstract void addConnection(Connection connection);
 
     /**
      * 添加连接到指定分组
@@ -47,12 +54,7 @@ public interface RemotingContext {
      */
     public abstract BaseConfig getConfig();
 
-    /**
-     * 添加到默认分组
-     *
-     * @param connection
-     */
-    public abstract void addConnection(Connection connection);
+
 
     /**
      * 从默认分组移除

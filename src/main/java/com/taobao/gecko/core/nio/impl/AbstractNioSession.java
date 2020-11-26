@@ -15,17 +15,6 @@
  */
 package com.taobao.gecko.core.nio.impl;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.Future;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.core.EventType;
 import com.taobao.gecko.core.core.WriteMessage;
@@ -36,6 +25,11 @@ import com.taobao.gecko.core.core.impl.PoisonWriteMessage;
 import com.taobao.gecko.core.nio.NioSession;
 import com.taobao.gecko.core.nio.NioSessionConfig;
 import com.taobao.gecko.core.util.SelectorFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.nio.channels.*;
+import java.util.concurrent.Future;
 
 
 /**
@@ -79,13 +73,11 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     // 为了让NioController可见
     @Override
     protected final void close0() {
         super.close0();
     }
-
 
     private void interestRead(final SelectionKey key) {
         if (key.attachment() == null) {
@@ -94,17 +86,14 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         key.interestOps(key.interestOps() | SelectionKey.OP_READ);
     }
 
-
     @Override
     protected void start0() {
         this.registerSession();
     }
 
-
     public InetAddress getLocalAddress() {
         return ((SocketChannel) this.selectableChannel).socket().getLocalAddress();
     }
-
 
     /**
      * 往连接写入消息，可被中断，中断可能引起连接断开，请慎重使用
@@ -120,7 +109,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         this.scheduleWritenBytes.addAndGet(message.remaining());
         this.write0(message);
     }
-
 
     /**
      * 往连接异步写入消息，可被中断，中断可能引起连接断开，请慎重使用
@@ -141,7 +129,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         return writeFuture;
     }
 
-
     private Object writeToChannel(final WriteMessage msg) throws ClosedChannelException, IOException {
         if (msg instanceof PoisonWriteMessage) {
             this.close0();
@@ -151,9 +138,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     protected abstract Object writeToChannel0(WriteMessage msg) throws ClosedChannelException, IOException;
-
 
     protected boolean schduleWriteMessage(final WriteMessage writeMessage) {
         final boolean offered = this.writeQueue.offer(writeMessage);
@@ -165,7 +150,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
         return false;
     }
-
 
     protected void onWrite(final SelectionKey key) {
         boolean isLockedByMe = false;
@@ -258,7 +242,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     /**
      * 注册OP_WRITE
      */
@@ -277,7 +260,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     private void interestWrite(final SelectionKey key) {
         if (key.attachment() == null) {
             key.attach(this);
@@ -285,25 +267,20 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
     }
 
-
     protected void onRead(final SelectionKey key) {
         this.updateTimeStamp();
         this.readFromBuffer();
     }
 
-
     protected abstract void readFromBuffer();
-
 
     protected final void registerSession() {
         this.selectorManager.registerSession(this, EventType.REGISTER);
     }
 
-
     protected void unregisterSession() {
         this.selectorManager.registerSession(this, EventType.UNREGISTER);
     }
-
 
     @Override
     protected final void writeFromUserCode(final WriteMessage message) {
@@ -313,7 +290,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         // 到这里，当前线程一定是IO线程
         this.onWrite(null);
     }
-
 
     private void write0(WriteMessage message) {
         boolean isLockedByMe = false;
@@ -394,13 +370,11 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     @Override
     protected void addPoisonWriteMessage(final PoisonWriteMessage poisonWriteMessage) {
         this.writeQueue.offer(poisonWriteMessage);
         this.selectorManager.registerSession(this, EventType.ENABLE_WRITE);
     }
-
 
     public void flush() {
         if (this.isClosed()) {
@@ -408,7 +382,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
         this.flush0();
     }
-
 
     protected final void flush0() {
         SelectionKey tmpKey = null;
@@ -459,7 +432,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     /**
      * 派发IO事件
      */
@@ -495,7 +467,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
     public void insertTimer(final TimerRef timerRef) {
         if (this.isClosed()) {
             return;
@@ -503,9 +474,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         this.selectorManager.insertTimer(timerRef);
     }
 
-
-    public Future<Boolean> asyncTransferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src,
-                                             final long position, long size) {
+    public Future<Boolean> asyncTransferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src, final long position, long size) {
         this.checkParams(src, position);
         size = this.normalSize(src, position, size);
         final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
@@ -514,7 +483,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         this.writeFromUserCode(message);
         return future;
     }
-
 
     private void checkParams(final FileChannel src, final long position) {
         if (src == null) {
@@ -529,9 +497,7 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         }
     }
 
-
-    public Future<Boolean> transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src,
-                                        final long position, long size) {
+    public Future<Boolean> transferFrom(final IoBuffer head, final IoBuffer tail, final FileChannel src, final long position, long size) {
         this.checkParams(src, position);
         size = this.normalSize(src, position, size);
         final FutureImpl<Boolean> future = new FutureImpl<Boolean>();
@@ -540,7 +506,6 @@ public abstract class AbstractNioSession extends AbstractSession implements NioS
         this.writeFromUserCode(message);
         return future;
     }
-
 
     private long normalSize(final FileChannel src, final long position, long size) {
         try {

@@ -88,6 +88,15 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
     }
 
     /**
+     * 当响应到达时触发此方法，留给子类扩展
+     *
+     * @param group
+     * @param responseCommand
+     * @param connection
+     */
+    public abstract void onResponse0(String group, ResponseCommand responseCommand, Connection connection);
+
+    /**
      * 设置异常
      *
      * @param e
@@ -101,6 +110,12 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
         this.setException0(e, conn, requestCommand);
     }
 
+
+    /**
+     * 当收到响应后，将连接从#writeFutureMap移除，并设置future不可中断
+     *
+     * @param conn
+     */
     public void cancelWrite(final Connection conn) {
         if (conn == null) {
             return;
@@ -115,6 +130,9 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
         this.writeFutureMap.put(conn, future);
     }
 
+    /**
+     * countDownLatch - 1，当countDownLatch为0时，不再阻塞
+     */
     public void countDownLatch() {
         this.responseLock.lock();
         try {
@@ -124,6 +142,14 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
         }
     }
 
+    /**
+     * 如果请求一直没响应，countDownLatch将一直阻塞，直到收到响应或者异常或者超时
+     *
+     * @param timeout
+     * @param unit
+     * @return
+     * @throws InterruptedException
+     */
     public boolean await(final long timeout, final TimeUnit unit) throws InterruptedException {
         return this.countDownLatch.await(timeout, unit);
     }
@@ -157,7 +183,7 @@ public abstract class AbstractRequestCallBack implements RequestCallBack {
         return value;
     }
 
-    public abstract void onResponse0(String group, ResponseCommand responseCommand, Connection connection);
+
 
     public abstract void setException0(Exception e, Connection conn, RequestCommand requestCommand);
 

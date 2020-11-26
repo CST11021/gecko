@@ -123,19 +123,19 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
      *
      * @param url         服务端的URL，形如schema://host:port的字符串
      * @param targetGroup 连接成功后加入的分组
-     * @param connCount   连接数
+     * @param connCount   表示客户端要创建的连接数
      * @throws IOException
      */
     @Override
     public void connect(String url, String targetGroup, int connCount) throws NotifyRemotingException {
-        // 连接重试次数必须大于0
+        // 客户端要创建的连接数必须大于0
         if (connCount <= 0) {
             throw new IllegalArgumentException("非法连接数，必须大于0");
         }
 
         url = url.trim();
 
-        // 判断分组是否发起过连接请求
+        // 判断该客户端是否对该分组发起过连接请求
         if (this.isGroupConnectPending(targetGroup)) {
             return;
         }
@@ -146,7 +146,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         // 将group从重连管理器中移除
         this.reconnectManager.removeCanceledGroup(targetGroup);
 
-        // 设置连接数属性
+        // 设置客户端要创建的连接数属性
         if (this.setAttributeIfAbsent(targetGroup, Constants.CONNECTION_COUNT_ATTR, connCount) != null) {
             return;
         }
@@ -157,6 +157,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
         final Set<String> groupSet = new HashSet<String>();
         groupSet.add(targetGroup);
+        // 创建指定数量的连接对象
         for (int i = 0; i < connCount; i++) {
             try {
                 final TimerRef timerRef = new TimerRef(((ClientConfig) this.config).getConnectTimeout(), null);
@@ -179,6 +180,13 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
     // 等待连接就绪
 
+    /**
+     * 等待连接就绪：是指指定分组的有效连接数达到设定值，并且可用，默认等待超时为连接数乘以连接超时
+     *
+     * @param group
+     * @throws NotifyRemotingException
+     * @throws InterruptedException
+     */
     @Override
     public void awaitReadyInterrupt(final String group) throws NotifyRemotingException, InterruptedException {
         final Object readyLock = this.getAttribute(group, Constants.GROUP_CONNECTION_READY_LOCK);
@@ -189,11 +197,20 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         final long defaultConnectTimeout = ((ClientConfig) this.config).getConnectTimeout();
         this.awaitReadyInterrupt(group, defaultConnectTimeout * (Integer) attribute);
     }
+    /**
+     * 等待连接就绪：是指指定分组的有效连接数达到设定值，并且可用，默认等待超时为连接数乘以连接超时
+     *
+     * @param group
+     * @param time
+     * @throws NotifyRemotingException
+     * @throws InterruptedException
+     */
     @Override
     public void awaitReadyInterrupt(final String group, final long time) throws NotifyRemotingException, InterruptedException {
         if (StringUtils.isBlank(group)) {
             throw new IllegalArgumentException("Blank group");
         }
+
         // 获取分组连接就绪锁
         final Object readyLock = this.getAttribute(group, Constants.GROUP_CONNECTION_READY_LOCK);
         final Object attribute = this.getAttribute(group, Constants.CONNECTION_COUNT_ATTR);
@@ -203,6 +220,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
             final int maxConnCount = (Integer) attribute;
             long totalTime = 0;
             synchronized (readyLock) {
+                // 一直轮询：直到该客户端的连接数个数等于创建连接#connect()方法指定的数量
                 while (this.getConnectionCount(group) != maxConnCount) {
                     final long start = System.currentTimeMillis();
                     readyLock.wait(1000);

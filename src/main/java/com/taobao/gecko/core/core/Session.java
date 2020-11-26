@@ -40,29 +40,10 @@ public interface Session {
         CLOSED
     }
 
-
     /**
      * Start session
      */
     void start();
-
-
-    /**
-     * Async write a message to socket,return a future
-     *
-     * @param packet
-     * @return
-     */
-    Future<Boolean> asyncWrite(Object packet);
-
-
-    /**
-     * Write a message,if you don't care when the message is written
-     *
-     * @param packet
-     */
-    void write(Object packet);
-
 
     /**
      * Check if session is closed
@@ -71,11 +52,27 @@ public interface Session {
      */
     boolean isClosed();
 
-
     /**
      * Close session
      */
     void close();
+
+
+    /**
+     * Write a message,if you don't care when the message is written
+     *
+     * @param packet
+     */
+    void write(Object packet);
+    /**
+     * 异步写消息到套接字
+     *
+     * @param packet
+     * @return
+     */
+    Future<Boolean> asyncWrite(Object packet);
+
+
 
 
     /**
@@ -85,14 +82,12 @@ public interface Session {
      */
     InetSocketAddress getRemoteSocketAddress();
 
-
     /**
      * 获取本地ip地址
      *
      * @return
      */
     InetAddress getLocalAddress();
-
 
     /**
      * Return true if using blocking write
@@ -101,14 +96,12 @@ public interface Session {
      */
     boolean isUseBlockingWrite();
 
-
     /**
      * Set if using blocking write
      *
      * @param useBlockingWrite
      */
     void setUseBlockingWrite(boolean useBlockingWrite);
-
 
     /**
      * Return true if using blocking read
@@ -117,16 +110,13 @@ public interface Session {
      */
     boolean isUseBlockingRead();
 
-
     void setUseBlockingRead(boolean useBlockingRead);
-
 
     /**
      * Flush the write queue,this method may be no effect if OP_WRITE is
      * running.
      */
     void flush();
-
 
     /**
      * Return true if session is expired,session is expired beacause you set the
@@ -137,7 +127,6 @@ public interface Session {
      */
     boolean isExpired();
 
-
     /**
      * Check if session is idle
      *
@@ -146,32 +135,30 @@ public interface Session {
     boolean isIdle();
 
 
+
+    // 设置编解码
+
     /**
      * Return current encoder
      *
      * @return
      */
     CodecFactory.Encoder getEncoder();
-
-
     /**
      * Set encoder
      *
      * @param encoder
      */
     void setEncoder(CodecFactory.Encoder encoder);
-
-
     /**
      * Return current decoder
      *
      * @return
      */
-
     CodecFactory.Decoder getDecoder();
-
-
     void setDecoder(CodecFactory.Decoder decoder);
+
+
 
 
     /**
@@ -182,9 +169,7 @@ public interface Session {
      */
     boolean isHandleReadWriteConcurrently();
 
-
     void setHandleReadWriteConcurrently(boolean handleReadWriteConcurrently);
-
 
     /**
      * Return the session read buffer's byte order,big end or little end.
@@ -193,9 +178,10 @@ public interface Session {
      */
     ByteOrder getReadBufferByteOrder();
 
-
     void setReadBufferByteOrder(ByteOrder readBufferByteOrder);
 
+
+    // attribute
 
     /**
      * Set a attribute attched with this session
@@ -204,24 +190,19 @@ public interface Session {
      * @param value
      */
     void setAttribute(String key, Object value);
-
-
+    Object setAttributeIfAbsent(String key, Object value);
     /**
      * Returns all attribute key set
      *
      * @return
      */
-    public Set<String> attributeKeySet();
-
-
+    Set<String> attributeKeySet();
     /**
      * Remove attribute
      *
      * @param key
      */
     void removeAttribute(String key);
-
-
     /**
      * Return attribute associated with key
      *
@@ -229,22 +210,19 @@ public interface Session {
      * @return
      */
     Object getAttribute(String key);
-
-
     /**
      * Clear attributes
      */
     void clearAttributes();
 
 
+
     /**
-     * Return the bytes in write queue,there bytes is in memory.Use this method
-     * to controll writing speed.
+     * 返回写入队列中的字节，内存中有字节。使用此方法控制写入速度。
      *
      * @return
      */
     long getScheduleWritenBytes();
-
 
     /**
      * 返回上一个操作的时间戳，操作包括读，写，空闲
@@ -253,7 +231,6 @@ public interface Session {
      */
     long getLastOperationTimeStamp();
 
-
     /**
      * return true if it is a loopback connection
      *
@@ -261,20 +238,12 @@ public interface Session {
      */
     boolean isLoopbackConnection();
 
-
     long getSessionIdleTimeout();
-
-
     void setSessionIdleTimeout(long sessionIdleTimeout);
 
-
     long getSessionTimeout();
-
-
     void setSessionTimeout(long sessionTimeout);
 
-
-    Object setAttributeIfAbsent(String key, Object value);
 
 
     Handler getHandler();

@@ -63,8 +63,6 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
     public Exception getException() {
         return this.exception;
     }
-
-
     @Override
     public void setException0(final Exception exception, final Connection conn, final RequestCommand requestCommand) {
         this.exception = exception;
@@ -77,14 +75,21 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
     }
 
     @Override
+    public boolean isComplete() {
+        return this.responsed;
+    }
+    @Override
     public void complete() {
         this.responsed = true;
     }
 
-    @Override
-    public boolean isComplete() {
-        return this.responsed;
-    }
+    /**
+     * 当响应到达时触发此方法，留给子类扩展
+     *
+     * @param group
+     * @param responseCommand
+     * @param connection
+     */
     @Override
     public void onResponse0(final String group, final ResponseCommand responseCommand, final Connection connection) {
         synchronized (this) {
@@ -95,6 +100,7 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
             }
         }
 
+        // countDownLatch - 1，当countDownLatch为0时，不再阻塞
         this.countDownLatch();
         if (this.tryComplete()) {
             if (this.requestCallBackListener != null) {
@@ -112,7 +118,39 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
     }
 
 
+    /**
+     * 返回响应对象
+     *
+     * @param time
+     * @param timeUnit
+     * @param conn
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws NotifyRemotingException
+     */
+    public ResponseCommand getResult(final long time, final TimeUnit timeUnit, final Connection conn) throws InterruptedException, TimeoutException, NotifyRemotingException {
+        // 如果请求一直没响应，将一直阻塞，直到收到响应或者异常或者超时
+        if (!this.await(time, timeUnit)) {
+            // 当收到响应后，将连接从#writeFutureMap移除，并设置future不可中断
+            this.cancelWrite(conn);
+            // 切记移除回调
+            this.removeCallBackFromConnection(conn, this.requestCommandHeader.getOpaque());
+            throw new TimeoutException("Operation timeout");
+        }
 
+        if (this.exception != null) {
+            // 当收到响应后，将连接从#writeFutureMap移除，并设置future不可中断
+            this.cancelWrite(conn);
+            // 切记移除回调
+            this.removeCallBackFromConnection(conn, this.requestCommandHeader.getOpaque());
+            throw new NotifyRemotingException("同步调用失败", this.exception);
+        }
+
+        synchronized (this) {
+            return this.responseCommand;
+        }
+    }
     public ResponseCommand getResult() throws InterruptedException, TimeoutException, NotifyRemotingException {
         if (!this.await(1000, TimeUnit.MILLISECONDS)) {
             throw new TimeoutException("Operation timeout(1 second)");
@@ -120,23 +158,7 @@ public final class SingleRequestCallBack extends AbstractRequestCallBack {
         if (this.exception != null) {
             throw new NotifyRemotingException("同步调用失败", this.exception);
         }
-        synchronized (this) {
-            return this.responseCommand;
-        }
-    }
-    public ResponseCommand getResult(final long time, final TimeUnit timeUnit, final Connection conn) throws InterruptedException, TimeoutException, NotifyRemotingException {
-        if (!this.await(time, timeUnit)) {
-            this.cancelWrite(conn);
-            // 切记移除回调
-            this.removeCallBackFromConnection(conn, this.requestCommandHeader.getOpaque());
-            throw new TimeoutException("Operation timeout");
-        }
-        if (this.exception != null) {
-            this.cancelWrite(conn);
-            // 切记移除回调
-            this.removeCallBackFromConnection(conn, this.requestCommandHeader.getOpaque());
-            throw new NotifyRemotingException("同步调用失败", this.exception);
-        }
+
         synchronized (this) {
             return this.responseCommand;
         }

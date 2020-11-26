@@ -26,19 +26,6 @@ package com.taobao.gecko.core.nio.impl;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific language governing permissions and limitations under the License
  */
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
-import java.util.concurrent.Future;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.core.EventType;
 import com.taobao.gecko.core.core.WriteMessage;
@@ -51,6 +38,11 @@ import com.taobao.gecko.core.nio.output.ChannelOutputStream;
 import com.taobao.gecko.core.util.ByteBufferUtils;
 import com.taobao.gecko.core.util.SelectorFactory;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.channels.*;
+import java.util.concurrent.Future;
 
 /**
  * Nio tcp连接
@@ -65,7 +57,27 @@ public class NioTCPSession extends AbstractNioSession {
     private InetSocketAddress remoteAddress;
     private final int initialReadBufferSize;
     private int recvBufferSize = 16 * 1024;
+    /**
+     * 如果写入返回为0，强制循环多次，提高发送效率
+     */
+    static final int WRITE_SPIN_COUNT = Integer.parseInt(System.getProperty("notify.remoting.write_spin_count", "16"));
 
+
+    public NioTCPSession(final NioSessionConfig sessionConfig, final int readRecvBufferSize) {
+        super(sessionConfig);
+        if (this.selectableChannel != null && this.getRemoteSocketAddress() != null) {
+            this.loopback = this.getRemoteSocketAddress().getAddress().isLoopbackAddress();
+        }
+        this.setReadBuffer(IoBuffer.allocate(readRecvBufferSize));
+        this.initialReadBufferSize = this.readBuffer.capacity();
+        // 触发Handler#onSessionCreated
+        this.onCreated();
+        try {
+            this.recvBufferSize = ((SocketChannel) this.selectableChannel).socket().getReceiveBufferSize();
+        } catch (final Exception e) {
+            log.error("Get socket receive buffer size failed", e);
+        }
+    }
 
     @Override
     public final boolean isExpired() {
@@ -77,32 +89,9 @@ public class NioTCPSession extends AbstractNioSession {
                 : System.currentTimeMillis() - this.lastOperationTimeStamp.get() >= this.sessionTimeout;
     }
 
-
-    public NioTCPSession(final NioSessionConfig sessionConfig, final int readRecvBufferSize) {
-        super(sessionConfig);
-        if (this.selectableChannel != null && this.getRemoteSocketAddress() != null) {
-            this.loopback = this.getRemoteSocketAddress().getAddress().isLoopbackAddress();
-        }
-        this.setReadBuffer(IoBuffer.allocate(readRecvBufferSize));
-        this.initialReadBufferSize = this.readBuffer.capacity();
-        this.onCreated();
-        try {
-            this.recvBufferSize = ((SocketChannel) this.selectableChannel).socket().getReceiveBufferSize();
-        } catch (final Exception e) {
-            log.error("Get socket receive buffer size failed", e);
-        }
-    }
-
-
     protected final long doRealWrite(final SelectableChannel channel, final WriteMessage message) throws IOException {
         return message.write((WritableByteChannel) channel);
     }
-
-    /**
-     * 如果写入返回为0，强制循环多次，提高发送效率
-     */
-    static final int WRITE_SPIN_COUNT = Integer.parseInt(System.getProperty("notify.remoting.write_spin_count", "16"));
-
 
     @Override
     protected Object writeToChannel0(final WriteMessage message) throws IOException {
@@ -142,7 +131,6 @@ public class NioTCPSession extends AbstractNioSession {
 
     }
 
-
     public InetSocketAddress getRemoteSocketAddress() {
         if (this.remoteAddress == null) {
             if (this.selectableChannel instanceof SocketChannel) {
@@ -152,7 +140,6 @@ public class NioTCPSession extends AbstractNioSession {
         }
         return this.remoteAddress;
     }
-
 
     /**
      * 阻塞写，采用temp selector强制写入
@@ -164,8 +151,7 @@ public class NioTCPSession extends AbstractNioSession {
      * @throws IOException
      * @throws ClosedChannelException
      */
-    protected final Object blockingWrite(final SelectableChannel channel, final WriteMessage message,
-                                         final WriteMessage writeBuffer) throws IOException, ClosedChannelException {
+    protected final Object blockingWrite(final SelectableChannel channel, final WriteMessage message, final WriteMessage writeBuffer) throws IOException, ClosedChannelException {
         SelectionKey tmpKey = null;
         Selector writeSelector = null;
         int attempts = 0;
@@ -212,7 +198,6 @@ public class NioTCPSession extends AbstractNioSession {
         return message.getMessage();
     }
 
-
     @Override
     protected WriteMessage wrapMessage(final Object msg, final Future<Boolean> writeFuture) {
         final ByteBufferWriteMessage message = new ByteBufferWriteMessage(msg, (FutureImpl<Boolean>) writeFuture);
@@ -221,7 +206,6 @@ public class NioTCPSession extends AbstractNioSession {
         }
         return message;
     }
-
 
     @Override
     protected void readFromBuffer() {
@@ -270,7 +254,6 @@ public class NioTCPSession extends AbstractNioSession {
         }
     }
 
-
     protected final int blockingRead() throws ClosedChannelException, IOException {
         int n = 0;
         final Selector readSelector = SelectorFactory.getSelector();
@@ -307,7 +290,6 @@ public class NioTCPSession extends AbstractNioSession {
         return n;
     }
 
-
     /**
      * 解码并派发消息
      */
@@ -336,11 +318,9 @@ public class NioTCPSession extends AbstractNioSession {
         }
     }
 
-
     public Socket socket() {
         return ((SocketChannel) this.selectableChannel).socket();
     }
-
 
     public ChannelInputStream getInputStream(final Object msg) throws IOException {
         if (this.decoder instanceof ByteBufferCodecFactory.ByteBufferDecoder) {
@@ -351,7 +331,6 @@ public class NioTCPSession extends AbstractNioSession {
         }
     }
 
-
     public ChannelOutputStream getOutputStream() throws IOException {
         if (this.encoder instanceof ByteBufferCodecFactory.ByteBufferEncoder) {
             return new ChannelOutputStream(this, 0, false);
@@ -360,7 +339,6 @@ public class NioTCPSession extends AbstractNioSession {
                     "If you want to use ChannelOutputStream,please set CodecFactory to ByteBufferCodecFactory");
         }
     }
-
 
     public ChannelOutputStream getOutputStream(final int capacity, final boolean direct) throws IOException {
         if (capacity < 0) {
@@ -373,7 +351,6 @@ public class NioTCPSession extends AbstractNioSession {
                     "If you want to use ChannelOutputStream,please set CodecFactory to ByteBufferCodecFactory");
         }
     }
-
 
     @Override
     protected final void closeChannel() throws IOException {
@@ -401,7 +378,6 @@ public class NioTCPSession extends AbstractNioSession {
             this.unregisterSession();
         }
     }
-
 
     @Override
     protected void onIdle0() {

@@ -157,6 +157,32 @@ public interface RemotingController {
 
     // 服务调用
 
+
+    /**
+     * 异步单向发送给指定分组中的一个连接，默认是随机策略
+     *
+     * @param group
+     * @param command
+     */
+    public void sendToGroup(String group, RequestCommand command) throws NotifyRemotingException;
+    /**
+     * 异步发送给指定分组中的一个连接，指定回调监听器RequestCallBackListener，默认策略是随机，默认超时为1秒,
+     * 超过超时时间将返回一个超时应答给回调监听器
+     *
+     * @param group    分组名称
+     * @param command  请求命令
+     * @param listener 响应处理器
+     */
+    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener) throws NotifyRemotingException;
+    /**
+     * 异步发送给指定分组中的一个连接，默认策略是随机，指定超时,超过超时时间将返回一个超时应答给回调监听器
+     *
+     * @param group    分组名称
+     * @param command  请求命令
+     * @param listener 响应处理器
+     */
+    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener, long time, TimeUnit timeunut) throws NotifyRemotingException;
+
     /**
      * 异步发送消息给多个分组，每个分组根据策略选一个连接发送，指定回调处理器和超时时间，超时将返回一个超时应答给回调监听器
      *
@@ -167,7 +193,6 @@ public interface RemotingController {
      * @param args         附件
      */
     public void sendToGroups(Map<String, RequestCommand> groupObjects, MultiGroupCallBackListener listener, long timeout, TimeUnit timeUnit, Object... args) throws NotifyRemotingException;
-
     /**
      * 异步单向发送消息给多个分组
      *
@@ -183,12 +208,54 @@ public interface RemotingController {
     public void sendToAllConnections(RequestCommand command) throws NotifyRemotingException;
 
     /**
-     * 异步单向发送给指定分组中的一个连接，默认是随机策略
+     * 同步调用分组内的所有连接，
+     * 超时响应的连接将放入一个BooleanResponseCommand作为结果并且设置responseStatus为TIMEOUT
+     * ,如果分组内没有连接将返回null
+     *
+     * @param group
+     * @param command
+     * @return
+     * @throws InterruptedException
+     * @throws NotifyRemotingException
+     */
+    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command) throws InterruptedException, NotifyRemotingException;
+    /**
+     * 同步调用分组内的所有连接，
+     * 超时响应的连接将放入一个BooleanResponseCommand作为结果并且设置responseStatus为TIMEOUT
+     * ,如果分组内没有连接将返回null
+     *
+     * @param group
+     * @param command
+     * @return
+     * @throws InterruptedException
+     * @throws NotifyRemotingException
+     */
+    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command, long time, TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException;
+
+    /**
+     * 异步单向发送给指定分组的所有连接：获取group的所有连接对象，向每个连接对象发送命令
      *
      * @param group
      * @param command
      */
-    public void sendToGroup(String group, RequestCommand command) throws NotifyRemotingException;
+    public void sendToGroupAllConnections(String group, RequestCommand command) throws NotifyRemotingException;
+    /**
+     * 异步发送给指定分组的所有连接，默认超时1秒,超过超时时间将返回一个超时应答给回调监听器
+     *
+     * @param group    分组名称
+     * @param command  请求命令
+     * @param listener 响应处理器
+     */
+    public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener) throws NotifyRemotingException;
+    /**
+     * 异步发送给指定分组的所有连接，指定超时时间，超过超时时间将返回一个超时应答给回调监听器
+     *
+     * @param group    分组名称
+     * @param command  请求命令
+     * @param listener 响应处理器
+     */
+    public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
+
 
     /**
      * 从指定FileChannel的position位置开始传输size个字节到指定group的一个socket,
@@ -209,7 +276,6 @@ public interface RemotingController {
      * @throws NotifyRemotingException
      */
     public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size, Integer opaque, SingleRequestCallBackListener listener, long time, TimeUnit unit) throws NotifyRemotingException;
-
     /**
      * 单向传输数据到指定group的某个socket连接，传输需要使用的时间未知，也不可取消
      *
@@ -224,32 +290,6 @@ public interface RemotingController {
      */
     public void transferToGroup(String group, IoBuffer head, IoBuffer tail, FileChannel channel, long position, long size) throws NotifyRemotingException;
 
-    /**
-     * 异步单向发送给指定分组的所有连接
-     *
-     * @param group
-     * @param command
-     */
-    public void sendToGroupAllConnections(String group, RequestCommand command) throws NotifyRemotingException;
-
-    /**
-     * 异步发送给指定分组中的一个连接，指定回调监听器RequestCallBackListener，默认策略是随机，默认超时为1秒,
-     * 超过超时时间将返回一个超时应答给回调监听器
-     *
-     * @param group    分组名称
-     * @param command  请求命令
-     * @param listener 响应处理器
-     */
-    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener) throws NotifyRemotingException;
-
-    /**
-     * 异步发送给指定分组中的一个连接，默认策略是随机，指定超时,超过超时时间将返回一个超时应答给回调监听器
-     *
-     * @param group    分组名称
-     * @param command  请求命令
-     * @param listener 响应处理器
-     */
-    public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener, long time, TimeUnit timeunut) throws NotifyRemotingException;
 
     /**
      * 同步调用分组中的一个连接，默认超时1秒
@@ -261,7 +301,6 @@ public interface RemotingController {
      * @throws TimeoutException
      */
     public ResponseCommand invokeToGroup(String group, RequestCommand command) throws InterruptedException, TimeoutException, NotifyRemotingException;
-
     /**
      * 同步调用分组中的一个连接，指定超时时间
      *
@@ -275,49 +314,6 @@ public interface RemotingController {
      */
     public ResponseCommand invokeToGroup(String group, RequestCommand command, long time, TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException;
 
-    /**
-     * 异步发送给指定分组的所有连接，默认超时1秒,超过超时时间将返回一个超时应答给回调监听器
-     *
-     * @param group    分组名称
-     * @param command  请求命令
-     * @param listener 响应处理器
-     */
-    public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener) throws NotifyRemotingException;
-
-    /**
-     * 同步调用分组内的所有连接，
-     * 超时响应的连接将放入一个BooleanResponseCommand作为结果并且设置responseStatus为TIMEOUT
-     * ,如果分组内没有连接将返回null
-     *
-     * @param group
-     * @param command
-     * @return
-     * @throws InterruptedException
-     * @throws NotifyRemotingException
-     */
-    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command) throws InterruptedException, NotifyRemotingException;
-
-    /**
-     * 同步调用分组内的所有连接，
-     * 超时响应的连接将放入一个BooleanResponseCommand作为结果并且设置responseStatus为TIMEOUT
-     * ,如果分组内没有连接将返回null
-     *
-     * @param group
-     * @param command
-     * @return
-     * @throws InterruptedException
-     * @throws NotifyRemotingException
-     */
-    public Map<Connection, ResponseCommand> invokeToGroupAllConnections(String group, RequestCommand command, long time, TimeUnit timeUnit) throws InterruptedException, NotifyRemotingException;
-
-    /**
-     * 异步发送给指定分组的所有连接，指定超时时间，超过超时时间将返回一个超时应答给回调监听器
-     *
-     * @param group    分组名称
-     * @param command  请求命令
-     * @param listener 响应处理器
-     */
-    public void sendToGroupAllConnections(String group, RequestCommand command, GroupAllConnectionCallBackListener listener, long time, TimeUnit timeUnit) throws NotifyRemotingException;
 
 
 

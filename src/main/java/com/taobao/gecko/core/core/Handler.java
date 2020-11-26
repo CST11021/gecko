@@ -23,13 +23,37 @@ package com.taobao.gecko.core.core;
  */
 public interface Handler {
 
+    /**
+     * 创建会话的时候调用
+     *
+     * @param session
+     */
     void onSessionCreated(Session session);
 
+    /**
+     * 启动会话的时候调用
+     *
+     * @param session
+     */
     void onSessionStarted(Session session);
 
-    void onSessionClosed(Session session);
+    /**
+     * 当建立了连接时会调用该方法
+     *
+     * @param session
+     * @param args
+     */
+    void onSessionConnected(Session session, Object... args);
 
+    /**
+     * 处理会话接收到的消息
+     *
+     * @param session
+     * @param msg
+     */
     void onMessageReceived(Session session, Object msg);
+
+    void onSessionClosed(Session session);
 
     void onMessageSent(Session session, Object msg);
 
@@ -39,6 +63,6 @@ public interface Handler {
 
     void onSessionIdle(Session session);
 
-    void onSessionConnected(Session session, Object... args);
+
 
 }

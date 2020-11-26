@@ -345,6 +345,13 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     public void onAccept(final SelectionKey sk) throws IOException {
         this.statistics.statisticsAccept();
     }
+
+    /**
+     * 当客户端与服务端建立连接后，会调用该方法
+     *
+     * @param key
+     * @throws IOException
+     */
     public void onConnect(final SelectionKey key) throws IOException {
         throw new UnsupportedOperationException();
     }
@@ -380,6 +387,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
+    /**
+     * 遍历Controller生命周期监听器，为监听指定的Controller做准备
+     */
     public void notifyReady() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
             stateListener.onReady(this);

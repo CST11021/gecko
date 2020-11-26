@@ -15,16 +15,12 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.taobao.gecko.core.util.MBeanUtils;
 import com.taobao.gecko.service.Connection;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -34,24 +30,35 @@ import com.taobao.gecko.service.Connection;
  * @since 1.0, 2009-12-15 下午02:38:09
  */
 public class GroupManager implements GroupManagerMBean {
-    private final ConcurrentHashMap<String/* group */, List<Connection>> group2ConnectionMap = new ConcurrentHashMap<String, List<Connection>>();
+
+    /** 保存group到连接对象的映射关系：Map<group,  List<Connection>> */
+    private final ConcurrentHashMap<String, List<Connection>> group2ConnectionMap = new ConcurrentHashMap<String, List<Connection>>();
 
 
     public GroupManager() {
         MBeanUtils.registerMBeanWithIdPrefix(this, null);
     }
 
+    /**
+     * 将连接对象添加到指定的分组
+     *
+     * @param group
+     * @param connection
+     * @return
+     */
     public boolean addConnection(final String group, final Connection connection) {
         synchronized (group.intern()) {
             List<Connection> connections = this.group2ConnectionMap.get(group);
             if (connections == null) {
                 // 采用copyOnWrite主要是考虑遍历connection的操作会多一些，在发送消息的时候
                 connections = new CopyOnWriteArrayList<Connection>();
+                // 放入新的value返回老的value
                 final List<Connection> oldList = this.group2ConnectionMap.putIfAbsent(group, connections);
                 if (oldList != null) {
                     connections = oldList;
                 }
             }
+
             // 已经包含，即认为添加成功
             if (connections.contains(connection)) {
                 return true;
@@ -116,6 +123,12 @@ public class GroupManager implements GroupManagerMBean {
         return this.group2ConnectionMap.keySet();
     }
 
+    /**
+     * 根据group获取所有可用的连接对象
+     *
+     * @param group
+     * @return
+     */
     public List<Connection> getConnectionsByGroup(final String group) {
         return this.group2ConnectionMap.get(group);
     }

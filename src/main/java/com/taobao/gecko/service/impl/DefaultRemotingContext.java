@@ -15,15 +15,6 @@
  */
 package com.taobao.gecko.service.impl;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Semaphore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.taobao.gecko.core.command.CommandFactory;
 import com.taobao.gecko.core.command.Constants;
 import com.taobao.gecko.core.command.RequestCommand;
@@ -34,6 +25,14 @@ import com.taobao.gecko.service.ConnectionLifeCycleListener;
 import com.taobao.gecko.service.RemotingContext;
 import com.taobao.gecko.service.RequestProcessor;
 import com.taobao.gecko.service.config.BaseConfig;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -147,10 +146,22 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         return this.groupManager.getGroupSet();
     }
 
+    /**
+     * 将连接添加到所属的分组
+     *
+     * @param group
+     * @param connection
+     * @return
+     */
     public boolean addConnectionToGroup(final String group, final Connection connection) {
         return this.groupManager.addConnection(group, connection);
     }
 
+    /**
+     * 将连接添加到默认的分组
+     *
+     * @param connection
+     */
     public void addConnection(final Connection connection) {
         this.groupManager.addConnection(Constants.DEFAULT_GROUP, connection);
     }
@@ -159,6 +170,12 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         this.groupManager.removeConnection(Constants.DEFAULT_GROUP, connection);
     }
 
+    /**
+     * 根据group获取所有可用的连接对象
+     *
+     * @param group
+     * @return
+     */
     public List<Connection> getConnectionsByGroup(final String group) {
         return this.groupManager.getConnectionsByGroup(group);
     }

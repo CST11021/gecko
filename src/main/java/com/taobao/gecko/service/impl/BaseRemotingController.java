@@ -261,21 +261,6 @@ public abstract class BaseRemotingController implements RemotingController {
 
     // 服务调用
 
-    public void sendToAllConnections(final RequestCommand command) throws NotifyRemotingException {
-        if (command == null) {
-            throw new NotifyRemotingException("Null command");
-        }
-        final List<Connection> connnections =
-                this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
-        if (connnections != null) {
-            for (final Connection conn : connnections) {
-                if (conn.isConnected()) {
-                    conn.send(command);
-                }
-            }
-        }
-
-    }
     public void sendToGroup(final String group, final RequestCommand command) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -283,31 +268,11 @@ public abstract class BaseRemotingController implements RemotingController {
         if (command == null) {
             throw new NotifyRemotingException("Null command");
         }
-        final Connection conn =
-                this.selectConnectionForGroup(group, this.connectionSelector, command);
+        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, command);
         if (conn != null) {
             conn.send(command);
         } else {
             throw new NotifyRemotingException("分组" + group + "没有可用的连接");
-        }
-    }
-    /**
-     * 根据策略从分组中的连接选择一个连接对象
-     *
-     * @param group
-     * @param connectionSelector 连接选择器
-     * @return
-     */
-    public Connection selectConnectionForGroup(final String group, final ConnectionSelector connectionSelector, final RequestCommand request) throws NotifyRemotingException {
-        if (group == null) {
-            throw new NotifyRemotingException("Null group");
-        }
-
-        final List<Connection> connnections = this.remotingContext.getConnectionsByGroup(group);
-        if (connnections != null) {
-            return connectionSelector.select(group, request, connnections);
-        } else {
-            return null;
         }
     }
     public void sendToGroup(final String group, final RequestCommand command, final SingleRequestCallBackListener listener) throws NotifyRemotingException {
@@ -336,9 +301,7 @@ public abstract class BaseRemotingController implements RemotingController {
                 if (executor != null) {
                     executor.execute(new Runnable() {
                         public void run() {
-                            listener.onResponse(BaseRemotingController.this
-                                            .createNoConnectionResponseCommand(request.getRequestHeader()),
-                                    null);
+                            listener.onResponse(BaseRemotingController.this.createNoConnectionResponseCommand(request.getRequestHeader()), null);
                         }
                     });
                 } else {
@@ -350,6 +313,32 @@ public abstract class BaseRemotingController implements RemotingController {
         }
 
     }
+
+    public void sendToAllConnections(final RequestCommand command) throws NotifyRemotingException {
+        if (command == null) {
+            throw new NotifyRemotingException("Null command");
+        }
+        final List<Connection> connnections =
+                this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
+        if (connnections != null) {
+            for (final Connection conn : connnections) {
+                if (conn.isConnected()) {
+                    conn.send(command);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 同步调用分组中的一个连接，默认超时1秒
+     *
+     * @param group   分组名称
+     * @param command 请求命令
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
     public ResponseCommand invokeToGroup(final String group, final RequestCommand command) throws InterruptedException, TimeoutException, NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -366,6 +355,17 @@ public abstract class BaseRemotingController implements RemotingController {
             return this.createNoConnectionResponseCommand(command.getRequestHeader());
         }
     }
+    /**
+     * 同步调用分组中的一个连接，指定超时时间
+     *
+     * @param group    分组名称
+     * @param command  请求命令
+     * @param time     超时时间
+     * @param timeUnit 时间单位
+     * @return
+     * @throws InterruptedException
+     * @throws TimeoutException
+     */
     public ResponseCommand invokeToGroup(final String group, final RequestCommand command, final long time, final TimeUnit timeUnit) throws InterruptedException, TimeoutException, NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -376,14 +376,22 @@ public abstract class BaseRemotingController implements RemotingController {
         if (timeUnit == null) {
             throw new NotifyRemotingException("Null TimeUnit");
         }
-        final Connection conn =
-                this.selectConnectionForGroup(group, this.connectionSelector, command);
+
+        // 根据策略从分组中的连接选择一个连接对象
+        final Connection conn = this.selectConnectionForGroup(group, this.connectionSelector, command);
         if (conn != null) {
             return conn.invoke(command, time, timeUnit);
         } else {
             return this.createNoConnectionResponseCommand(command.getRequestHeader());
         }
     }
+    /**
+     * 获取group的所有连接对象，向每个连接对象发送命令
+     *
+     * @param group
+     * @param command
+     * @throws NotifyRemotingException
+     */
     public void sendToGroupAllConnections(final String group, final RequestCommand command) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -391,6 +399,8 @@ public abstract class BaseRemotingController implements RemotingController {
         if (command == null) {
             throw new NotifyRemotingException("Null command");
         }
+
+        // 获取所有的连接对象
         final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
         if (connections != null) {
             for (final Connection conn : connections) {
@@ -414,17 +424,14 @@ public abstract class BaseRemotingController implements RemotingController {
 
         if (connections != null && connections.size() > 0) {
             final CountDownLatch countDownLatch = new CountDownLatch(connections.size());
-            final ConcurrentHashMap<Connection, ResponseCommand> resultMap =
-                    new ConcurrentHashMap<Connection, ResponseCommand>();
+            final ConcurrentHashMap<Connection, ResponseCommand> resultMap = new ConcurrentHashMap<Connection, ResponseCommand>();
             final long timeoutInMillis = TimeUnit.MILLISECONDS.convert(timeout, timeUnit);
             // 创建callBack
             final GroupAllConnectionRequestCallBack requestCallBack =
-                    new GroupAllConnectionRequestCallBack(listener, countDownLatch,
-                            timeoutInMillis, System.currentTimeMillis(), resultMap);
+                    new GroupAllConnectionRequestCallBack(listener, countDownLatch, timeoutInMillis, System.currentTimeMillis(), resultMap);
             // 创建定时器引用
-            final TimerRef timerRef =
-                    new TimerRef(timeoutInMillis, new GroupAllConnectionCallBackRunner(
-                            requestCallBack, resultMap, connections, command.getRequestHeader()));
+            final TimerRef timerRef = new TimerRef(timeoutInMillis,
+                    new GroupAllConnectionCallBackRunner(requestCallBack, resultMap, connections, command.getRequestHeader()));
             requestCallBack.setTimerRef(timerRef);
 
             for (final Connection conn : connections) {
@@ -523,6 +530,7 @@ public abstract class BaseRemotingController implements RemotingController {
         this.sendToGroupAllConnections(group, command, listener, this.opTimeout,
                 TimeUnit.MILLISECONDS);
     }
+
     public void sendToGroups(final Map<String, RequestCommand> groupObjects, final MultiGroupCallBackListener listener, final long timeout, final TimeUnit timeUnit, final Object... args) throws NotifyRemotingException {
         if (groupObjects == null || groupObjects.size() == 0) {
             throw new NotifyRemotingException("groupObject为空");
@@ -636,7 +644,25 @@ public abstract class BaseRemotingController implements RemotingController {
 
 
 
+    /**
+     * 根据策略从分组中的连接选择一个连接对象
+     *
+     * @param group
+     * @param connectionSelector 连接选择器
+     * @return
+     */
+    public Connection selectConnectionForGroup(final String group, final ConnectionSelector connectionSelector, final RequestCommand request) throws NotifyRemotingException {
+        if (group == null) {
+            throw new NotifyRemotingException("Null group");
+        }
 
+        final List<Connection> connnections = this.remotingContext.getConnectionsByGroup(group);
+        if (connnections != null) {
+            return connectionSelector.select(group, request, connnections);
+        } else {
+            return null;
+        }
+    }
     public DefaultRemotingContext getRemotingContext() {
         return this.remotingContext;
     }
@@ -647,6 +673,12 @@ public abstract class BaseRemotingController implements RemotingController {
         this.connectionSelector = selector;
 
     }
+    /**
+     * 获取当前客户端与对应group已建立连接的连接数
+     *
+     * @param group
+     * @return
+     */
     public int getConnectionCount(final String group) {
         final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
         return connections == null ? 0 : connections.size();

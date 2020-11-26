@@ -23,8 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
- * Simple {@link Future} implementation, which uses synchronization
- * {@link Object} to synchronize during the lifecycle.
+ * 简单的{@link Future}实现，它使用同步{@link Object}在生命周期内进行同步。
  *
  * @author Alexey Stashok
  * @see Future
@@ -42,30 +41,24 @@ public class FutureImpl<R> implements Future<R> {
 
     protected Object[] args;
 
-
-    public Object[] getArgs() {
-        return this.args;
-    }
-
-
     public FutureImpl() {
         this(new Object());
     }
-
-
     public FutureImpl(Object... args) {
         this();
         this.args = args;
     }
-
-
     public FutureImpl(Object sync) {
         this.sync = sync;
     }
 
 
+    public Object[] getArgs() {
+        return this.args;
+    }
+
     /**
-     * Get current result value without any blocking.
+     * 获取当前结果值而没有任何阻塞
      *
      * @return current result value without any blocking.
      */
@@ -75,9 +68,8 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
-
     /**
-     * Set the result value and notify about operation completion.
+     * 设置结果值并通知操作完成
      *
      * @param result the result value
      */
@@ -88,10 +80,6 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public boolean cancel(boolean mayInterruptIfRunning) {
         synchronized (this.sync) {
             this.isCancelled = true;
@@ -100,30 +88,18 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public boolean isCancelled() {
         synchronized (this.sync) {
             return this.isCancelled;
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public boolean isDone() {
         synchronized (this.sync) {
             return this.isDone;
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public R get() throws InterruptedException, ExecutionException {
         synchronized (this.sync) {
             for (; ; ) {
@@ -142,10 +118,6 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
     public R get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         long startTime = System.currentTimeMillis();
         long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);
@@ -168,10 +140,8 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
-
     /**
-     * Notify about the failure, occured during asynchronous operation
-     * execution.
+     * Notify about the failure, occured during asynchronous operation execution.
      *
      * @param failure
      */
@@ -181,7 +151,6 @@ public class FutureImpl<R> implements Future<R> {
             this.notifyHaveResult();
         }
     }
-
 
     /**
      * Notify blocked listeners threads about operation completion.

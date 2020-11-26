@@ -41,18 +41,51 @@ import java.nio.channels.Selector;
  */
 public interface SelectionKeyHandler {
 
+    /**
+     * 表示服务端与客户端建立的连接时调用
+     *
+     * @param sk
+     * @throws IOException
+     */
     public void onAccept(SelectionKey sk) throws IOException;
 
+    /**
+     * 表示客户端与服务端建立的连接时调用
+     *
+     * @param key
+     * @throws IOException
+     */
+    public void onConnect(SelectionKey key) throws IOException;
+
+    /**
+     * 当通道是可写的时候调用
+     *
+     * @param key
+     */
     public void onWrite(SelectionKey key);
 
+    /**
+     * 当通道是可读取的时候调用
+     *
+     * @param key
+     */
     public void onRead(SelectionKey key);
 
     public void onTimeout(TimerRef timerRef);
 
-    public void onConnect(SelectionKey key) throws IOException;
-
+    /**
+     * 关闭SelectionKey时调用
+     *
+     * @param key
+     */
     public void closeSelectionKey(SelectionKey key);
 
+    /**
+     * 关闭Channel时调用
+     *
+     * @param selector
+     * @throws IOException
+     */
     public void closeChannel(Selector selector) throws IOException;
 
 }

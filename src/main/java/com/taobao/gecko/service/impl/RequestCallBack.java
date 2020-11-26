@@ -21,7 +21,7 @@ import com.taobao.gecko.service.Connection;
 
 
 /**
- * 请求回调的公共接口
+ * 收到响应时的回调的接口
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午01:13:41

@@ -77,7 +77,6 @@ public class SelectorManager {
         this.dividend = this.reactorSet.length - 1;
     }
 
-
     public synchronized void start() {
         if (this.started) {
             return;
@@ -98,39 +97,18 @@ public class SelectorManager {
         }
     }
 
-
-
-    public int getSelectorCount() {
-        return this.reactorSet == null ? 0 : this.reactorSet.length;
-    }
-
-
-
     /**
-     * 仅用于测试
+     * 将channel注册到selector
      *
-     * @param index
-     * @return
-     */
-    Reactor getReactorByIndex(final int index) {
-        if (index < 0 || index > this.reactorSet.length - 1) {
-            throw new ArrayIndexOutOfBoundsException();
-        }
-        return this.reactorSet[index];
-    }
-
-
-
-    /**
-     * 注册channel
-     *
-     * @param channel
-     * @param ops
+     * @param channel       可选择的通道
+     * @param ops           注册的事件类型
      * @param attachment
      * @return
      */
     public final Reactor registerChannel(final SelectableChannel channel, final int ops, final Object attachment) {
+        // 等待Reactor准备好
         this.awaitReady();
+
         int index = 0;
         // Accept单独一个Reactor
         if (ops == SelectionKey.OP_ACCEPT || ops == SelectionKey.OP_CONNECT) {
@@ -142,19 +120,24 @@ public class SelectorManager {
                 index = 0;
             }
         }
+
         final Reactor reactor = this.reactorSet[index];
+        // 将channel注册到selector
         reactor.registerChannel(channel, ops, attachment);
         return reactor;
-
     }
 
+    /**
+     * 等待Reactor准备好
+     */
     void awaitReady() {
         synchronized (this) {
             while (!this.started || this.reactorReadyCount != this.reactorSet.length) {
                 try {
                     this.wait(1000);
                 } catch (final InterruptedException e) {
-                    Thread.currentThread().interrupt();// reset interrupt status
+                    // reset interrupt status
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -180,9 +163,6 @@ public class SelectorManager {
      * @param event
      */
     public final void registerSession(final Session session, final EventType event) {
-        // if (session.isClosed() && event != EventType.UNREGISTER) {
-        // return;
-        // }
         final Reactor reactor = this.getReactorFromSession(session);
         reactor.registerSession(session, event);
     }
@@ -230,16 +210,36 @@ public class SelectorManager {
         return this.controller;
     }
 
+    /**
+     * Reactor线程即将开始指定前调用该方法，让其他相关组件做好准备
+     */
     synchronized void notifyReady() {
         this.reactorReadyCount++;
         if (this.reactorReadyCount == this.reactorSet.length) {
+            // 通知所有的Controller生命周期监听器准备好
             this.controller.notifyReady();
             this.notifyAll();
         }
-
     }
 
     public final boolean isStarted() {
         return this.started;
+    }
+
+
+    public int getSelectorCount() {
+        return this.reactorSet == null ? 0 : this.reactorSet.length;
+    }
+    /**
+     * 仅用于测试
+     *
+     * @param index
+     * @return
+     */
+    Reactor getReactorByIndex(final int index) {
+        if (index < 0 || index > this.reactorSet.length - 1) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        return this.reactorSet[index];
     }
 }
