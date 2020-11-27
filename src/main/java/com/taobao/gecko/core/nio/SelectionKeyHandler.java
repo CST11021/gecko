@@ -71,6 +71,11 @@ public interface SelectionKeyHandler {
      */
     public void onRead(SelectionKey key);
 
+    /**
+     * 执行TimerRef#runnable线程
+     *
+     * @param timerRef
+     */
     public void onTimeout(TimerRef timerRef);
 
     /**

@@ -166,7 +166,7 @@ public class TimerRefQueue {
     }
 
     /**
-     * 遍历并访问链表中的每个timerRef
+     * 遍历并处理链表中的每个timerRef，处理完timerRef后，从双向链表移除该timerRef实例
      *
      * @param visitor
      */
@@ -186,6 +186,7 @@ public class TimerRefQueue {
         } finally {
             this.lock.unlock();
         }
+
         if (snapshot != null) {
             for (TimerRef timerRef : snapshot) {
                 if (timerRef != null) {
@@ -195,5 +196,6 @@ public class TimerRefQueue {
                 }
             }
         }
+
     }
 }

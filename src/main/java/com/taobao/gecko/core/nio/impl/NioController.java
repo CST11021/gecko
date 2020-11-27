@@ -122,15 +122,17 @@ public abstract class NioController extends AbstractController implements Select
     }
 
     /**
-     * 处理超时事件
+     * 执行TimerRef#runnable线程
      *
      * @param timerRef
      */
     public void onTimeout(final TimerRef timerRef) {
         if (!timerRef.isCanceled()) {
             if (this.readEventDispatcher == null) {
+                // 执行TimerRef#runnable线程
                 timerRef.getRunnable().run();
             } else {
+                // 通过线程池来执行TimerRef#runnable
                 this.readEventDispatcher.dispatch(timerRef.getRunnable());
             }
         }

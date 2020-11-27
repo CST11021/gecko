@@ -30,13 +30,15 @@ import java.util.concurrent.TimeoutException;
  */
 public class FutureImpl<R> implements Future<R> {
 
+    /** 用于阻塞线程，直到返回异步结果 */
     private final Object sync;
-
+    /** 表示该future是否完成（即异步的收到了异步的响应结果） */
     private boolean isDone;
-
+    /** 标识该future是否取消 */
     private boolean isCancelled;
+    /**  */
     private Throwable failure;
-
+    /** 表示异步的响应结果 */
     protected R result;
 
     protected Object[] args;
@@ -80,6 +82,12 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
+    /**
+     * 取消当前异步请求
+     *
+     * @param mayInterruptIfRunning
+     * @return
+     */
     public boolean cancel(boolean mayInterruptIfRunning) {
         synchronized (this.sync) {
             this.isCancelled = true;
@@ -88,18 +96,35 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
+    /**
+     * 返回当前异步请求是否被取消
+     *
+     * @return
+     */
     public boolean isCancelled() {
         synchronized (this.sync) {
             return this.isCancelled;
         }
     }
 
+    /**
+     * 判断当前异步请求是否完成
+     *
+     * @return
+     */
     public boolean isDone() {
         synchronized (this.sync) {
             return this.isDone;
         }
     }
 
+    /**
+     * 一直轮询，直到返回结果（session）
+     *
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
     public R get() throws InterruptedException, ExecutionException {
         synchronized (this.sync) {
             for (; ; ) {
@@ -118,6 +143,16 @@ public class FutureImpl<R> implements Future<R> {
         }
     }
 
+    /**
+     * 一直轮询，直到返回结果（session）或者超时
+     *
+     * @param timeout
+     * @param unit
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
     public R get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         long startTime = System.currentTimeMillis();
         long timeoutMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);

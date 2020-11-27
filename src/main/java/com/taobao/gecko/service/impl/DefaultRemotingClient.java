@@ -118,6 +118,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     public void connect(String url, String targetGroup) throws NotifyRemotingException {
         this.connect(url, targetGroup, 1);
     }
+    // 核心方法
     /**
      * 根据URL连接服务端，如果连接失败将转入重连模式，但是连接加入的分组将为target group。
      *
@@ -168,6 +169,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
                 final CheckConnectFutureRunner runnable = new CheckConnectFutureRunner(future, remoteAddress, groupSet, this);
 
                 timerRef.setRunnable(runnable);
+                // 将TimerRef实例添加Reactor#timerQueue的双向队列中
                 this.insertTimer(timerRef);
             } catch (final Exception e) {
                 log.error("连接" + RemotingUtils.getAddrString(remoteAddress) + "失败,启动重连任务", e);
@@ -273,7 +275,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     }
 
     /**
-     * 判断url对应的连接是否可用，注意，如果设置了连接池，那么如果连接池中任一连接可用，即认为可用
+     * 判断group是否存在可用的连接对象，注意，如果设置了连接池，那么如果连接池中任一连接可用，即认为可用
      *
      * @param group 服务端的url，形如schema://host:port的字符串
      * @return
@@ -283,10 +285,12 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         if (this.remotingContext == null) {
             return false;
         }
+
         final List<Connection> connections = this.remotingContext.getConnectionsByGroup(group);
         if (connections == null || connections.size() == 0) {
             return false;
         }
+
         for (final Connection conn : connections) {
             if (conn.isConnected()) {
                 return true;
@@ -459,7 +463,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
 
 
     /**
-     * 用于检测连接建立是否成功
+     * 用于检测连接建立是否成功：从future获取会话对象，如果10毫秒内还客户端还没有与服务创建连接，则将任务放到重连管理器中
      *
      * @author boyan
      * @since 1.0, 2009-12-23 下午01:49:41
@@ -483,7 +487,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         }
 
         /**
-         * 从future获取会话，如果10毫秒内还未客户端还没有与服务创建连接，则将任务放到重连管理中
+         * 从future获取会话，如果10毫秒内还客户端还没有与服务创建连接，则将任务放到重连管理器中
          */
         @Override
         public void run() {

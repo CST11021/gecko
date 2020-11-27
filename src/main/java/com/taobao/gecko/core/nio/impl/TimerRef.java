@@ -21,19 +21,24 @@ package com.taobao.gecko.core.nio.impl;
  * @author dennis
  */
 public class TimerRef implements Comparable<TimerRef> {
-    long timeoutTimestamp;
     /** 连接超时时间 */
     final long timeout;
-    /** 用于检测连接建立是否成功的线程任务 */
+    /** 表示当前TimerRef的添加到链表的时间，可以近似理解为TimerRef的创建时间 */
+    volatile long addTimestamp;
+    /** 表示连接超时的时间搓：timeoutTimestamp = addTimestamp + timeout */
+    long timeoutTimestamp;
+    /** 对应DefaultRemotingClient.CheckConnectFutureRunner 的实例，用于检测连接建立是否成功的线程任务 */
     volatile Runnable runnable;
+
+    /** 用于标记该TimerRef是否取消，如果取消了，则后续就不再处理该TimerRef */
     volatile boolean canceled;
+    /** 表示该TimerRef实例被添加到指定的双向队列的引用 */
     volatile TimerRefQueue queue;
     /** TimerRef是一个双向链表的结构，next表示下一个TimerRef */
     TimerRef next;
     /** TimerRef是一个双向链表的结构，next表示上一个TimerRef */
     TimerRef prev;
-    /** 表示当前TimerRef的添加到链表的时间 */
-    volatile long addTimestamp;
+
 
     public TimerRef(long timeout, Runnable runnable) {
         this.timeout = timeout;

@@ -686,6 +686,12 @@ public abstract class BaseRemotingController implements RemotingController {
     public Set<String> getGroupSet() {
         return this.remotingContext.getGroupSet();
     }
+
+    /**
+     * 将TimerRef实例添加Reactor#timerQueue的双向队列中
+     *
+     * @param timerRef
+     */
     public void insertTimer(final TimerRef timerRef) {
         if (timerRef == null) {
             throw new IllegalArgumentException("无效的timerRef,不能为null");

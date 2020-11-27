@@ -32,11 +32,11 @@ public class ClientConfig extends BaseConfig {
         this.setMaxScheduleWrittenBytes(Runtime.getRuntime().maxMemory() / 10);
     }
 
-    /** Max重试以重新连接。如果小于或等于零，则表示unlimit，默认为Unlimit */
+    /** 表示客户端的最大重连次数，如果小于或等于零，则表示unlimit，默认为Unlimit */
     private int maxReconnectTimes = -1;
-    /** 连接超时，单位毫秒，这里为80秒 */
+    /** 连接超时时间，单位毫秒，这里为80秒 */
     private long connectTimeout = 80000L;
-    /** 重连间隔，单位毫秒 */
+    /** 重连间隔，单位毫秒，这里是2秒 */
     private long healConnectionInterval = 2000L;
     /** 重连管理器的连接池大小 */
     private int healConnectionExecutorPoolSize = 1;

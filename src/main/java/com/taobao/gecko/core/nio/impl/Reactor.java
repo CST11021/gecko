@@ -50,25 +50,31 @@ public final class Reactor extends Thread {
     private static final Log log = LogFactory.getLog(Reactor.class);
 
     /**
-     * 定时器队列访问器
+     * 用于处理#timerQueue队列中的每个TimerRef实例
      *
      * @author boyan
      * @Date 2010-5-20
      */
     private final class TimerQueueVisitor implements TimerRefQueue.TimerQueueVisitor {
-        private final long now;
 
+        private final long now;
 
         private TimerQueueVisitor(final long now) {
             this.now = now;
         }
 
-
+        /**
+         * 处理TimerRef实例
+         *
+         * @param timerRef
+         * @return
+         */
         public boolean visit(final TimerRef timerRef) {
             if (!timerRef.isCanceled()) {
                 // 已经超时，马上处理
                 if (timerRef.getTimeoutTimestamp() < this.now) {
                     Reactor.this.timerQueue.remove(timerRef);
+                    // 执行TimerRef#runnable线程
                     Reactor.this.controller.onTimeout(timerRef);
                 } else if (this.now - timerRef.addTimestamp >= TIMEOUT_THRESOLD) {
                     // 超过阀值，搬迁到优先队列
@@ -113,14 +119,11 @@ public final class Reactor extends Thread {
 
     /** NIO中用于监听通道事件的选择器 */
     private volatile Selector selector;
-
-
-
     private final Configuration configuration;
     private final AtomicBoolean wakenUp = new AtomicBoolean(false);
     /** 注册的事件列表：通道注册到selector和session注册都会将任务存在该队列中 */
     private final Queue<Object[]> register = new LinkedTransferQueue<Object[]>();
-    /** 用于存放TimerRef对象的队列 */
+    /** 用于存放TimerRef的双向队列 */
     private final TimerRefQueue timerQueue = new TimerRefQueue();
     /**
      * 记录cancel的key数目，这里本当用AtomicInteger，不过我们不追求完全精确的控制，只是一个预防手段
@@ -130,9 +133,7 @@ public final class Reactor extends Thread {
     // cancel keys的个数阀值，超过这个数值调用一次selectNow一次性清除
     static final int CLEANUP_INTERVAL = 256;
 
-    /**
-     * 超时时间的二叉堆
-     */
+    /** 超时时间的二叉堆 */
     private final PriorityQueue<TimerRef> timerHeap = new PriorityQueue<TimerRef>();
     /**
      * 时间缓存
@@ -285,7 +286,7 @@ public final class Reactor extends Thread {
     }
 
     /**
-     * 添加TimerRef
+     * 将TimerRef实例添加#timerQueue双向队列中
      *
      * @param timerRef
      */
@@ -295,6 +296,7 @@ public final class Reactor extends Thread {
             final long timestamp = now + timerRef.getTimeout();
             timerRef.setTimeoutTimestamp(timestamp);
             timerRef.addTimestamp = now;
+            // 将timerRef添加到双向队列中
             this.timerQueue.add(timerRef);
         }
     }
@@ -420,15 +422,16 @@ public final class Reactor extends Thread {
         this.wakeup();
     }
 
+
     final void beforeSelect() throws IOException {
         this.controller.checkStatisticsForRestart();
         // 消费注册表中的元素
         this.processRegister();
+        // 依次处理链表中的每个TimerRef，处理完timerRef后，从双向链表移除该timerRef实例
         this.processMoveTimer();
+        // 从selector移除哪些取消了的key
         this.clearCancelKeys();
     }
-
-
 
     /**
      * wakeup this.selector
@@ -469,14 +472,6 @@ public final class Reactor extends Thread {
         }
     }
 
-
-
-
-
-
-
-
-
     /**
      * 取最近的超时时间的时间
      *
@@ -510,11 +505,12 @@ public final class Reactor extends Thread {
                     this.timerHeap.poll();
                     continue;
                 }
+
                 // 没有超时，break掉
                 if (timerRef.getTimeoutTimestamp() > now) {
                     break;
                 }
-                // 移除并处理
+                // 执行TimerRef#runnable线程
                 this.controller.onTimeout(this.timerHeap.poll());
             }
         }
@@ -540,6 +536,11 @@ public final class Reactor extends Thread {
         return selectedKeys;
     }
 
+    /**
+     * 从selector移除哪些取消了的key
+     *
+     * @throws IOException
+     */
     private void clearCancelKeys() throws IOException {
         if (this.cancelledKeys > CLEANUP_INTERVAL) {
             final Selector selector = this.selector;
@@ -679,12 +680,15 @@ public final class Reactor extends Thread {
         return Thread.currentThread() == this;
     }
 
+    /**
+     * 依次处理链表中的每个TimerRef，处理完timerRef后，从双向链表移除该timerRef实例
+     */
     private void processMoveTimer() {
         final long now = this.getTime();
         // 距离上一次检测时间超过1秒
         if (now - this.lastMoveTimestamp >= TIMEOUT_THRESOLD && !this.timerQueue.isEmpty()) {
             this.lastMoveTimestamp = now;
-            // 遍历并访问链表中的每个TimerRef
+            // 遍历并访问链表中的每个TimerRef，处理完timerRef后，从双向链表移除该timerRef实例
             this.timerQueue.iterateQueue(new TimerQueueVisitor(now));
         }
     }

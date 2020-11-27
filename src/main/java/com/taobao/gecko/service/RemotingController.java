@@ -327,8 +327,9 @@ public interface RemotingController {
      */
     public void setConnectionSelector(ConnectionSelector selector);
     /**
-     * 添加一个定时器
+     * 将TimerRef实例添加Reactor#timerQueue的双向队列中
      *
+     * @param timerRef
      */
     public void insertTimer(TimerRef timerRef);
 

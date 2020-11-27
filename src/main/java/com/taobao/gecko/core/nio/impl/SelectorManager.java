@@ -194,15 +194,17 @@ public class SelectorManager {
      */
     public final void insertTimer(final Session session, final TimerRef timerRef) {
         final Reactor reactor = this.getReactorFromSession(session);
+        // 将TimerRef实例添加Reactor#timerQueue的双向队列中
         reactor.insertTimer(timerRef);
     }
 
     /**
-     * 插入定时器并返回当前时间，随机选择一个reactor
+     * 随机选择一个Reactor实例，并将TimerRef实例添加Reactor#timerQueue的双向队列中
      *
      * @param timerRef
      */
     public final void insertTimer(final TimerRef timerRef) {
+        // 将TimerRef实例添加Reactor#timerQueue的双向队列中
         this.nextReactor().insertTimer(timerRef);
     }
 
