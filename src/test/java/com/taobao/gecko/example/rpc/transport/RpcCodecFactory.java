@@ -28,8 +28,8 @@ import com.taobao.gecko.example.rpc.command.RpcResponse;
  */
 public class RpcCodecFactory implements CodecFactory {
 
-    static final byte REQ_MAGIC = (byte) 0x70;
-    static final byte RESP_MAGIC = (byte) 0x71;
+    public static final byte REQ_MAGIC = (byte) 0x70;
+    public static final byte RESP_MAGIC = (byte) 0x71;
 
     static final class RpcDecoder implements Decoder {
 
@@ -60,7 +60,7 @@ public class RpcCodecFactory implements CodecFactory {
                 return null;
             }
 
-            // 2、如果会话属性没有标记当前的消息类型，则根据缓冲区中的magic判断是请求对象还是响应对象
+            // 2、如果会话属性没有标记当前的消息类型，则根据缓冲区中的第一个字节判断是请求对象还是响应对象
             byte magic = buff.get();
             if (magic == REQ_MAGIC) {
                 command = new RpcRequest();

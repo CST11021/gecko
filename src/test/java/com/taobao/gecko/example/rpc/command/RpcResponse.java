@@ -19,6 +19,7 @@ import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
+import com.taobao.gecko.example.rpc.transport.RpcCodecFactory;
 import com.taobao.gecko.service.notify.ResponseStatusCode;
 
 import java.io.*;
@@ -132,7 +133,7 @@ public class RpcResponse implements ResponseCommand, RpcCommand, BooleanAckComma
         }
 
         final IoBuffer buffer = IoBuffer.allocate(1 + 2 + 4 + 4 + resultData.length);
-        buffer.put((byte) 0x71);
+        buffer.put(RpcCodecFactory.RESP_MAGIC);
         buffer.putInt(this.opaque);
         buffer.putShort(ResponseStatusCode.getValue(this.responseStatus));
         buffer.putInt(resultData.length);

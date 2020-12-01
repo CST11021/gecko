@@ -19,6 +19,7 @@ import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.command.CommandHeader;
 import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.util.OpaqueGenerator;
+import com.taobao.gecko.example.rpc.transport.RpcCodecFactory;
 
 import java.io.*;
 
@@ -74,7 +75,7 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
         final IoBuffer buffer =
                 IoBuffer.allocate(1 + 4 + 4 + this.beanName.length() + 4 + this.methodName.length() + 4
                         + (argumentsData != null ? 4 : 0) + (argumentsData != null ? argumentsData.length : 0));
-        buffer.put((byte) 0x70);
+        buffer.put(RpcCodecFactory.REQ_MAGIC);
         buffer.putInt(this.opaque);
         buffer.putInt(this.beanName.length());
         buffer.put(this.beanName.getBytes());
