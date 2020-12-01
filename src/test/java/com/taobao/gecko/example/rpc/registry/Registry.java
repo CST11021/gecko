@@ -13,28 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.taobao.gecko.example.rpc.command;
-
-import com.taobao.gecko.core.buffer.IoBuffer;
+package com.taobao.gecko.example.rpc.registry;
 
 /**
- * Rpc对应的编解码接口
+ * 服务查找器
+ *
+ * @author boyan
+ * @Date 2011-2-17
  */
-public interface RpcCommand {
+public interface Registry {
 
     /**
-     * 将对象进行编码，转为IoBuffer对象
+     * 根据服务名获取服务实现
      *
+     * @param name
      * @return
      */
-    IoBuffer encode();
-
-    /**
-     * 将对象进行解码
-     *
-     * @param buffer
-     * @return
-     */
-    boolean decode(IoBuffer buffer);
+    Object findServer(String name);
 
 }

@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.taobao.gecko.example.rpc.server;
+package com.taobao.gecko.example.rpc;
 
-/**
- * Bean查找器
- *
- * @author boyan
- * @Date 2011-2-17
- */
-public interface BeanLocator {
+public class RpcRuntimeException extends RuntimeException {
 
-    public Object getBean(String name);
+    public RpcRuntimeException() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+
+    public RpcRuntimeException(String message, Throwable cause) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
+
+
+    public RpcRuntimeException(String message) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
+
+
+    public RpcRuntimeException(Throwable cause) {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
 
 }

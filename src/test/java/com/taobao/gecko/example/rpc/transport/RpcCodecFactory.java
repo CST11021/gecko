@@ -21,8 +21,6 @@ import com.taobao.gecko.core.core.Session;
 import com.taobao.gecko.example.rpc.command.RpcCommand;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.command.RpcResponse;
-import com.taobao.gecko.example.rpc.transport.RpcWireFormatType.RpcHeartBeatCommand;
-
 
 /**
  * @author boyan
@@ -45,47 +43,51 @@ public class RpcCodecFactory implements CodecFactory {
          * @return
          */
         public Object decode(IoBuffer buff, Session session) {
-            //
+            // TODO whz 这个后面再看看
             if (!buff.hasRemaining()) {
                 return null;
             }
 
+            // 1、优先从会话属性获取当前的请求或者响应的对象进行解码
             RpcCommand command = (RpcCommand) session.getAttribute(CURRENT_COMMAND);
             if (command != null) {
+                System.out.println("会话中居然有command命令？？？？？？");
                 if (command.decode(buff)) {
                     session.removeAttribute(CURRENT_COMMAND);
                     return command;
-                } else {
-                    return null;
-                }
-            } else {
-                // 根据magic判断是请求对象还是响应对象
-                byte magic = buff.get();
-                if (magic == REQ_MAGIC) {
-                    command = new RpcRequest();
-                } else {
-                    command = new RpcResponse();
                 }
 
-                if (command.decode(buff)) {
-                    return command;
-                } else {
-                    session.setAttribute(CURRENT_COMMAND, command);
-                    return null;
-                }
+                return null;
             }
+
+            // 2、如果会话属性没有标记当前的消息类型，则根据缓冲区中的magic判断是请求对象还是响应对象
+            byte magic = buff.get();
+            if (magic == REQ_MAGIC) {
+                command = new RpcRequest();
+            } else {
+                command = new RpcResponse();
+            }
+
+            if (command.decode(buff)) {
+                return command;
+            }
+
+            session.setAttribute(CURRENT_COMMAND, command);
+            return null;
         }
 
     }
 
     static final class RpcEncoder implements Encoder {
 
+        /**
+         * 将消息对象进行编码（序列化），获取对应的字节缓冲区
+         *
+         * @param message
+         * @param session
+         * @return
+         */
         public IoBuffer encode(Object message, Session session) {
-            // 如果是心跳请求，则调用心跳请求
-            if (message instanceof RpcHeartBeatCommand) {
-                return ((RpcHeartBeatCommand) message).request.encode();
-            }
-
             return ((RpcCommand) message).encode();
         }
 

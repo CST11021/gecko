@@ -18,7 +18,7 @@ package com.taobao.gecko.example.rpc.client;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.command.RpcResponse;
-import com.taobao.gecko.example.rpc.exception.RpcRuntimeException;
+import com.taobao.gecko.example.rpc.RpcRuntimeException;
 import com.taobao.gecko.example.rpc.transport.RpcWireFormatType;
 import com.taobao.gecko.service.RemotingClient;
 import com.taobao.gecko.service.RemotingFactory;
@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 /**
- *
+ * 创建客户端的代理服务
  */
 public class RpcProxyFactory {
 
@@ -88,14 +88,15 @@ public class RpcProxyFactory {
                         if (response == null) {
                             throw new RpcRuntimeException("Rpc failure,no response from rpc server");
                         }
-                        if (response.getResponseStatus() == ResponseStatus.NO_ERROR) {
-                            return response.getResult();
-                        } else {
+
+                        if (response.getResponseStatus() != ResponseStatus.NO_ERROR) {
                             throw new RpcRuntimeException("Rpc failure:" + response.getErrorMsg());
                         }
 
+                        return response.getResult();
                     }
                 });
 
     }
+
 }

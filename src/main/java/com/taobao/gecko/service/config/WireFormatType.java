@@ -30,6 +30,7 @@ import java.util.Map;
  */
 public abstract class WireFormatType {
 
+    /** 保存协议名称（对应#name()方法）对应的协议配置 */
     private static Map<String, WireFormatType> registeredWireFormatType = new HashMap<String, WireFormatType>();
 
     /**
@@ -41,6 +42,7 @@ public abstract class WireFormatType {
         if (wireFormatType == null) {
             throw new IllegalArgumentException("Null wire format");
         }
+
         registeredWireFormatType.put(wireFormatType.name(), wireFormatType);
     }
 
@@ -53,9 +55,16 @@ public abstract class WireFormatType {
         if (wireFormatType == null) {
             throw new IllegalArgumentException("Null wire format");
         }
+
         registeredWireFormatType.remove(wireFormatType.name());
     }
 
+    /**
+     * 根据协议名获取WireFormatType
+     *
+     * @param name
+     * @return
+     */
     public static WireFormatType valueOf(final String name) {
         return registeredWireFormatType.get(name);
 
@@ -77,7 +86,7 @@ public abstract class WireFormatType {
     public abstract CodecFactory newCodecFactory();
 
     /**
-     * 协议的命令工厂
+     * 协议的命令工厂：用于创建心跳请求和正常ack请求的命令对象
      *
      * @return
      */

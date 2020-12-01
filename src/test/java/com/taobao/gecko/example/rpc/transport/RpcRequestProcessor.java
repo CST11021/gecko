@@ -18,24 +18,28 @@ package com.taobao.gecko.example.rpc.transport;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.command.RpcResponse;
-import com.taobao.gecko.example.rpc.server.BeanLocator;
-import com.taobao.gecko.example.rpc.server.RpcSkeleton;
+import com.taobao.gecko.example.rpc.registry.Registry;
+import com.taobao.gecko.example.rpc.server.InvokeUtil;
+import com.taobao.gecko.example.rpc.registry.RegistryImpl;
 import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.RequestProcessor;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-
+/**
+ * 请求处理器
+ */
 public class RpcRequestProcessor implements RequestProcessor<RpcRequest> {
 
     private final ThreadPoolExecutor executor;
-    private final BeanLocator beanLocator;
+
+    private final Registry registry;
 
 
-    public RpcRequestProcessor(ThreadPoolExecutor executor, BeanLocator beanLocator) {
+    public RpcRequestProcessor(ThreadPoolExecutor executor) {
         super();
         this.executor = executor;
-        this.beanLocator = beanLocator;
+        this.registry = new RegistryImpl();
     }
 
 
@@ -44,20 +48,22 @@ public class RpcRequestProcessor implements RequestProcessor<RpcRequest> {
     }
 
     /**
-     * 处理请求
+     * 处理请求：
+     * 1、通过BeanLocator获取服务实现；
+     * 2、
      *
      * @param request 请求命令
      * @param conn    请求来源的连接
      */
     public void handleRequest(RpcRequest request, Connection conn) {
-        Object bean = this.beanLocator.getBean(request.getBeanName());
+        Object bean = this.registry.findServer(request.getBeanName());
         if (bean == null) {
             throw new RuntimeException("Could not find bean named " + request.getBeanName());
         }
 
-        RpcSkeleton skeleton = new RpcSkeleton(request.getBeanName(), bean);
         // 调用指定服务的目标方法
-        Object result = skeleton.invoke(request.getMethodName(), request.getArguments());
+        Object result = InvokeUtil.invoke(bean, request.getMethodName(), request.getArguments());
+
         try {
             // 回写响应数据
             conn.response(new RpcResponse(request.getOpaque(), ResponseStatus.NO_ERROR, result));

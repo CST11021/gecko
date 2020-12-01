@@ -28,28 +28,26 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-
+/**
+ * Rpc服务
+ */
 public class RpcServer {
-
-    private InetSocketAddress serverAddr;
 
     private RemotingServer remotingServer;
 
     /**
      * 绑定指定的端口，处理请求
      *
-     * @param beanLocator   提供获取服务的方法：根据请求的中的beanName获取指定的请求处理服务
      * @param serverAddr    绑定的服务端IP地址和端口
      * @throws IOException
      */
-    public void bind(BeanLocator beanLocator, InetSocketAddress serverAddr) throws IOException {
+    public void bind(InetSocketAddress serverAddr) throws IOException {
         final ServerConfig serverConfig = new ServerConfig();
         serverConfig.setWireFormatType(new RpcWireFormatType());
         serverConfig.setLocalInetSocketAddress(serverAddr);
 
-        this.serverAddr = serverAddr;
         this.remotingServer = RemotingFactory.newRemotingServer(serverConfig);
-        this.remotingServer.registerProcessor(RpcRequest.class, new RpcRequestProcessor((ThreadPoolExecutor) Executors.newCachedThreadPool(), beanLocator));
+        this.remotingServer.registerProcessor(RpcRequest.class, new RpcRequestProcessor((ThreadPoolExecutor) Executors.newCachedThreadPool()));
 
         try {
             this.remotingServer.start();
@@ -57,4 +55,5 @@ public class RpcServer {
             throw new IOException(e);
         }
     }
+
 }
