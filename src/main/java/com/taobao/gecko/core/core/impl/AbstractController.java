@@ -42,8 +42,9 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
 
     protected static final Log log = LogFactory.getLog(AbstractController.class);
 
-    /** 默认的统计器 */
+    /** 默认的统计器：空实现 */
     protected Statistics statistics = new DefaultStatistics();
+    /** 统计周期 */
     protected long statisticsInterval;
     /** Controller生命周期监听器 */
     protected CopyOnWriteArrayList<ControllerStateListener> stateListeners = new CopyOnWriteArrayList<ControllerStateListener>();
@@ -55,11 +56,18 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     protected volatile boolean started;
     /** 表示该Controller绑定的本地InetSocketAddress */
     protected InetSocketAddress localSocketAddress;
-    /** 读取事件处理线程数 */
+
+    protected Configuration configuration;
+    /** readEventDispatcher派发器的线程数 */
     protected int readThreadCount;
+
+    /** writeEventDispatcher派发器的线程数 */
     protected int writeThreadCount;
     protected int dispatchMessageThreadCount;
-    protected Configuration configuration;
+    /**
+     * readEventDispatcher：处理从channel读取消息的派发器；
+     * writeEventDispatcher：处理写消息到channel的派发器；
+     */
     protected Dispatcher readEventDispatcher, dispatchMessageDispatcher, writeEventDispatcher;
     /** 会话超时时间 */
     protected long sessionTimeout;
@@ -340,38 +348,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
     }
 
 
-    // SelectionKeyHandler
 
-    public void onAccept(final SelectionKey sk) throws IOException {
-        this.statistics.statisticsAccept();
-    }
-
-    /**
-     * 当客户端与服务端建立连接后，会调用该方法
-     *
-     * @param key
-     * @throws IOException
-     */
-    public void onConnect(final SelectionKey key) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-
-    // ServerController
-
-    /**
-     * Bind localhost address
-     *
-     * @param inetSocketAddress
-     * @throws IOException
-     */
-    public void bind(final InetSocketAddress inetSocketAddress) throws IOException {
-        if (inetSocketAddress == null) {
-            throw new IllegalArgumentException("Null inetSocketAddress");
-        }
-        this.setLocalSocketAddress(inetSocketAddress);
-        this.start();
-    }
 
 
     // ------------------------
@@ -396,23 +373,81 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
         }
     }
 
+    /**
+     * 连接端口（session关闭的时候调用该方法）
+     */
     public final void notifyAllSessionClosed() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
             stateListener.onAllSessionClosed(this);
         }
     }
 
+    /**
+     * 网络IO异常时调用该方法
+     *
+     * @param t
+     */
     public final void notifyException(final Throwable t) {
         for (final ControllerStateListener stateListener : this.stateListeners) {
             stateListener.onException(this, t);
         }
     }
 
+    /**
+     * 当Controller停止时，调用该方法
+     */
     public final void notifyStopped() {
         for (final ControllerStateListener stateListener : this.stateListeners) {
             stateListener.onStopped(this);
         }
     }
+
+
+
+
+
+
+    // ServerController ？？？？？？？？？？这个接口不应该放这里吧？？？？？？？？？？
+
+    /**
+     * Bind localhost address
+     *
+     * @param inetSocketAddress
+     * @throws IOException
+     */
+    public void bind(final InetSocketAddress inetSocketAddress) throws IOException {
+        if (inetSocketAddress == null) {
+            throw new IllegalArgumentException("Null inetSocketAddress");
+        }
+
+        this.setLocalSocketAddress(inetSocketAddress);
+        this.start();
+    }
+
+
+    // SelectionKeyHandler ？？？？？？？？？？这个接口不应该放这里吧？？？？？？？？？？
+
+    /**
+     * 当服务端接收到客户端的连接请求时，会调用该方法
+     *
+     * @param sk
+     * @throws IOException
+     */
+    public void onAccept(final SelectionKey sk) throws IOException {
+        this.statistics.statisticsAccept();
+    }
+
+    /**
+     * 当客户端与服务端建立连接后，会调用该方法
+     *
+     * @param key
+     * @throws IOException
+     */
+    public void onConnect(final SelectionKey key) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+
 
 
 

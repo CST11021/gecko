@@ -40,39 +40,37 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class AbstractSession implements Session {
 
-    protected IoBuffer readBuffer;
     protected static final Log log = LogFactory.getLog(AbstractSession.class);
 
+    /** 用于存储接收到的消息的缓冲区 */
+    protected IoBuffer readBuffer;
+    /** 用于保存session上的属性 */
     protected final ConcurrentHashMap<String, Object> attributes = new ConcurrentHashMap<String, Object>();
-
-    protected Queue<WriteMessage> writeQueue;
-
+    /** session闲置超时时间 */
     protected volatile long sessionIdleTimeout;
-
+    /** session超时时间 */
     protected volatile long sessionTimeout;
-
+    /** 消息编码器 */
     protected CodecFactory.Encoder encoder;
+    /** 消息解码器 */
     protected CodecFactory.Decoder decoder;
-
     protected volatile boolean closed, innerClosed;
-
     protected Statistics statistics;
-
     protected Handler handler;
-
+    /** 用于判断远端的IP地址是否为回环IP地址（即：127.0.0.1） */
     protected boolean loopback;
-
+    /** 设置最后一次操作的时间搓 */
     public AtomicLong lastOperationTimeStamp = new AtomicLong(0);
-
+    /** 表示当前待写入通道的所有消息字节大小 */
     protected AtomicLong scheduleWritenBytes = new AtomicLong(0);
-
     protected final Dispatcher dispatchMessageDispatcher;
     protected volatile boolean useBlockingWrite = false;
     protected volatile boolean useBlockingRead = true;
     protected volatile boolean handleReadWriteConcurrently = true;
-
     protected ReentrantLock writeLock = new ReentrantLock();
-
+    /** 保存将被写入通道的消息 */
+    protected Queue<WriteMessage> writeQueue;
+    /** 表示当前要写入通道的消息 */
     protected AtomicReference<WriteMessage> currentMessage = new AtomicReference<WriteMessage>();
 
 
@@ -92,138 +90,120 @@ public abstract class AbstractSession implements Session {
     }
 
 
-    public long getSessionIdleTimeout() {
-        return this.sessionIdleTimeout;
-    }
-    public void setSessionIdleTimeout(final long sessionIdleTimeout) {
-        this.sessionIdleTimeout = sessionIdleTimeout;
-    }
-
-    public long getSessionTimeout() {
-        return this.sessionTimeout;
-    }
-    public void setSessionTimeout(final long sessionTimeout) {
-        this.sessionTimeout = sessionTimeout;
+    /**
+     * 启动session：触发handler#onSessionStarted
+     */
+    public synchronized void start() {
+        log.debug("session started");
+        // 触发handler#onSessionStarted
+        this.onStarted();
+        this.start0();
     }
 
-    public Queue<WriteMessage> getWriteQueue() {
-        return this.writeQueue;
+    /**
+     * 关闭session：添加一个毒丸
+     */
+    public final void close() {
+        this.setClosed(true);
+        // 加入毒丸到队列
+        this.addPoisonWriteMessage(new PoisonWriteMessage());
     }
 
-    public Statistics getStatistics() {
-        return this.statistics;
+
+    /**
+     * 同步发送消息
+     *
+     * @param packet
+     */
+    public void write(final Object packet) {
+        if (packet == null) {
+            throw new NullPointerException("Null packet");
+        }
+        if (this.isClosed()) {
+            return;
+        }
+
+        // 将消息包装为WriteMessage对象
+        final WriteMessage message = this.wrapMessage(packet, null);
+        this.scheduleWritenBytes.addAndGet(message.remaining());
+        this.writeFromUserCode(message);
     }
 
-    public Handler getHandler() {
-        return this.handler;
+    /**
+     * 异步发送消息
+     *
+     * @param packet
+     * @return
+     */
+    public Future<Boolean> asyncWrite(final Object packet) {
+        if (this.isClosed()) {
+            final FutureImpl<Boolean> writeFuture = new FutureImpl<Boolean>();
+            writeFuture.failure(new IOException("连接已经被关闭"));
+            return writeFuture;
+        }
+        if (packet == null) {
+            throw new NullPointerException("Null packet");
+        }
+
+        final FutureImpl<Boolean> writeFuture = new FutureImpl<Boolean>();
+        final WriteMessage message = this.wrapMessage(packet, writeFuture);
+        this.scheduleWritenBytes.addAndGet(message.remaining());
+        this.writeFromUserCode(message);
+        return writeFuture;
     }
 
-    public Dispatcher getDispatchMessageDispatcher() {
-        return this.dispatchMessageDispatcher;
-    }
 
-    public ReentrantLock getWriteLock() {
-        return this.writeLock;
-    }
 
+
+
+    // 子类扩展
+
+    /**
+     * 启动session
+     */
+    protected abstract void start0();
+
+    /**
+     * 将消息封装为WriteMessage对象
+     *
+     * @param msg
+     * @param writeFuture
+     * @return
+     */
+    protected abstract WriteMessage wrapMessage(Object msg, Future<Boolean> writeFuture);
+
+    /**
+     * 将消息写入通道，留给子类去实现
+     *
+     * @param message
+     */
+    protected abstract void writeFromUserCode(WriteMessage message);
+
+    /**
+     * 将从网络读取字节解码（反序列化）为对象，并通过消息派发器通知Session（读取的字节保存在#readBuffer对象中）
+     */
     public abstract void decode();
 
-    public void updateTimeStamp() {
-        this.lastOperationTimeStamp.set(System.currentTimeMillis());
-    }
+    /**
+     * 添加一个毒丸消息到发送消息的队列中
+     *
+     * @param poisonWriteMessage
+     */
+    protected abstract void addPoisonWriteMessage(PoisonWriteMessage poisonWriteMessage);
 
-    public long getLastOperationTimeStamp() {
-        return this.lastOperationTimeStamp.get();
-    }
+    /**
+     * 关闭通道
+     *
+     * @throws IOException
+     */
+    protected abstract void closeChannel() throws IOException;
 
-    public final boolean isHandleReadWriteConcurrently() {
-        return this.handleReadWriteConcurrently;
-    }
 
-    public final void setHandleReadWriteConcurrently(final boolean handleReadWriteConcurrently) {
-        this.handleReadWriteConcurrently = handleReadWriteConcurrently;
-    }
 
-    public long getScheduleWritenBytes() {
-        return this.scheduleWritenBytes.get();
-    }
-
-    public CodecFactory.Encoder getEncoder() {
-        return this.encoder;
-    }
-
-    public void setEncoder(final CodecFactory.Encoder encoder) {
-        this.encoder = encoder;
-    }
-
-    public CodecFactory.Decoder getDecoder() {
-        return this.decoder;
-    }
-
-    public IoBuffer getReadBuffer() {
-        return this.readBuffer;
-    }
-
-    public void setReadBuffer(final IoBuffer readBuffer) {
-        this.readBuffer = readBuffer;
-    }
-
-    public void setDecoder(final CodecFactory.Decoder decoder) {
-        this.decoder = decoder;
-    }
-
-    public final ByteOrder getReadBufferByteOrder() {
-        if (this.readBuffer == null) {
-            throw new IllegalStateException();
-        }
-        return this.readBuffer.order();
-    }
-
-    public final void setReadBufferByteOrder(final ByteOrder readBufferByteOrder) {
-        if (this.readBuffer == null) {
-            throw new NullPointerException("Null ReadBuffer");
-        }
-        this.readBuffer.order(readBufferByteOrder);
-    }
-
-    // 同步，防止多个reactor并发调用此方法
-    protected synchronized void onIdle() {
-        try {
-            // 再次检测，防止重复调用
-            if (this.isIdle()) {
-                this.onIdle0();
-                this.handler.onSessionIdle(this);
-                this.updateTimeStamp();
-            }
-        } catch (final Throwable e) {
-            this.onException(e);
-        }
-    }
 
     protected void onIdle0() {
         // callback for sub class
     }
-
-    protected void onConnected() {
-        try {
-            this.handler.onSessionConnected(this, null);
-        } catch (final Throwable throwable) {
-            this.onException(throwable);
-        }
-    }
-
-    public void onExpired() {
-        try {
-            if (this.isExpired() && !this.isClosed()) {
-                this.handler.onSessionExpired(this);
-                this.close();
-            }
-        } catch (final Throwable e) {
-            this.onException(e);
-        }
-    }
-
-    protected abstract WriteMessage wrapMessage(Object msg, Future<Boolean> writeFuture);
 
     /**
      * Pre-Process WriteMessage before writing to channel
@@ -235,6 +215,11 @@ public abstract class AbstractSession implements Session {
         return writeMessage;
     }
 
+    /**
+     * 通知#handler#onMessageReceived处理接收到的消息，如果有消息派发器，则通过消息派发器进行通知
+     *
+     * @param message
+     */
     protected void dispatchReceivedMessage(final Object message) {
         if (this.dispatchMessageDispatcher == null) {
             long start = -1;
@@ -264,39 +249,19 @@ public abstract class AbstractSession implements Session {
 
     }
 
-    private void onMessage(final Object message, final Session session) {
-        try {
-            this.handler.onMessageReceived(session, message);
-        } catch (final Throwable e) {
-            this.onException(e);
-        }
-    }
-
-    public final boolean isClosed() {
-        return this.closed;
-    }
-
-    public final void setClosed(final boolean closed) {
-        this.closed = closed;
-    }
-
-    public final void close() {
-        this.setClosed(true);
-        // 加入毒丸到队列
-        this.addPoisonWriteMessage(new PoisonWriteMessage());
-
-    }
-
-    protected abstract void addPoisonWriteMessage(PoisonWriteMessage poisonWriteMessage);
-
+    /**
+     * 真正关闭session的方法
+     */
     protected void close0() {
         synchronized (this) {
             if (this.innerClosed) {
                 return;
             }
+
             this.innerClosed = true;
             this.setClosed(true);
         }
+
         try {
             this.closeChannel();
             log.debug("session closed");
@@ -321,12 +286,42 @@ public abstract class AbstractSession implements Session {
         }
     }
 
-    protected abstract void closeChannel() throws IOException;
+    /**
+     * 清空保存发送消息的队列
+     */
+    public void clearWriteQueue() {
+        this.writeQueue.clear();
+    }
 
+
+
+
+
+
+    // 会话生命周期处理器的相关触发方法
+
+    /**
+     * 通知#handler#onMessageReceived处理接收到的消息
+     *
+     * @param message
+     * @param session
+     */
+    private void onMessage(final Object message, final Session session) {
+        try {
+            this.handler.onMessageReceived(session, message);
+        } catch (final Throwable e) {
+            this.onException(e);
+        }
+    }
+    /**
+     * 触发handler#onExceptionCaught
+     */
     public void onException(final Throwable e) {
         this.handler.onExceptionCaught(this, e);
     }
-
+    /**
+     * 触发handler#onSessionClosed
+     */
     protected void onClosed() {
         try {
             this.handler.onSessionClosed(this);
@@ -334,39 +329,9 @@ public abstract class AbstractSession implements Session {
             this.onException(e);
         }
     }
-
-    public void setAttribute(final String key, final Object value) {
-        this.attributes.put(key, value);
-    }
-
-    public Set<String> attributeKeySet() {
-        return this.attributes.keySet();
-    }
-
-    public Object setAttributeIfAbsent(final String key, final Object value) {
-        return this.attributes.putIfAbsent(key, value);
-    }
-
-    public void removeAttribute(final String key) {
-        this.attributes.remove(key);
-    }
-
-    public Object getAttribute(final String key) {
-        return this.attributes.get(key);
-    }
-
-    public void clearAttributes() {
-        this.attributes.clear();
-    }
-
-    public synchronized void start() {
-        log.debug("session started");
-        this.onStarted();
-        this.start0();
-    }
-
-    protected abstract void start0();
-
+    /**
+     * 触发handler#onSessionStarted
+     */
     protected void onStarted() {
         try {
             this.handler.onSessionStarted(this);
@@ -374,6 +339,217 @@ public abstract class AbstractSession implements Session {
             this.onException(e);
         }
     }
+    /**
+     * 触发handler#onSessionCreated
+     */
+    protected void onCreated() {
+        try {
+            this.handler.onSessionCreated(this);
+        } catch (final Throwable e) {
+            this.onException(e);
+        }
+    }
+    /**
+     * 触发handler#onMessageSent
+     *
+     * @param message
+     */
+    protected void onMessageSent(final WriteMessage message) {
+        this.handler.onMessageSent(this, message.getMessage());
+    }
+    /**
+     * 同步，防止多个reactor并发调用此方法；
+     * 触发handler#onSessionIdle
+     */
+    protected synchronized void onIdle() {
+        try {
+            // 再次检测，防止重复调用
+            if (this.isIdle()) {
+                this.onIdle0();
+                this.handler.onSessionIdle(this);
+                this.updateTimeStamp();
+            }
+        } catch (final Throwable e) {
+            this.onException(e);
+        }
+    }
+    protected void onConnected() {
+        try {
+            this.handler.onSessionConnected(this, null);
+        } catch (final Throwable throwable) {
+            this.onException(throwable);
+        }
+    }
+    public void onExpired() {
+        try {
+            if (this.isExpired() && !this.isClosed()) {
+                this.handler.onSessionExpired(this);
+                this.close();
+            }
+        } catch (final Throwable e) {
+            this.onException(e);
+        }
+    }
+
+
+    // 缓冲区相关设置
+
+    /**
+     * 返回读缓冲区的字节顺序，例如：大头（BIG_ENDIAN）或者小头（LITTLE_ENDIAN）
+     *
+     * @return
+     */
+    public final ByteOrder getReadBufferByteOrder() {
+        if (this.readBuffer == null) {
+            throw new IllegalStateException();
+        }
+
+        return this.readBuffer.order();
+    }
+    /**
+     * 设置读缓冲区的字节顺序
+     *
+     * @param readBufferByteOrder
+     */
+    public final void setReadBufferByteOrder(final ByteOrder readBufferByteOrder) {
+        if (this.readBuffer == null) {
+            throw new NullPointerException("Null ReadBuffer");
+        }
+
+        this.readBuffer.order(readBufferByteOrder);
+    }
+
+
+
+    // 会话属性相关操作
+
+    public void setAttribute(final String key, final Object value) {
+        this.attributes.put(key, value);
+    }
+    public Set<String> attributeKeySet() {
+        return this.attributes.keySet();
+    }
+    public Object setAttributeIfAbsent(final String key, final Object value) {
+        return this.attributes.putIfAbsent(key, value);
+    }
+    public void removeAttribute(final String key) {
+        this.attributes.remove(key);
+    }
+    public Object getAttribute(final String key) {
+        return this.attributes.get(key);
+    }
+    public void clearAttributes() {
+        this.attributes.clear();
+    }
+
+
+
+    // getter and setter ...
+
+    /**
+     * 返回会话是否超时
+     *
+     * @return
+     */
+    public boolean isExpired() {
+        return false;
+    }
+
+    /**
+     * 判断会话是否超过了闲置时间
+     *
+     * @return
+     */
+    public boolean isIdle() {
+        final long lastOpTimestamp = this.getLastOperationTimeStamp();
+        return lastOpTimestamp > 0 && System.currentTimeMillis() - lastOpTimestamp > this.sessionIdleTimeout;
+    }
+    public long getScheduleWritenBytes() {
+        return this.scheduleWritenBytes.get();
+    }
+    public void updateTimeStamp() {
+        this.lastOperationTimeStamp.set(System.currentTimeMillis());
+    }
+    public long getLastOperationTimeStamp() {
+        return this.lastOperationTimeStamp.get();
+    }
+    public final boolean isHandleReadWriteConcurrently() {
+        return this.handleReadWriteConcurrently;
+    }
+    public final void setHandleReadWriteConcurrently(final boolean handleReadWriteConcurrently) {
+        this.handleReadWriteConcurrently = handleReadWriteConcurrently;
+    }
+    public final boolean isClosed() {
+        return this.closed;
+    }
+    public final void setClosed(final boolean closed) {
+        this.closed = closed;
+    }
+    public final boolean isLoopbackConnection() {
+        return this.loopback;
+    }
+    public boolean isUseBlockingWrite() {
+        return this.useBlockingWrite;
+    }
+    public void setUseBlockingWrite(final boolean useBlockingWrite) {
+        this.useBlockingWrite = useBlockingWrite;
+    }
+    public boolean isUseBlockingRead() {
+        return this.useBlockingRead;
+    }
+    public void setUseBlockingRead(final boolean useBlockingRead) {
+        this.useBlockingRead = useBlockingRead;
+    }
+    public Queue<WriteMessage> getWriteQueue() {
+        return this.writeQueue;
+    }
+    public Statistics getStatistics() {
+        return this.statistics;
+    }
+    public Handler getHandler() {
+        return this.handler;
+    }
+    public Dispatcher getDispatchMessageDispatcher() {
+        return this.dispatchMessageDispatcher;
+    }
+    public ReentrantLock getWriteLock() {
+        return this.writeLock;
+    }
+    public long getSessionIdleTimeout() {
+        return this.sessionIdleTimeout;
+    }
+    public void setSessionIdleTimeout(final long sessionIdleTimeout) {
+        this.sessionIdleTimeout = sessionIdleTimeout;
+    }
+    public long getSessionTimeout() {
+        return this.sessionTimeout;
+    }
+    public void setSessionTimeout(final long sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
+    public CodecFactory.Encoder getEncoder() {
+        return this.encoder;
+    }
+    public void setEncoder(final CodecFactory.Encoder encoder) {
+        this.encoder = encoder;
+    }
+    public CodecFactory.Decoder getDecoder() {
+        return this.decoder;
+    }
+    public void setDecoder(final CodecFactory.Decoder decoder) {
+        this.decoder = decoder;
+    }
+    public IoBuffer getReadBuffer() {
+        return this.readBuffer;
+    }
+    public void setReadBuffer(final IoBuffer readBuffer) {
+        this.readBuffer = readBuffer;
+    }
+
+
+
+
+
 
     static final class FailFuture implements Future<Boolean> {
 
@@ -387,8 +563,7 @@ public abstract class AbstractSession implements Session {
         }
 
 
-        public Boolean get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException,
-                TimeoutException {
+        public Boolean get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return Boolean.FALSE;
         }
 
@@ -404,78 +579,5 @@ public abstract class AbstractSession implements Session {
 
     }
 
-    public Future<Boolean> asyncWrite(final Object packet) {
-        if (this.isClosed()) {
-            final FutureImpl<Boolean> writeFuture = new FutureImpl<Boolean>();
-            writeFuture.failure(new IOException("连接已经被关闭"));
-            return writeFuture;
-        }
-        if (packet == null) {
-            throw new NullPointerException("Null packet");
-        }
-        final FutureImpl<Boolean> writeFuture = new FutureImpl<Boolean>();
-        final WriteMessage message = this.wrapMessage(packet, writeFuture);
-        this.scheduleWritenBytes.addAndGet(message.remaining());
-        this.writeFromUserCode(message);
-        return writeFuture;
-    }
 
-    public void write(final Object packet) {
-        if (packet == null) {
-            throw new NullPointerException("Null packet");
-        }
-        if (this.isClosed()) {
-            return;
-        }
-        final WriteMessage message = this.wrapMessage(packet, null);
-        this.scheduleWritenBytes.addAndGet(message.remaining());
-        this.writeFromUserCode(message);
-    }
-
-    protected abstract void writeFromUserCode(WriteMessage message);
-
-    public final boolean isLoopbackConnection() {
-        return this.loopback;
-    }
-
-    public boolean isUseBlockingWrite() {
-        return this.useBlockingWrite;
-    }
-
-    public void setUseBlockingWrite(final boolean useBlockingWrite) {
-        this.useBlockingWrite = useBlockingWrite;
-    }
-
-    public boolean isUseBlockingRead() {
-        return this.useBlockingRead;
-    }
-
-    public void setUseBlockingRead(final boolean useBlockingRead) {
-        this.useBlockingRead = useBlockingRead;
-    }
-
-    public void clearWriteQueue() {
-        this.writeQueue.clear();
-    }
-
-    public boolean isExpired() {
-        return false;
-    }
-
-    public boolean isIdle() {
-        final long lastOpTimestamp = this.getLastOperationTimeStamp();
-        return lastOpTimestamp > 0 && System.currentTimeMillis() - lastOpTimestamp > this.sessionIdleTimeout;
-    }
-
-    protected void onCreated() {
-        try {
-            this.handler.onSessionCreated(this);
-        } catch (final Throwable e) {
-            this.onException(e);
-        }
-    }
-
-    protected void onMessageSent(final WriteMessage message) {
-        this.handler.onMessageSent(this, message.getMessage());
-    }
 }

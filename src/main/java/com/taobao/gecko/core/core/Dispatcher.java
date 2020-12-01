@@ -22,8 +22,16 @@ package com.taobao.gecko.core.core;
  * @since 1.0, 2009-12-16 下午06:00:01
  */
 public interface Dispatcher {
+
+    /**
+     * 执行任务
+     *
+     * @param r
+     */
     public void dispatch(Runnable r);
 
-
+    /**
+     * 停止任务派发器
+     */
     public void stop();
 }

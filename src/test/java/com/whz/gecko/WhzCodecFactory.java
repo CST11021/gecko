@@ -71,7 +71,9 @@ public class WhzCodecFactory implements CodecFactory {
         IoBuffer buffer = factory.getEncoder().encode(request, null);
         // System.out.println(buffer.getString(Charset.forName("UTF-8").newDecoder()));
 
-        WhzRequest request1 = (WhzRequest) factory.getDecoder().decode(buffer, null);
+        Object object = factory.getDecoder().decode(buffer, null);
+
+        WhzRequest request1 = (WhzRequest) object;
         System.out.println(request1.getMessage());
     }
 

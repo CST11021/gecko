@@ -44,6 +44,14 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
         this.config = serverConfig;
     }
 
+
+    // 实现RemotingServer接口
+
+    /**
+     * 设置服务器配置，包括端口、TCP选项等
+     *
+     * @param serverConfig
+     */
     public void setServerConfig(final ServerConfig serverConfig) {
         if (this.controller != null && this.controller.isStarted()) {
             throw new IllegalStateException("RemotingServer已经启动，设置无效");
@@ -52,11 +60,51 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
     }
 
     /**
-     * 服务端还需要扫描连接是否存活
+     * 返回可供连接的URI
+     *
+     * @return
      */
+    public synchronized URI getConnectURI() {
+        final InetSocketAddress socketAddress = this.getInetSocketAddress();
+        if (socketAddress == null) {
+            throw new IllegalStateException("server未启动");
+        }
+        InetAddress inetAddress = null;
+        try {
+            inetAddress = RemotingUtils.getLocalHostAddress();
+        } catch (final Exception e) {
+            throw new IllegalStateException("获取IP地址失败", e);
+        }
+        try {
+            if (inetAddress instanceof Inet4Address) {
+                return new URI(this.config.getWireFormatType().getScheme() + "://" + inetAddress.getHostAddress() + ":"
+                        + socketAddress.getPort());
+            } else if (inetAddress instanceof Inet6Address) {
+                return new URI(this.config.getWireFormatType().getScheme() + "://[" + inetAddress.getHostAddress()
+                        + "]:" + socketAddress.getPort());
+            } else {
+                throw new IllegalStateException("Unknow InetAddress type " + inetAddress);
+            }
+        } catch (final URISyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * 返回绑定地址
+     *
+     * @return
+     */
+    public InetSocketAddress getInetSocketAddress() {
+        return this.controller == null ? null : this.controller.getLocalSocketAddress();
+    }
+
+
+    // 扩展BaseRemotingController
+
     @Override
-    protected ScanTask[] getScanTasks() {
-        return new ScanTask[]{new InvalidCallBackScanTask(), new InvalidConnectionScanTask()};
+    protected SocketChannelController initController(final Configuration conf) {
+        return new TCPController(conf);
     }
 
     @Override
@@ -92,39 +140,12 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
         }
     }
 
-    public synchronized URI getConnectURI() {
-        final InetSocketAddress socketAddress = this.getInetSocketAddress();
-        if (socketAddress == null) {
-            throw new IllegalStateException("server未启动");
-        }
-        InetAddress inetAddress = null;
-        try {
-            inetAddress = RemotingUtils.getLocalHostAddress();
-        } catch (final Exception e) {
-            throw new IllegalStateException("获取IP地址失败", e);
-        }
-        try {
-            if (inetAddress instanceof Inet4Address) {
-                return new URI(this.config.getWireFormatType().getScheme() + "://" + inetAddress.getHostAddress() + ":"
-                        + socketAddress.getPort());
-            } else if (inetAddress instanceof Inet6Address) {
-                return new URI(this.config.getWireFormatType().getScheme() + "://[" + inetAddress.getHostAddress()
-                        + "]:" + socketAddress.getPort());
-            } else {
-                throw new IllegalStateException("Unknow InetAddress type " + inetAddress);
-            }
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public InetSocketAddress getInetSocketAddress() {
-        return this.controller == null ? null : this.controller.getLocalSocketAddress();
-    }
-
+    /**
+     * 服务端还需要扫描连接是否存活
+     */
     @Override
-    protected SocketChannelController initController(final Configuration conf) {
-        return new TCPController(conf);
+    protected ScanTask[] getScanTasks() {
+        return new ScanTask[]{new InvalidCallBackScanTask(), new InvalidConnectionScanTask()};
     }
 
 }

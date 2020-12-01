@@ -54,20 +54,27 @@ import java.util.concurrent.Future;
  * @since 1.0, 2009-12-16 下午06:09:15
  */
 public class NioTCPSession extends AbstractNioSession {
-    private InetSocketAddress remoteAddress;
-    private final int initialReadBufferSize;
-    private int recvBufferSize = 16 * 1024;
-    /**
-     * 如果写入返回为0，强制循环多次，提高发送效率
-     */
+
+    /** 如果写入返回为0，强制循环多次，提高发送效率 */
     static final int WRITE_SPIN_COUNT = Integer.parseInt(System.getProperty("notify.remoting.write_spin_count", "16"));
+
+    /** 表示远端的IP地址 */
+    private InetSocketAddress remoteAddress;
+    /** 表示readBuffer初始的缓冲区大小，及对应readBuffer#capacity */
+    private final int initialReadBufferSize;
+    /** 表示#selectableChannel的接收的消息的缓存区大小 */
+    private int recvBufferSize = 16 * 1024;
+
 
 
     public NioTCPSession(final NioSessionConfig sessionConfig, final int readRecvBufferSize) {
         super(sessionConfig);
         if (this.selectableChannel != null && this.getRemoteSocketAddress() != null) {
+            // 远端的IP地址是否为回环IP地址
             this.loopback = this.getRemoteSocketAddress().getAddress().isLoopbackAddress();
         }
+
+        // 设置用于存储接收的消息的缓冲区
         this.setReadBuffer(IoBuffer.allocate(readRecvBufferSize));
         this.initialReadBufferSize = this.readBuffer.capacity();
         // 触发Handler#onSessionCreated
@@ -79,32 +86,57 @@ public class NioTCPSession extends AbstractNioSession {
         }
     }
 
+    /**
+     * 重写父类方法，判断session是否过期，父类方法默认消息不过期
+     *
+     * @return
+     */
     @Override
     public final boolean isExpired() {
         if (log.isDebugEnabled()) {
-            log.debug("sessionTimeout=" + this.sessionTimeout + ",this.timestamp=" + this.lastOperationTimeStamp.get()
+            log.debug("sessionTimeout=" + this.sessionTimeout
+                    + ",this.timestamp=" + this.lastOperationTimeStamp.get()
                     + ",current=" + System.currentTimeMillis());
         }
         return this.sessionTimeout <= 0 ? false
                 : System.currentTimeMillis() - this.lastOperationTimeStamp.get() >= this.sessionTimeout;
     }
 
+    /**
+     * 调用WriteMessage#write方法将消息写入通道
+     *
+     * @param channel
+     * @param message
+     * @return
+     * @throws IOException
+     */
     protected final long doRealWrite(final SelectableChannel channel, final WriteMessage message) throws IOException {
         return message.write((WritableByteChannel) channel);
     }
 
+    /**
+     * 将WriteMessage封装的消息对象写入通道，并返回原始的消息对象即WriteMessage#getMessage
+     *
+     * @param message
+     * @return
+     * @throws IOException
+     */
     @Override
     protected Object writeToChannel0(final WriteMessage message) throws IOException {
+
         if (message.getWriteFuture() != null && !message.isWriting() && message.getWriteFuture().isCancelled()) {
             this.scheduleWritenBytes.addAndGet(0 - message.remaining());
             return message.getMessage();
         }
+
+        // 判断如果消息字节缓冲区已经全部写入完成，则设置写入完成标识，并返回原始的消息对象
         if (!message.hasRemaining()) {
             if (message.getWriteFuture() != null) {
                 message.getWriteFuture().setResult(Boolean.TRUE);
             }
             return message.getMessage();
         }
+
         // begin writing
         message.writing();
         if (this.useBlockingWrite) {
@@ -118,24 +150,30 @@ public class NioTCPSession extends AbstractNioSession {
                     break;
                 }
             }
+
+            // 如果缓冲区的字节都写入完成了，则将消息的WriteFuture标记设置为true，表示写入完成
             if (!message.hasRemaining()) {
                 if (message.getWriteFuture() != null) {
                     message.getWriteFuture().setResult(Boolean.TRUE);
                 }
                 return message.getMessage();
             }
-            // have more data, but the buffer is full,
-            // wait next time to write
+
+            // 有更多数据，但缓冲区已满，请等待下一次写入
             return null;
         }
 
     }
 
+    /**
+     * 获取远端的IP地址
+     *
+     * @return
+     */
     public InetSocketAddress getRemoteSocketAddress() {
         if (this.remoteAddress == null) {
             if (this.selectableChannel instanceof SocketChannel) {
-                this.remoteAddress =
-                        (InetSocketAddress) ((SocketChannel) this.selectableChannel).socket().getRemoteSocketAddress();
+                this.remoteAddress = (InetSocketAddress) ((SocketChannel) this.selectableChannel).socket().getRemoteSocketAddress();
             }
         }
         return this.remoteAddress;
@@ -157,39 +195,51 @@ public class NioTCPSession extends AbstractNioSession {
         int attempts = 0;
         int bytesProduced = 0;
         try {
+
+
             while (writeBuffer.hasRemaining()) {
+                // 调用WriteMessage#write方法将消息写入通道
                 final long len = this.doRealWrite(channel, writeBuffer);
                 if (len > 0) {
                     attempts = 0;
                     bytesProduced += len;
+                    // 统计写入的消息字节大小
                     this.statistics.statisticsWrite(len);
                 } else {
+                    // 走到这里说明写入的消息是个毒丸，当写到此消息的时候，连接将关闭，参考 PoisonWriteMessage 实现
                     attempts++;
                     if (writeSelector == null) {
+                        // 借用一个选择器
                         writeSelector = SelectorFactory.getSelector();
                         if (writeSelector == null) {
-                            // Continue using the main one.
                             continue;
                         }
                         tmpKey = channel.register(writeSelector, SelectionKey.OP_WRITE);
                     }
+
                     if (writeSelector.select(1000) == 0) {
                         if (attempts > 2) {
                             throw new IOException("Client disconnected");
                         }
                     }
+
                 }
             }
+
+
+            // 设置WriteMessage#writeFuture标记已经写入完成
             if (!writeBuffer.hasRemaining() && message.getWriteFuture() != null) {
                 message.getWriteFuture().setResult(Boolean.TRUE);
             }
+
         } finally {
             if (tmpKey != null) {
                 tmpKey.cancel();
                 tmpKey = null;
             }
+
+            // 归还选择器
             if (writeSelector != null) {
-                // Cancel the key.
                 writeSelector.selectNow();
                 SelectorFactory.returnSelector(writeSelector);
             }
@@ -198,6 +248,13 @@ public class NioTCPSession extends AbstractNioSession {
         return message.getMessage();
     }
 
+    /**
+     * 重写父类方法，
+     *
+     * @param msg
+     * @param writeFuture
+     * @return
+     */
     @Override
     protected WriteMessage wrapMessage(final Object msg, final Future<Boolean> writeFuture) {
         final ByteBufferWriteMessage message = new ByteBufferWriteMessage(msg, (FutureImpl<Boolean>) writeFuture);
@@ -207,12 +264,15 @@ public class NioTCPSession extends AbstractNioSession {
         return message;
     }
 
+    /**
+     * 将从网络读取字节解码（反序列化）为对象，并通过消息派发器通知Session（读取的字节保存在#readBuffer对象中），触发Handler.onMessageReceived
+     */
     @Override
     protected void readFromBuffer() {
         if (!this.readBuffer.hasRemaining()) {
-            this.readBuffer =
-                    IoBuffer.wrap(ByteBufferUtils.increaseBufferCapatity(this.readBuffer.buf(), this.recvBufferSize));
+            this.readBuffer = IoBuffer.wrap(ByteBufferUtils.increaseBufferCapatity(this.readBuffer.buf(), this.recvBufferSize));
         }
+
         int n = -1;
         int readCount = 0;
         try {
@@ -225,6 +285,7 @@ public class NioTCPSession extends AbstractNioSession {
             }
             if (readCount > 0) {
                 this.readBuffer.flip();
+                // 将从网络读取字节解码（反序列化）为对象，并通过消息派发器通知Session（读取的字节保存在#readBuffer对象中），触发Handler.onMessageReceived
                 this.decode();
                 this.readBuffer.compact();
             } else if (readCount == 0 && this.useBlockingRead) {
@@ -236,11 +297,14 @@ public class NioTCPSession extends AbstractNioSession {
                     readCount += n;
                 }
             }
-            if (n < 0) { // Connection closed
+
+            // Connection closed
+            if (n < 0) {
                 this.close0();
             } else {
                 this.selectorManager.registerSession(this, EventType.ENABLE_READ);
             }
+
             if (log.isDebugEnabled()) {
                 log.debug("read " + readCount + " bytes from channel");
             }
@@ -250,7 +314,6 @@ public class NioTCPSession extends AbstractNioSession {
         } catch (final Throwable e) {
             this.close0();
             this.onException(e);
-
         }
     }
 
@@ -291,7 +354,7 @@ public class NioTCPSession extends AbstractNioSession {
     }
 
     /**
-     * 解码并派发消息
+     * 将从网络读取字节解码（反序列化）为对象，并通过消息派发器通知Session（读取的字节保存在#readBuffer对象中），触发Handler.onMessageReceived
      */
     @Override
     public void decode() {
@@ -308,6 +371,8 @@ public class NioTCPSession extends AbstractNioSession {
                         size = this.readBuffer.remaining();
                     }
                 }
+
+                // 通知#handler#onMessageReceived处理接收到的消息
                 this.dispatchReceivedMessage(message);
             } catch (final Exception e) {
                 this.onException(e);

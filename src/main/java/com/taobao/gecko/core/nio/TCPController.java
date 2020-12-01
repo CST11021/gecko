@@ -94,30 +94,43 @@ public class TCPController extends SocketChannelController implements ServerCont
         this.serverSocketChannel = ServerSocketChannel.open();
         this.serverSocketChannel.socket().setSoTimeout(this.soTimeout);
         if (this.connectionTime != 0 || this.latency != 0 || this.bandwidth != 0) {
-            this.serverSocketChannel.socket().setPerformancePreferences(this.connectionTime, this.latency,
-                    this.bandwidth);
+            this.serverSocketChannel.socket().setPerformancePreferences(this.connectionTime, this.latency, this.bandwidth);
         }
+
         this.serverSocketChannel.configureBlocking(false);
 
+        // 设置通道的so_reuseaddr属性
         if (this.socketOptions.get(StandardSocketOption.SO_REUSEADDR) != null) {
             this.serverSocketChannel.socket().setReuseAddress(
-                    StandardSocketOption.SO_REUSEADDR.type()
-                            .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
+                    StandardSocketOption.SO_REUSEADDR.type().cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
         }
+
+        // 设置通道的so_rcvbuf属性
         if (this.socketOptions.get(StandardSocketOption.SO_RCVBUF) != null) {
             this.serverSocketChannel.socket().setReceiveBufferSize(
                     StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
 
         }
+
+        // 开ServerSocketChannel：
         if (this.localSocketAddress != null) {
             this.serverSocketChannel.socket().bind(this.localSocketAddress, this.backlog);
         } else {
             this.serverSocketChannel.socket().bind(new InetSocketAddress("localhost", 0), this.backlog);
         }
+
         this.setLocalSocketAddress((InetSocketAddress) this.serverSocketChannel.socket().getLocalSocketAddress());
+
+        // 通过selectorManager注册通道到selector
         this.selectorManager.registerChannel(this.serverSocketChannel, SelectionKey.OP_ACCEPT, null);
     }
 
+    /**
+     * 当接收到来自客户端的建立连接请求时，会调用该方法
+     *
+     * @param selectionKey
+     * @throws IOException
+     */
     @Override
     public void onAccept(final SelectionKey selectionKey) throws IOException {
         // Server已经关闭，直接返回
@@ -125,40 +138,25 @@ public class TCPController extends SocketChannelController implements ServerCont
             selectionKey.cancel();
             return;
         }
+
         SocketChannel sc = null;
         try {
             sc = this.serverSocketChannel.accept();
             if (sc != null) {
                 this.configureSocketChannel(sc);
+
+                // 创建session
                 final Session session = this.buildSession(sc);
                 // enable read
                 this.selectorManager.registerSession(session, EventType.ENABLE_READ);
                 session.start();
-                super.onAccept(selectionKey); // for statistics
+                super.onAccept(selectionKey);
             } else {
                 log.debug("Accept fail");
             }
         } catch (final IOException e) {
             this.closeAcceptChannel(selectionKey, sc);
             this.notifyException(e);
-        }
-    }
-
-    /**
-     *
-     * @param sk
-     * @param sc
-     * @throws IOException
-     * @throws SocketException
-     */
-    private void closeAcceptChannel(final SelectionKey sk, final SocketChannel sc) throws IOException, SocketException {
-        if (sk != null) {
-            sk.cancel();
-        }
-        if (sc != null) {
-            sc.socket().setSoLinger(true, 0); // await TIME_WAIT status
-            sc.socket().shutdownOutput();
-            sc.close();
         }
     }
 
@@ -172,14 +170,24 @@ public class TCPController extends SocketChannelController implements ServerCont
         this.closeServerChannel();
     }
 
+    public void unbind() throws IOException {
+        this.stop();
+    }
+
+    private void closeAcceptChannel(final SelectionKey sk, final SocketChannel sc) throws IOException, SocketException {
+        if (sk != null) {
+            sk.cancel();
+        }
+        if (sc != null) {
+            sc.socket().setSoLinger(true, 0); // await TIME_WAIT status
+            sc.socket().shutdownOutput();
+            sc.close();
+        }
+    }
+
     private void closeServerChannel() throws IOException {
         if (this.serverSocketChannel != null && this.serverSocketChannel.isOpen()) {
             this.serverSocketChannel.close();
         }
     }
-
-    public void unbind() throws IOException {
-        this.stop();
-    }
-
 }

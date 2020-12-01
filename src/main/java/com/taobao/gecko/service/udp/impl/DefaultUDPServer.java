@@ -15,10 +15,6 @@
  */
 package com.taobao.gecko.service.udp.impl;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetSocketAddress;
-
 import com.taobao.gecko.core.core.Session;
 import com.taobao.gecko.core.core.impl.HandlerAdapter;
 import com.taobao.gecko.core.core.impl.StandardSocketOption;
@@ -31,6 +27,10 @@ import com.taobao.gecko.service.impl.BaseRemotingController;
 import com.taobao.gecko.service.udp.UDPServer;
 import com.taobao.gecko.service.udp.UDPServiceHandler;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
+
 
 /**
  * UDP服务端实现
@@ -39,17 +39,16 @@ import com.taobao.gecko.service.udp.UDPServiceHandler;
  * @Date 2010-8-26
  */
 public class DefaultUDPServer implements UDPServer {
+
     protected DatagramChannelController udpController;
+
     protected final UDPServiceHandler handler;
 
 
     public DefaultUDPServer(final UDPServiceHandler handler, final int port) throws NotifyRemotingException {
         this(null, handler, port);
     }
-
-
-    public DefaultUDPServer(final RemotingController remotingController, final UDPServiceHandler handler, final int port)
-            throws NotifyRemotingException {
+    public DefaultUDPServer(final RemotingController remotingController, final UDPServiceHandler handler, final int port) throws NotifyRemotingException {
         this.initController();
         this.handler = handler;
         this.udpController.setHandler(new HandlerAdapter() {
@@ -78,17 +77,14 @@ public class DefaultUDPServer implements UDPServer {
         return this.udpController.isStarted();
     }
 
-
     protected void initController() {
         this.udpController = new UDPController();
         this.udpController.setSocketOption(StandardSocketOption.SO_REUSEADDR, true);
     }
 
-
     public UDPServiceHandler getUDPServiceHandler() {
         return this.handler;
     }
-
 
     public void start() throws NotifyRemotingException {
         try {
@@ -98,7 +94,6 @@ public class DefaultUDPServer implements UDPServer {
         }
 
     }
-
 
     public void stop() throws NotifyRemotingException {
         try {

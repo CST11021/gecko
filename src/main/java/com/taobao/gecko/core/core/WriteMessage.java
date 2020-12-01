@@ -15,14 +15,13 @@
  */
 package com.taobao.gecko.core.core;
 
+import com.taobao.gecko.core.core.impl.FutureImpl;
+
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 
-import com.taobao.gecko.core.core.impl.FutureImpl;
-
-
 /**
- * 发送消息包装类
+ * 发送消息包装类，通过该类将消息对象转为字节写入channel
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午06:02:37
@@ -31,21 +30,37 @@ public interface WriteMessage {
 
     void writing();
 
-
     boolean isWriting();
 
-
+    /**
+     * 获取原始消息对象，原始的消息对象会被封装为WriteMessage
+     *
+     * @return
+     */
     Object getMessage();
 
+    /**
+     * 返回是否还有未被写入通道的字节
+     *
+     * @return
+     */
+    boolean hasRemaining();
 
-    public boolean hasRemaining();
+    /**
+     * 返回该消息还剩余多少字节未被写入通道
+     *
+     * @return
+     */
+    long remaining();
 
-
-    public long remaining();
-
-
-    public long write(WritableByteChannel channel) throws IOException;
-
+    /**
+     * 将WriteMessage消息对象写入指定的通道
+     *
+     * @param channel
+     * @return
+     * @throws IOException
+     */
+    long write(WritableByteChannel channel) throws IOException;
 
     FutureImpl<Boolean> getWriteFuture();
 

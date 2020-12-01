@@ -28,6 +28,9 @@ public interface ControllerLifeCycle {
 
     void notifyStarted();
 
+    /**
+     * 连接端口（session关闭的时候调用该方法）
+     */
     void notifyAllSessionClosed();
 
     void notifyException(Throwable t);

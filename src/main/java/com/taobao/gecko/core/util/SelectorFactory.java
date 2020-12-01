@@ -37,17 +37,19 @@
  */
 package com.taobao.gecko.core.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.nio.channels.Selector;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
- * Temp selector factory,come from grizzly
+ * 用于维护选择器池的工厂
+ *
+ * Temp selector factory, come from grizzly
  *
  * @author dennis zhuang
  */
@@ -72,7 +74,7 @@ public class SelectorFactory {
     private final static Stack<Selector> selectors = new Stack<Selector>();
 
     /**
-     * Creates the <code>Selector</code>
+     * 初始化选择器池
      */
     static {
         try {
@@ -84,37 +86,9 @@ public class SelectorFactory {
 
 
     /**
-     * Set max selector pool size.
+     * 从选择器池获取一个选择器
      *
-     * @param size max pool size
-     */
-    public final static void setMaxSelectors(int size) throws IOException {
-        synchronized (selectors) {
-            if (size < maxSelectors) {
-                reduce(size);
-            } else if (size > maxSelectors) {
-                grow(size);
-            }
-
-            maxSelectors = size;
-        }
-    }
-
-
-    /**
-     * Returns max selector pool size
-     *
-     * @return max pool size
-     */
-    public final static int getMaxSelectors() {
-        return maxSelectors;
-    }
-
-
-    /**
-     * Get a exclusive <code>Selector</code>
-     *
-     * @return <code>Selector</code>
+     * @return Selector
      */
     public final static Selector getSelector() {
         synchronized (selectors) {
@@ -147,9 +121,9 @@ public class SelectorFactory {
 
 
     /**
-     * Return the <code>Selector</code> to the cache
+     * 将选择器归还给池子
      *
-     * @param s <code>Selector</code>
+     * @param s
      */
     public final static void returnSelector(Selector s) {
         synchronized (selectors) {
@@ -162,7 +136,36 @@ public class SelectorFactory {
 
 
     /**
-     * Increase <code>Selector</code> pool size
+     * 获取当前选择器池的大小
+     *
+     * @return max pool size
+     */
+    public final static int getMaxSelectors() {
+        return maxSelectors;
+    }
+
+    /**
+     * 设置选择器池的大小，如果目前的选择器个数>size，则将多余的选择器销毁，如果<size，则创建选择器直到达到size
+     *
+     * @param size max pool size
+     */
+    public final static void setMaxSelectors(int size) throws IOException {
+        synchronized (selectors) {
+            if (size < maxSelectors) {
+                reduce(size);
+            } else if (size > maxSelectors) {
+                grow(size);
+            }
+
+            maxSelectors = size;
+        }
+    }
+
+    /**
+     * 创建相应数量的选择器到池子，直到池中的选择器数量大小size
+     *
+     * @param size
+     * @throws IOException
      */
     private static void grow(int size) throws IOException {
         for (int i = 0; i < size - maxSelectors; i++) {
@@ -170,9 +173,10 @@ public class SelectorFactory {
         }
     }
 
-
     /**
-     * Decrease <code>Selector</code> pool size
+     * 销毁池子中多出的选择器
+     *
+     * @param size
      */
     private static void reduce(int size) {
         for (int i = 0; i < maxSelectors - size; i++) {

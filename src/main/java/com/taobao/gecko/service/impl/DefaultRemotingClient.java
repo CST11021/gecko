@@ -59,7 +59,16 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.setAttribute(Constants.DEFAULT_GROUP, Constants.CONNECTION_COUNT_ATTR, Integer.MAX_VALUE);
     }
 
+    // ---------------
+    // 实现BaseRemotingController抽象方法
+    // ---------------
 
+    /**
+     * 根据conf创建一个SocketChannelController实例，DefaultRemotingClient的连接实现都是基于该Controller实例实现的
+     *
+     * @param conf
+     * @return
+     */
     @Override
     protected SocketChannelController initController(final Configuration conf) {
         final GeckoTCPConnectorController notifyTCPConnectorController = new GeckoTCPConnectorController(conf);
@@ -67,7 +76,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         notifyTCPConnectorController.setConnectFailListener(this);
         return notifyTCPConnectorController;
     }
-
     /**
      * 启动
      *
@@ -77,6 +85,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     protected void doStart() throws NotifyRemotingException {
         // 启动GeckoTCPConnectorController
         this.startController();
+        // 启动重连管理器
         this.startReconnectManager();
     }
     /**
@@ -89,6 +98,12 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.stopReconnectManager();
         this.closeAllConnection();
     }
+
+
+
+    // ---------------
+    // 实现RemotingClient接口
+    // ---------------
 
 
     // 与服务端建立连接
@@ -237,6 +252,7 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
     }
 
 
+    // RemotingClient其他相关接口
 
     /**
      * 根据group从可用连接获取服务端的InetSocketAddress
@@ -312,12 +328,6 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.config = clientConfig;
     }
 
-
-
-
-
-
-
     @Override
     public void close(final String group, final boolean allowReconnect) throws NotifyRemotingException {
         if (!this.started) {
@@ -342,6 +352,8 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         }
 
     }
+
+
 
 
     // -------------------

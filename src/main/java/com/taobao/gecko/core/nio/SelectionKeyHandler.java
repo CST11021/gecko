@@ -42,7 +42,7 @@ import java.nio.channels.Selector;
 public interface SelectionKeyHandler {
 
     /**
-     * 表示服务端与客户端建立的连接时调用
+     * 当服务端接收到客户端的连接请求时，会调用该方法
      *
      * @param sk
      * @throws IOException

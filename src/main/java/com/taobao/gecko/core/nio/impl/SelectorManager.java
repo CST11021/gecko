@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 
-
 /**
  * Selector管理器，管理多个reactor
  *
@@ -40,18 +39,14 @@ public class SelectorManager {
     /** Reactor保存在session中的key */
     public static final String REACTOR_ATTRIBUTE = System.currentTimeMillis() + "_Reactor_Attribute";
 
-
-    /** 递增的统计器 */
+    /** 一个简单递增的统计器： */
     private final PositiveAtomicCounter sets = new PositiveAtomicCounter();
-
-
     /**
      * Reactor准备就绪的个数
      */
     private int reactorReadyCount;
-
+    /** 用于标识SelectorManager是否启动 */
     private volatile boolean started;
-
     /** 表示为reactorSet.length - 1 */
     private final int dividend;
     /** 在SelectorManager的构造器中初始化该组件 */
@@ -60,8 +55,14 @@ public class SelectorManager {
     private final NioController controller;
 
 
-
-
+    /**
+     * 创建NioController实例和Reactor集合
+     *
+     * @param selectorPoolSize
+     * @param controller
+     * @param conf
+     * @throws IOException
+     */
     public SelectorManager(final int selectorPoolSize, final NioController controller, final Configuration conf) throws IOException {
         if (selectorPoolSize <= 0) {
             throw new IllegalArgumentException("selectorPoolSize<=0");
@@ -77,6 +78,18 @@ public class SelectorManager {
         this.dividend = this.reactorSet.length - 1;
     }
 
+    /**
+     * 返回SelectorManager是否启动
+     *
+     * @return
+     */
+    public final boolean isStarted() {
+        return this.started;
+    }
+
+    /**
+     * 启动SelectorManager：启动Reactor
+     */
     public synchronized void start() {
         if (this.started) {
             return;
@@ -87,6 +100,9 @@ public class SelectorManager {
         }
     }
 
+    /**
+     * 停止SelectorManager：停止Reactor
+     */
     public synchronized void stop() {
         if (!this.started) {
             return;
@@ -98,7 +114,7 @@ public class SelectorManager {
     }
 
     /**
-     * 将channel注册到selector
+     * 通过Reactor将channel注册到selector
      *
      * @param channel       可选择的通道
      * @param ops           注册的事件类型
@@ -128,6 +144,23 @@ public class SelectorManager {
     }
 
     /**
+     * 注册连接事件
+     *
+     * @param session
+     * @param event
+     */
+    public final void registerSession(final Session session, final EventType event) {
+        final Reactor reactor = this.getReactorFromSession(session);
+        reactor.registerSession(session, event);
+    }
+
+
+
+
+
+
+
+    /**
      * 等待Reactor准备好
      */
     void awaitReady() {
@@ -144,7 +177,7 @@ public class SelectorManager {
     }
 
     /**
-     * 查找下一个reactor
+     * 从Reactor集合获取一个Reactor实例
      *
      * @return
      */
@@ -154,17 +187,6 @@ public class SelectorManager {
         } else {
             return this.reactorSet[0];
         }
-    }
-
-    /**
-     * 注册连接事件
-     *
-     * @param session
-     * @param event
-     */
-    public final void registerSession(final Session session, final EventType event) {
-        final Reactor reactor = this.getReactorFromSession(session);
-        reactor.registerSession(session, event);
     }
 
     /**
@@ -187,7 +209,7 @@ public class SelectorManager {
     }
 
     /**
-     * 插入定时器到session关联的reactor，返回当前时间
+     * 将定时器检测连接建立是否成功的TimerRef放到session对应的Reactor实例中
      *
      * @param session
      * @param timerRef
@@ -208,6 +230,11 @@ public class SelectorManager {
         this.nextReactor().insertTimer(timerRef);
     }
 
+    /**
+     * 获取
+     *
+     * @return
+     */
     public NioController getController() {
         return this.controller;
     }
@@ -224,14 +251,15 @@ public class SelectorManager {
         }
     }
 
-    public final boolean isStarted() {
-        return this.started;
-    }
-
-
+    /**
+     * 获取Reactor集合的大小
+     *
+     * @return
+     */
     public int getSelectorCount() {
         return this.reactorSet == null ? 0 : this.reactorSet.length;
     }
+
     /**
      * 仅用于测试
      *
@@ -244,4 +272,5 @@ public class SelectorManager {
         }
         return this.reactorSet[index];
     }
+
 }

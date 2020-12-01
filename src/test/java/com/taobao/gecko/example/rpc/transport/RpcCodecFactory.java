@@ -37,11 +37,19 @@ public class RpcCodecFactory implements CodecFactory {
 
         private static final String CURRENT_COMMAND = "CurrentCommand";
 
-
+        /**
+         * 对buffer进行解码（反序列化），并返回对应的对象
+         *
+         * @param buff
+         * @param session
+         * @return
+         */
         public Object decode(IoBuffer buff, Session session) {
+            //
             if (!buff.hasRemaining()) {
                 return null;
             }
+
             RpcCommand command = (RpcCommand) session.getAttribute(CURRENT_COMMAND);
             if (command != null) {
                 if (command.decode(buff)) {
@@ -51,13 +59,14 @@ public class RpcCodecFactory implements CodecFactory {
                     return null;
                 }
             } else {
+                // 根据magic判断是请求对象还是响应对象
                 byte magic = buff.get();
                 if (magic == REQ_MAGIC) {
                     command = new RpcRequest();
                 } else {
                     command = new RpcResponse();
-
                 }
+
                 if (command.decode(buff)) {
                     return command;
                 } else {
@@ -72,19 +81,31 @@ public class RpcCodecFactory implements CodecFactory {
     static final class RpcEncoder implements Encoder {
 
         public IoBuffer encode(Object message, Session session) {
+            // 如果是心跳请求，则调用心跳请求
             if (message instanceof RpcHeartBeatCommand) {
                 return ((RpcHeartBeatCommand) message).request.encode();
             }
+
             return ((RpcCommand) message).encode();
         }
 
     }
 
 
+    /**
+     * RPC解码器
+     *
+     * @return
+     */
     public Decoder getDecoder() {
         return new RpcDecoder();
     }
 
+    /**
+     * RPC编码器
+     *
+     * @return
+     */
     public Encoder getEncoder() {
         return new RpcEncoder();
     }

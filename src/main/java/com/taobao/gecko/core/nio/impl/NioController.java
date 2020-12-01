@@ -42,6 +42,9 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.util.Queue;
 
+/**
+ * 基于NIO实现的网络层IO：NioController通过
+ */
 public abstract class NioController extends AbstractController implements SelectionKeyHandler {
 
     protected SelectorManager selectorManager;
@@ -64,15 +67,15 @@ public abstract class NioController extends AbstractController implements Select
     }
 
 
-    /**
-     * 获取SelectorManager
-     *
-     * @return
-     */
-    public final SelectorManager getSelectorManager() {
-        return this.selectorManager;
-    }
 
+
+    // 扩展：AbstractController
+
+    /**
+     * 初始化SelectorManager管理器
+     *
+     * @throws IOException
+     */
     @Override
     protected void start0() throws IOException {
         try {
@@ -87,21 +90,22 @@ public abstract class NioController extends AbstractController implements Select
 
     }
 
-    public void setSelectorManager(final SelectorManager selectorManager) {
-        this.selectorManager = selectorManager;
-    }
-
     /**
-     * 初始化SelectorManager
+     * 停止SelectorManager管理器
      *
      * @throws IOException
      */
-    protected void initialSelectorManager() throws IOException {
-        if (this.selectorManager == null) {
-            this.selectorManager = new SelectorManager(this.selectorPoolSize, this, this.configuration);
-            this.selectorManager.start();
+    @Override
+    protected void stop0() throws IOException {
+        if (this.selectorManager == null || !this.selectorManager.isStarted()) {
+            return;
         }
+        this.selectorManager.stop();
+        this.selectorManager = null;
     }
+
+
+    // 子类扩展
 
     /**
      * Inner startup
@@ -109,6 +113,27 @@ public abstract class NioController extends AbstractController implements Select
      * @throws IOException
      */
     protected abstract void doStart() throws IOException;
+
+    /**
+     * Dispatch read event
+     *
+     * @param key
+     * @return
+     */
+    protected abstract void dispatchReadEvent(final SelectionKey key);
+
+    /**
+     * Dispatch write event
+     *
+     * @param key
+     * @return
+     */
+    protected abstract void dispatchWriteEvent(final SelectionKey key);
+
+
+
+    // 实现 SelectionKeyHandler 接口
+
 
     /**
      * READBLE事件派发
@@ -161,30 +186,10 @@ public abstract class NioController extends AbstractController implements Select
         }
     }
 
-    /**
-     * Dispatch read event
-     *
-     * @param key
-     * @return
-     */
-    protected abstract void dispatchReadEvent(final SelectionKey key);
 
-    /**
-     * Dispatch write event
-     *
-     * @param key
-     * @return
-     */
-    protected abstract void dispatchWriteEvent(final SelectionKey key);
 
-    @Override
-    protected void stop0() throws IOException {
-        if (this.selectorManager == null || !this.selectorManager.isStarted()) {
-            return;
-        }
-        this.selectorManager.stop();
-        this.selectorManager = null;
-    }
+
+    // 这个接口放在这里？？？？？？？？？
 
     public synchronized void bind(final int port) throws IOException {
         if (this.isStarted()) {
@@ -193,6 +198,35 @@ public abstract class NioController extends AbstractController implements Select
         this.bind(new InetSocketAddress(port));
     }
 
+
+
+
+
+
+    /**
+     * 获取SelectorManager
+     *
+     * @return
+     */
+    public final SelectorManager getSelectorManager() {
+        return this.selectorManager;
+    }
+
+    public void setSelectorManager(final SelectorManager selectorManager) {
+        this.selectorManager = selectorManager;
+    }
+
+    /**
+     * 初始化SelectorManager
+     *
+     * @throws IOException
+     */
+    protected void initialSelectorManager() throws IOException {
+        if (this.selectorManager == null) {
+            this.selectorManager = new SelectorManager(this.selectorPoolSize, this, this.configuration);
+            this.selectorManager.start();
+        }
+    }
     /**
      * 构建NIO会话配置
      *
@@ -207,9 +241,6 @@ public abstract class NioController extends AbstractController implements Select
                         this.sessionTimeout, this.configuration.getSessionIdleTimeout());
         return sessionConfig;
     }
-
-
-
     public int getSelectorPoolSize() {
         return this.selectorPoolSize;
     }

@@ -18,6 +18,9 @@ package com.taobao.gecko.example.rpc.example.client;
 import com.taobao.gecko.example.rpc.client.RpcProxyFactory;
 import com.taobao.gecko.example.rpc.example.Hello;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 
 public class HelloClient {
     public static void main(String[] args) throws Exception {
@@ -28,13 +31,15 @@ public class HelloClient {
         Hello hello = factory.proxyRemote("rpc://localhost:8080", "hello", Hello.class);
 
         // 发起远程服务调用
-        String response = hello.sayHello("庄晓丹", 10000);
-        System.out.println(response);
+        while (true) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String response = hello.sayHello(reader.readLine(), 10000);
+            System.out.println(response);
+        }
 
-
-        hello.add(1, 300);
-
-        hello.getDate();
+        // hello.add(1, 300);
+        //
+        // hello.getDate();
 
     }
 }

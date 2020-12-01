@@ -19,7 +19,7 @@ import com.taobao.gecko.core.util.SystemUtils;
 
 
 /**
- * 网络层的基础配置
+ * 网络层的基础配置，客户端配置和服务端配置都继承该类
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:15:01

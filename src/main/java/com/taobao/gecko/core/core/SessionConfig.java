@@ -15,9 +15,9 @@
  */
 package com.taobao.gecko.core.core;
 
-import java.util.Queue;
-
 import com.taobao.gecko.core.statistics.Statistics;
+
+import java.util.Queue;
 
 
 /**
@@ -27,13 +27,21 @@ import com.taobao.gecko.core.statistics.Statistics;
  * @since 1.0, 2009-12-16 下午06:01:37
  */
 public class SessionConfig {
+
+    /** 会话生命周期处理器 */
     public final Handler handler;
+    /** 消息编解码工厂 */
     public final CodecFactory codecFactory;
+    /** 统计管理器 */
     public final Statistics statistics;
+    /** 网session写消息的消息队列：WriteMessage是发送消息的包装类 */
     public final Queue<WriteMessage> queue;
+    /** 发送消息的派发器 */
     public final Dispatcher dispatchMessageDispatcher;
     public final boolean handleReadWriteConcurrently;
+    /** session的超时时间 */
     public final long sessionTimeout;
+    /** session闲置的超时时间 */
     public final long sessionIdelTimeout;
 
 

@@ -201,12 +201,16 @@ public class DefaultConnection implements Connection {
         if (timeUnit == null) {
             throw new NotifyRemotingException("Null TimeUnit");
         }
+
+        // 检查写入的消息是否超过流量设置
         this.checkFlow();
         final long timeoutInMills = TimeUnit.MILLISECONDS.convert(time, timeUnit);
-        final SingleRequestCallBack requestCallBack =
-                new SingleRequestCallBack(requestCommand.getRequestHeader(), timeoutInMills, listener);
+        // 创建异步请求回调
+        final SingleRequestCallBack requestCallBack = new SingleRequestCallBack(requestCommand.getRequestHeader(), timeoutInMills, listener);
+        // 将回调注册到reactor
         final TimerRef timerRef = new TimerRef(timeoutInMills, new SingleRequestCallBackRunner(requestCallBack, this));
         requestCallBack.setTimerRef(timerRef);
+        // 保存请求id对应的回调映射关系
         this.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
         try {
             requestCallBack.addWriteFuture(this, this.asyncWriteToSession(requestCommand));

@@ -15,11 +15,11 @@
  */
 package com.taobao.gecko.core.core.impl;
 
-import java.io.IOException;
-import java.nio.channels.WritableByteChannel;
-
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.core.WriteMessage;
+
+import java.io.IOException;
+import java.nio.channels.WritableByteChannel;
 
 
 /**
@@ -30,73 +30,102 @@ import com.taobao.gecko.core.core.WriteMessage;
  */
 public class ByteBufferWriteMessage implements WriteMessage {
 
+    /** 表示消息对象 */
     protected Object message;
 
+    /** 对应#message对象编码后的字节，即后续要写入通道的字节缓存区 */
     protected IoBuffer buffer;
 
     protected FutureImpl<Boolean> writeFuture;
 
+    /** 表示该消息对象是否正在被写入通道 */
     protected volatile boolean writing;
-
-
-    public final void writing() {
-        this.writing = true;
-    }
-
-
-    public final boolean isWriting() {
-        return this.writing;
-    }
-
 
     public ByteBufferWriteMessage(final Object message, final FutureImpl<Boolean> writeFuture) {
         this.message = message;
         this.writeFuture = writeFuture;
     }
 
+    /**
+     * 标记消息是否开始正在写入通道
+     */
+    public final void writing() {
+        this.writing = true;
+    }
 
+    /**
+     * 返回该消息对象是否正在被写入通道
+     *
+     * @return
+     */
+    public final boolean isWriting() {
+        return this.writing;
+    }
+
+    /**
+     * 返回该消息还剩余多少字节未被写入通道
+     *
+     * @return
+     */
     public long remaining() {
         return this.buffer == null ? 0 : this.buffer.remaining();
     }
 
-
-    /*
-     * (non-Javadoc)
+    /**
+     * 返回是否还有未被写入通道的字节
      *
-     * @see com.google.code.yanf4j.nio.IWriteMessage#getBuffers()
+     * @return
+     */
+    public boolean hasRemaining() {
+        return this.buffer != null && this.buffer.hasRemaining();
+    }
+
+    /**
+     * 获取要写入通道的消息的字节缓冲区
+     *
+     * @return
      */
     public synchronized final IoBuffer getWriteBuffer() {
         return this.buffer;
     }
 
-
-    public boolean hasRemaining() {
-        return this.buffer != null && this.buffer.hasRemaining();
-    }
-
-
+    /**
+     * 将保存消息字节的缓冲区写入通道
+     *
+     * @param channel
+     * @return 返回写入的字节数
+     * @throws IOException
+     */
     public long write(final WritableByteChannel channel) throws IOException {
         return channel.write(this.buffer.buf());
     }
 
-
+    /**
+     * 设置要写入通道的消息缓冲区
+     *
+     * @param buffers
+     */
     public synchronized final void setWriteBuffer(final IoBuffer buffers) {
         this.buffer = buffers;
 
     }
 
-
+    /**
+     * 返回标记消息是否写入完成的future
+     *
+     * @return
+     */
     public final FutureImpl<Boolean> getWriteFuture() {
         return this.writeFuture;
     }
 
-
-    /*
-     * (non-Javadoc)
+    /**
+     * 获取原始消息对象，原始的消息对象会被封装为WriteMessage
      *
-     * @see com.google.code.yanf4j.nio.IWriteMessage#getMessage()
+     * @return
      */
     public final Object getMessage() {
         return this.message;
     }
+
 }

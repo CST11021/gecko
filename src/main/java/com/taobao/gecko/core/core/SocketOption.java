@@ -33,6 +33,15 @@ public class SocketOption<T> {
     }
 
 
+    public String name() {
+        return this.name;
+    }
+
+    public Class<T> type() {
+        return this.type;
+    }
+
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -40,7 +49,6 @@ public class SocketOption<T> {
         result = prime * result + (this.name == null ? 0 : this.name.hashCode());
         return result;
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
@@ -64,17 +72,6 @@ public class SocketOption<T> {
         }
         return true;
     }
-
-
-    public String name() {
-        return this.name;
-    }
-
-
-    public Class<T> type() {
-        return this.type;
-    }
-
 
     @Override
     public String toString() {

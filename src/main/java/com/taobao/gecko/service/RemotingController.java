@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 
 
 /**
- * Notify Remoting服务基础接口
+ * 客户端和服务端的基础服务接口，该接口下有两个重要的子接口：RemotingClient和RemotingServer
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午02:15:02

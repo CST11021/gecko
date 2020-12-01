@@ -3,13 +3,17 @@ package com.whz.nio;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.Set;
 
 public class Server {
+
     private Selector selector;
-    private ByteBuffer readBuffer = ByteBuffer.allocate(1024);//调整缓存的大小可以看到打印输出的变化 
-    private ByteBuffer sendBuffer = ByteBuffer.allocate(1024);//调整缓存的大小可以看到打印输出的变化 
+    /** 调整缓存的大小可以看到打印输出的变化 */
+    private ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+    /** 调整缓存的大小可以看到打印输出的变化 */
+    private ByteBuffer sendBuffer = ByteBuffer.allocate(1024);
 
     String str;
 
@@ -28,6 +32,7 @@ public class Server {
 
         while (!Thread.currentThread().isInterrupted()) {
             selector.select();
+
             Set<SelectionKey> keys = selector.selectedKeys();
             Iterator<SelectionKey> keyIterator = keys.iterator();
             while (keyIterator.hasNext()) {
@@ -36,7 +41,6 @@ public class Server {
                     continue;
                 }
 
-                //
                 if (key.isAcceptable()) {
                     accept(key);
                 } else if (key.isReadable()) {
@@ -44,7 +48,9 @@ public class Server {
                 } else if (key.isWritable()) {
                     write(key);
                 }
-                keyIterator.remove(); //该事件已经处理，可以丢弃
+
+                // 该事件已经处理，可以丢弃
+                keyIterator.remove();
             }
         }
     }

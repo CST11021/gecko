@@ -62,8 +62,6 @@ public abstract class BaseRemotingController implements RemotingController {
     protected ScheduledExecutorService scanAllConnectionExecutor;
     /** BaseRemotingController内部通过该controller建立连接 */
     protected SocketChannelController controller;
-
-
     /** 服务调用默认的超时时间，默认1秒 */
     protected long opTimeout = 1000L;
     /** 标记服务是否启动 */

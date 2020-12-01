@@ -58,12 +58,17 @@ public interface Session {
     void close();
 
 
+
+
+    // 发送消息
+
     /**
-     * Write a message,if you don't care when the message is written
+     * 将消息写入session，内部实现是将消息写入通道
      *
      * @param packet
      */
     void write(Object packet);
+
     /**
      * 异步写消息到套接字
      *
@@ -113,8 +118,7 @@ public interface Session {
     void setUseBlockingRead(boolean useBlockingRead);
 
     /**
-     * Flush the write queue,this method may be no effect if OP_WRITE is
-     * running.
+     * 刷新写入队列，如果正在运行OP_WRITE，则此方法可能无效
      */
     void flush();
 
@@ -172,12 +176,17 @@ public interface Session {
     void setHandleReadWriteConcurrently(boolean handleReadWriteConcurrently);
 
     /**
-     * Return the session read buffer's byte order,big end or little end.
+     * 返回读缓冲区的字节顺序，例如：大头（BIG_ENDIAN）或者小头（LITTLE_ENDIAN）
      *
      * @return
      */
     ByteOrder getReadBufferByteOrder();
 
+    /**
+     * 设置读缓冲区的字节顺序
+     *
+     * @param readBufferByteOrder
+     */
     void setReadBufferByteOrder(ByteOrder readBufferByteOrder);
 
 
@@ -232,7 +241,7 @@ public interface Session {
     long getLastOperationTimeStamp();
 
     /**
-     * return true if it is a loopback connection
+     * 判断当前连接是否是一个回环连接
      *
      * @return
      */

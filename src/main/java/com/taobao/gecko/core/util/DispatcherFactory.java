@@ -15,14 +15,24 @@
  */
 package com.taobao.gecko.core.util;
 
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.TimeUnit;
-
 import com.taobao.gecko.core.core.Dispatcher;
 import com.taobao.gecko.core.core.impl.PoolDispatcher;
 
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * 用于创建事件分发器的工厂
+ */
 public class DispatcherFactory {
+
+    /**
+     * 创建一个基于线程池的事件分发器
+     *
+     * @param size                      线程池的核心线程数
+     * @param rejectedExecutionHandler  任务拒绝处理器策略
+     * @return
+     */
     public static Dispatcher newDispatcher(final int size, final RejectedExecutionHandler rejectedExecutionHandler) {
         if (size > 0) {
             return new PoolDispatcher(size, 60, TimeUnit.SECONDS, rejectedExecutionHandler);
@@ -31,9 +41,15 @@ public class DispatcherFactory {
         }
     }
 
-
-    public static Dispatcher newDispatcher(final int size, final String prefix,
-                                           final RejectedExecutionHandler rejectedExecutionHandler) {
+    /**
+     * 创建一个基于线程池的事件分发器
+     *
+     * @param size                      线程池的核心线程数
+     * @param prefix                    线程池中线程名的前缀
+     * @param rejectedExecutionHandler  任务拒绝处理器策略
+     * @return
+     */
+    public static Dispatcher newDispatcher(final int size, final String prefix, final RejectedExecutionHandler rejectedExecutionHandler) {
         if (size > 0) {
             return new PoolDispatcher(size, 60, TimeUnit.SECONDS, prefix, rejectedExecutionHandler);
         } else {

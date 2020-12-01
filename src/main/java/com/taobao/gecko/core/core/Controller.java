@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 /**
- * 网络层主控接口
+ * 网络层IO主控接口
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:57:49

@@ -29,12 +29,12 @@ import com.taobao.gecko.service.config.WireFormatType;
 public class RpcWireFormatType extends WireFormatType {
 
     public static final class RpcHeartBeatCommand implements HeartBeatRequestCommand {
+
         public RpcRequest request = new RpcRequest("heartBeat" + System.currentTimeMillis(), "heartBeat" + System.currentTimeMillis(), null);
 
         public CommandHeader getRequestHeader() {
             return this.request;
         }
-
 
         public Integer getOpaque() {
             return this.request.getOpaque();

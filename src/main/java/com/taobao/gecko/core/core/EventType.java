@@ -21,6 +21,7 @@ package com.taobao.gecko.core.core;
  * @author dennis
  */
 public enum EventType {
+    /***/
     REGISTER,
     READABLE,
     WRITEABLE,
