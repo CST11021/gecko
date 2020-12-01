@@ -38,42 +38,41 @@ import java.nio.ByteBuffer;
 
 
 /**
- * Allocates {@link IoBuffer}s and manages them. Please implement this interface
- * if you need more advanced memory management scheme.
+ * 用于创建IoBuffer缓存区对象的分配器
  *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 671827 $, $Date: 2008-06-26 10:49:48 +0200 (Thu, 26 Jun 2008)
  * $
  */
 public interface IoBufferAllocator {
+
     /**
-     * Returns the buffer which is capable of the specified size.
+     * 返回具有指定大小的缓冲区
      *
-     * @param capacity the capacity of the buffer
-     * @param direct   <tt>true</tt> to get a direct buffer, <tt>false</tt> to get a
-     *                 heap buffer.
+     * @param capacity  缓冲区的容量
+     * @param direct    为true时，表示获取的是直接缓冲，否则获取的堆缓冲区
      */
     IoBuffer allocate(int capacity, boolean direct);
 
-
     /**
-     * Returns the NIO buffer which is capable of the specified size.
+     * 返回具有指定大小的NIO缓冲区
      *
-     * @param capacity the capacity of the buffer
-     * @param direct   <tt>true</tt> to get a direct buffer, <tt>false</tt> to get a
-     *                 heap buffer.
+     * @param capacity 缓冲区的容量
+     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区
      */
     ByteBuffer allocateNioBuffer(int capacity, boolean direct);
 
-
     /**
-     * Wraps the specified NIO {@link ByteBuffer} into MINA buffer.
+     * 将指定的Nio的缓冲区（ByteBuffer）对象包装为MINA缓冲区（IoBuffer）并返回
+     *
+     * @param nioBuffer
+     * @return
      */
     IoBuffer wrap(ByteBuffer nioBuffer);
 
-
     /**
-     * Dispose of this allocator.
+     * 销毁分配器
      */
     void dispose();
+
 }

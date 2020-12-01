@@ -39,8 +39,7 @@ import java.nio.ByteOrder;
 
 
 /**
- * A simplistic {@link IoBufferAllocator} which simply allocates a new buffer
- * every time.
+ * 一个简单缓冲区分配器
  *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 671827 $, $Date: 2008-06-26 10:49:48 +0200 (Thu, 26 Jun 2008)
@@ -52,7 +51,6 @@ public class SimpleBufferAllocator implements IoBufferAllocator {
         return wrap(allocateNioBuffer(capacity, direct));
     }
 
-
     public ByteBuffer allocateNioBuffer(int capacity, boolean direct) {
         ByteBuffer nioBuffer;
         if (direct) {
@@ -63,18 +61,18 @@ public class SimpleBufferAllocator implements IoBufferAllocator {
         return nioBuffer;
     }
 
-
     public IoBuffer wrap(ByteBuffer nioBuffer) {
         return new SimpleBuffer(nioBuffer);
     }
 
-
     public void dispose() {
     }
 
-    private class SimpleBuffer extends AbstractIoBuffer {
-        private ByteBuffer buf;
 
+
+    private class SimpleBuffer extends AbstractIoBuffer {
+
+        private ByteBuffer buf;
 
         protected SimpleBuffer(ByteBuffer buf) {
             super(SimpleBufferAllocator.this, buf.capacity());
@@ -140,5 +138,6 @@ public class SimpleBufferAllocator implements IoBufferAllocator {
         @Override
         public void free() {
         }
+
     }
 }

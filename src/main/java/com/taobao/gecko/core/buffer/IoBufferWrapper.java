@@ -53,11 +53,7 @@ import java.util.Set;
 
 
 /**
- * A {@link IoBuffer} that wraps a buffer and proxies any operations to it.
- * <p>
- * You can think this class like a {@link FilterOutputStream}. All operations
- * are proxied by default so that you can extend this class and override
- * existing operations selectively. You can introduce new operations, too.
+ * 该类就好比{@link FilterOutputStream}，该包装类中的所有方法都是代理方法，因此可以扩展此类并有选择地重载需要的方法，也可以基于此添加新的方法
  *
  * @author The Apache MINA Project (dev@mina.apache.org)
  * @version $Rev: 671827 $, $Date: 2008-06-26 10:49:48 +0200 (Thu, 26 Jun 2008)
@@ -69,7 +65,6 @@ public class IoBufferWrapper extends IoBuffer {
      * The buffer proxied by this proxy.
      */
     private final IoBuffer buf;
-
 
     /**
      * Create a new instance.
@@ -85,7 +80,8 @@ public class IoBufferWrapper extends IoBuffer {
 
 
     /**
-     * Returns the parent buffer that this buffer wrapped.
+     * 获取原始的IoBuffer实例
+     * @return
      */
     public IoBuffer getParentBuffer() {
         return buf;
@@ -616,8 +612,7 @@ public class IoBufferWrapper extends IoBuffer {
 
 
     @Override
-    public IoBuffer putPrefixedString(CharSequence in, int prefixLength, int padding, byte padValue,
-                                      CharsetEncoder encoder) throws CharacterCodingException {
+    public IoBuffer putPrefixedString(CharSequence in, int prefixLength, int padding, byte padValue, CharsetEncoder encoder) throws CharacterCodingException {
         buf.putPrefixedString(in, prefixLength, padding, padValue, encoder);
         return this;
     }

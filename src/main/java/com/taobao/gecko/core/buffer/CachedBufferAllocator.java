@@ -34,13 +34,13 @@
  */
 package com.taobao.gecko.core.buffer;
 
+import com.taobao.gecko.core.util.CircularQueue;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-
-import com.taobao.gecko.core.util.CircularQueue;
 
 
 /**
@@ -78,7 +78,8 @@ import com.taobao.gecko.core.util.CircularQueue;
 public class CachedBufferAllocator implements IoBufferAllocator {
 
     private static final int DEFAULT_MAX_POOL_SIZE = 8;
-    private static final int DEFAULT_MAX_CACHED_BUFFER_SIZE = 1 << 18; // 256KB
+    // 256KB
+    private static final int DEFAULT_MAX_CACHED_BUFFER_SIZE = 1 << 18;
 
     private final int maxPoolSize;
     private final int maxCachedBufferSize;
@@ -95,8 +96,6 @@ public class CachedBufferAllocator implements IoBufferAllocator {
     public CachedBufferAllocator() {
         this(DEFAULT_MAX_POOL_SIZE, DEFAULT_MAX_CACHED_BUFFER_SIZE);
     }
-
-
     /**
      * Creates a new instance.
      *
@@ -123,6 +122,7 @@ public class CachedBufferAllocator implements IoBufferAllocator {
                 return CachedBufferAllocator.this.newPoolMap();
             }
         };
+
         this.directBuffers = new ThreadLocal<Map<Integer, Queue<CachedBuffer>>>() {
             @Override
             protected Map<Integer, Queue<CachedBuffer>> initialValue() {
@@ -133,36 +133,11 @@ public class CachedBufferAllocator implements IoBufferAllocator {
 
 
     /**
-     * Returns the maximum number of buffers with the same capacity per thread.
-     * <tt>0</tt> means 'no limitation'.
+     * 返回具有指定大小的缓冲区
+     *
+     * @param requestedCapacity 缓冲区的容量
+     * @param direct            为true时，表示获取的是直接缓冲，否则获取的堆缓冲区
      */
-    public int getMaxPoolSize() {
-        return this.maxPoolSize;
-    }
-
-
-    /**
-     * Returns the maximum capacity of a cached buffer. A buffer whose capacity
-     * is bigger than this value is not pooled. <tt>0</tt> means 'no
-     * limitation'.
-     */
-    public int getMaxCachedBufferSize() {
-        return this.maxCachedBufferSize;
-    }
-
-
-    private Map<Integer, Queue<CachedBuffer>> newPoolMap() {
-        final Map<Integer, Queue<CachedBuffer>> poolMap = new HashMap<Integer, Queue<CachedBuffer>>();
-        final int poolSize = this.maxPoolSize == 0 ? DEFAULT_MAX_POOL_SIZE : this.maxPoolSize;
-        for (int i = 0; i < 31; i++) {
-            poolMap.put(1 << i, new CircularQueue<CachedBuffer>(poolSize));
-        }
-        poolMap.put(0, new CircularQueue<CachedBuffer>(poolSize));
-        poolMap.put(Integer.MAX_VALUE, new CircularQueue<CachedBuffer>(poolSize));
-        return poolMap;
-    }
-
-
     public IoBuffer allocate(final int requestedCapacity, final boolean direct) {
         final int actualCapacity = IoBuffer.normalizeCapacity(requestedCapacity);
         IoBuffer buf;
@@ -199,18 +174,59 @@ public class CachedBufferAllocator implements IoBufferAllocator {
         return buf;
     }
 
-
+    /**
+     * 返回具有指定大小的NIO缓冲区
+     *
+     * @param capacity 缓冲区的容量
+     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区
+     */
     public ByteBuffer allocateNioBuffer(final int capacity, final boolean direct) {
         return this.allocate(capacity, direct).buf();
     }
 
-
+    /**
+     * 将指定的Nio的缓冲区（ByteBuffer）对象包装为MINA缓冲区（IoBuffer）并返回
+     *
+     * @param nioBuffer
+     * @return
+     */
     public IoBuffer wrap(final ByteBuffer nioBuffer) {
         return new CachedBuffer(nioBuffer);
     }
 
-
+    /**
+     * 销毁该分配器
+     */
     public void dispose() {
+    }
+
+
+
+    private Map<Integer, Queue<CachedBuffer>> newPoolMap() {
+        final Map<Integer, Queue<CachedBuffer>> poolMap = new HashMap<Integer, Queue<CachedBuffer>>();
+        final int poolSize = this.maxPoolSize == 0 ? DEFAULT_MAX_POOL_SIZE : this.maxPoolSize;
+        for (int i = 0; i < 31; i++) {
+            poolMap.put(1 << i, new CircularQueue<CachedBuffer>(poolSize));
+        }
+
+        poolMap.put(0, new CircularQueue<CachedBuffer>(poolSize));
+        poolMap.put(Integer.MAX_VALUE, new CircularQueue<CachedBuffer>(poolSize));
+        return poolMap;
+    }
+    /**
+     * Returns the maximum number of buffers with the same capacity per thread.
+     * <tt>0</tt> means 'no limitation'.
+     */
+    public int getMaxPoolSize() {
+        return this.maxPoolSize;
+    }
+    /**
+     * Returns the maximum capacity of a cached buffer. A buffer whose capacity
+     * is bigger than this value is not pooled. <tt>0</tt> means 'no
+     * limitation'.
+     */
+    public int getMaxCachedBufferSize() {
+        return this.maxCachedBufferSize;
     }
 
     private class CachedBuffer extends AbstractIoBuffer {
@@ -224,7 +240,6 @@ public class CachedBufferAllocator implements IoBufferAllocator {
             this.buf = buf;
             buf.order(ByteOrder.BIG_ENDIAN);
         }
-
 
         protected CachedBuffer(final CachedBuffer parent, final ByteBuffer buf) {
             super(parent);
@@ -240,7 +255,6 @@ public class CachedBufferAllocator implements IoBufferAllocator {
             }
             return this.buf;
         }
-
 
         @Override
         protected void buf(final ByteBuffer buf) {
@@ -284,7 +298,6 @@ public class CachedBufferAllocator implements IoBufferAllocator {
         public boolean hasArray() {
             return this.buf().hasArray();
         }
-
 
         @Override
         public void free() {
