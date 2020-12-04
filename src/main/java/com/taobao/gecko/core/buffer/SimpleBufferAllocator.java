@@ -79,8 +79,6 @@ public class SimpleBufferAllocator implements IoBufferAllocator {
             this.buf = buf;
             buf.order(ByteOrder.BIG_ENDIAN);
         }
-
-
         protected SimpleBuffer(SimpleBuffer parent, ByteBuffer buf) {
             super(parent);
             this.buf = buf;

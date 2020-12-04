@@ -53,7 +53,6 @@ import java.nio.charset.CharsetEncoder;
 import java.util.EnumSet;
 import java.util.Set;
 
-
 /**
  * A byte buffer used by MINA applications.
  * <p>
@@ -166,60 +165,24 @@ import java.util.Set;
  * $
  */
 public abstract class IoBuffer implements Comparable<IoBuffer> {
-    /**
-     * The allocator used to create new buffers
-     */
-    private static IoBufferAllocator allocator = new SimpleBufferAllocator();
 
     /**
      * A flag indicating which type of buffer we are using : heap or direct
      */
     private static boolean useDirectBuffer = false;
 
-
     /**
-     * Returns the allocator used by existing and new buffers
+     * The allocator used to create new buffers
      */
-    public static IoBufferAllocator getAllocator() {
-        return allocator;
-    }
+    private static IoBufferAllocator allocator = new SimpleBufferAllocator();
 
 
     /**
-     * Sets the allocator used by existing and new buffers
+     * Creates a new instance. This is an empty constructor.
      */
-    public static void setAllocator(IoBufferAllocator newAllocator) {
-        if (newAllocator == null) {
-            throw new NullPointerException("allocator");
-        }
-
-        IoBufferAllocator oldAllocator = allocator;
-
-        allocator = newAllocator;
-
-        if (null != oldAllocator) {
-            oldAllocator.dispose();
-        }
+    protected IoBuffer() {
     }
 
-
-    /**
-     * Returns <tt>true</tt> if and only if a direct buffer is allocated by
-     * default when the type of the new buffer is not specified. The default
-     * value is <tt>false</tt>.
-     */
-    public static boolean isUseDirectBuffer() {
-        return useDirectBuffer;
-    }
-
-
-    /**
-     * Sets if a direct buffer should be allocated by default when the type of
-     * the new buffer is not specified. The default value is <tt>false</tt>.
-     */
-    public static void setUseDirectBuffer(boolean useDirectBuffer) {
-        IoBuffer.useDirectBuffer = useDirectBuffer;
-    }
 
 
     /**
@@ -232,8 +195,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     public static IoBuffer allocate(int capacity) {
         return allocate(capacity, useDirectBuffer);
     }
-
-
     /**
      * Returns the buffer which is capable of the specified size.
      *
@@ -256,16 +217,12 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     public static IoBuffer wrap(ByteBuffer nioBuffer) {
         return allocator.wrap(nioBuffer);
     }
-
-
     /**
      * Wraps the specified byte array into MINA heap buffer.
      */
     public static IoBuffer wrap(byte[] byteArray) {
         return wrap(ByteBuffer.wrap(byteArray));
     }
-
-
     /**
      * Wraps the specified byte array into MINA heap buffer.
      */
@@ -328,11 +285,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
     }
 
 
-    /**
-     * Creates a new instance. This is an empty constructor.
-     */
-    protected IoBuffer() {
-    }
+
 
 
     /**
@@ -1007,8 +960,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @return hexidecimal representation of this buffer
      */
     public abstract String getHexDump();
-
-
     /**
      * Return hexdump of this buffer with limited length.
      *
@@ -1029,8 +980,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * the limit of this buffer if no <tt>NUL</tt> is found.
      */
     public abstract String getString(CharsetDecoder decoder) throws CharacterCodingException;
-
-
     /**
      * Reads a <code>NUL</code>-terminated string from this buffer using the
      * specified <code>decoder</code> and returns it.
@@ -1038,7 +987,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param fieldSize the maximum number of bytes to read
      */
     public abstract String getString(int fieldSize, CharsetDecoder decoder) throws CharacterCodingException;
-
 
     /**
      * Writes the content of <code>in</code> into this buffer using the
@@ -1048,8 +996,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putString(CharSequence val, CharsetEncoder encoder) throws CharacterCodingException;
-
-
     /**
      * Writes the content of <code>in</code> into this buffer as a
      * <code>NUL</code>-terminated string using the specified
@@ -1064,8 +1010,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      *
      * @param fieldSize the maximum number of bytes to write
      */
-    public abstract IoBuffer putString(CharSequence val, int fieldSize, CharsetEncoder encoder)
-            throws CharacterCodingException;
+    public abstract IoBuffer putString(CharSequence val, int fieldSize, CharsetEncoder encoder) throws CharacterCodingException;
 
 
     /**
@@ -1074,8 +1019,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * method is a shortcut for <tt>getPrefixedString(2, decoder)</tt>.
      */
     public abstract String getPrefixedString(CharsetDecoder decoder) throws CharacterCodingException;
-
-
     /**
      * Reads a string which has a length field before the actual encoded string,
      * using the specified <code>decoder</code> and returns it.
@@ -1083,7 +1026,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param prefixLength the length of the length field (1, 2, or 4)
      */
     public abstract String getPrefixedString(int prefixLength, CharsetDecoder decoder) throws CharacterCodingException;
-
 
     /**
      * Writes the content of <code>in</code> into this buffer as a string which
@@ -1094,8 +1036,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @throws BufferOverflowException if the specified string doesn't fit
      */
     public abstract IoBuffer putPrefixedString(CharSequence in, CharsetEncoder encoder) throws CharacterCodingException;
-
-
     /**
      * Writes the content of <code>in</code> into this buffer as a string which
      * has a 16-bit length field before the actual encoded string, using the
@@ -1105,9 +1045,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param prefixLength the length of the length field (1, 2, or 4)
      * @throws BufferOverflowException if the specified string doesn't fit
      */
-    public abstract IoBuffer putPrefixedString(CharSequence in, int prefixLength, CharsetEncoder encoder)
-            throws CharacterCodingException;
-
+    public abstract IoBuffer putPrefixedString(CharSequence in, int prefixLength, CharsetEncoder encoder) throws CharacterCodingException;
 
     /**
      * Writes the content of <code>in</code> into this buffer as a string which
@@ -1120,10 +1058,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param padding      the number of padded <tt>NUL</tt>s (1 (or 0), 2, or 4)
      * @throws BufferOverflowException if the specified string doesn't fit
      */
-    public abstract IoBuffer putPrefixedString(CharSequence in, int prefixLength, int padding, CharsetEncoder encoder)
-            throws CharacterCodingException;
-
-
+    public abstract IoBuffer putPrefixedString(CharSequence in, int prefixLength, int padding, CharsetEncoder encoder) throws CharacterCodingException;
     /**
      * Writes the content of <code>in</code> into this buffer as a string which
      * has a 16-bit length field before the actual encoded string, using the
@@ -1134,17 +1069,13 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param padValue     the value of padded bytes
      * @throws BufferOverflowException if the specified string doesn't fit
      */
-    public abstract IoBuffer putPrefixedString(CharSequence val, int prefixLength, int padding, byte padValue,
-                                               CharsetEncoder encoder) throws CharacterCodingException;
-
+    public abstract IoBuffer putPrefixedString(CharSequence val, int prefixLength, int padding, byte padValue, CharsetEncoder encoder) throws CharacterCodingException;
 
     /**
      * Reads a Java object from the buffer using the context {@link ClassLoader}
      * of the current thread.
      */
     public abstract Object getObject() throws ClassNotFoundException;
-
-
     /**
      * Reads a Java object from the buffer using the specified
      * <tt>classLoader</tt>.
@@ -1172,8 +1103,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @throws BufferDataException      if data length is negative
      */
     public abstract boolean prefixedDataAvailable(int prefixLength);
-
-
     /**
      * Returns <tt>true</tt> if this buffer contains a data which has a data
      * length as a prefix and the buffer has remaining data as enough as
@@ -1210,29 +1139,21 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * bytes.
      */
     public abstract IoBuffer skip(int size);
-
-
     /**
      * Fills this buffer with the specified value. This method moves buffer
      * position forward.
      */
     public abstract IoBuffer fill(byte value, int size);
-
-
     /**
      * Fills this buffer with the specified value. This method does not change
      * buffer position.
      */
     public abstract IoBuffer fillAndReset(byte value, int size);
-
-
     /**
      * Fills this buffer with <code>NUL (0x00)</code>. This method moves buffer
      * position forward.
      */
     public abstract IoBuffer fill(int size);
-
-
     /**
      * Fills this buffer with <code>NUL (0x00)</code>. This method does not
      * change buffer position.
@@ -1252,8 +1173,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnum(Class<E> enumClass);
-
-
     /**
      * Reads a byte from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
@@ -1263,8 +1182,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnum(int index, Class<E> enumClass);
-
-
     /**
      * Reads a short from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
@@ -1273,8 +1190,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumShort(Class<E> enumClass);
-
-
     /**
      * Reads a short from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
@@ -1284,8 +1199,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumShort(int index, Class<E> enumClass);
-
-
     /**
      * Reads an int from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
@@ -1294,8 +1207,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param enumClass The enum's class object
      */
     public abstract <E extends Enum<E>> E getEnumInt(Class<E> enumClass);
-
-
     /**
      * Reads an int from the buffer and returns the correlating enum constant
      * defined by the specified enum type.
@@ -1313,8 +1224,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param e The enum to write to the buffer
      */
     public abstract IoBuffer putEnum(Enum<?> e);
-
-
     /**
      * Writes an enum's ordinal value to the buffer as a byte.
      *
@@ -1322,16 +1231,12 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param e     The enum to write to the buffer
      */
     public abstract IoBuffer putEnum(int index, Enum<?> e);
-
-
     /**
      * Writes an enum's ordinal value to the buffer as a short.
      *
      * @param e The enum to write to the buffer
      */
     public abstract IoBuffer putEnumShort(Enum<?> e);
-
-
     /**
      * Writes an enum's ordinal value to the buffer as a short.
      *
@@ -1339,16 +1244,12 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param e     The enum to write to the buffer
      */
     public abstract IoBuffer putEnumShort(int index, Enum<?> e);
-
-
     /**
      * Writes an enum's ordinal value to the buffer as an integer.
      *
      * @param e The enum to write to the buffer
      */
     public abstract IoBuffer putEnumInt(Enum<?> e);
-
-
     /**
      * Writes an enum's ordinal value to the buffer as an integer.
      *
@@ -1377,7 +1278,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @return the EnumSet representation of the bit vector
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSet(Class<E> enumClass);
-
     /**
      * Reads a byte sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1388,7 +1288,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSet(int index, Class<E> enumClass);
-
     /**
      * Reads a short sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1398,7 +1297,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetShort(Class<E> enumClass);
-
     /**
      * Reads a short sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1409,7 +1307,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetShort(int index, Class<E> enumClass);
-
     /**
      * Reads an int sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1419,7 +1316,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetInt(Class<E> enumClass);
-
     /**
      * Reads an int sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1430,7 +1326,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetInt(int index, Class<E> enumClass);
-
     /**
      * Reads a long sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1440,7 +1335,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @see #getEnumSet(Class)
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetLong(Class<E> enumClass);
-
     /**
      * Reads a long sized bit vector and converts it to an {@link EnumSet}.
      *
@@ -1452,6 +1346,7 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      */
     public abstract <E extends Enum<E>> EnumSet<E> getEnumSetLong(int index, Class<E> enumClass);
 
+
     /**
      * Writes the specified {@link Set} to the buffer as a byte sized bit
      * vector.
@@ -1460,7 +1355,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSet(Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as a byte sized bit
      * vector.
@@ -1470,7 +1364,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSet(int index, Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as a short sized bit
      * vector.
@@ -1479,7 +1372,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetShort(Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as a short sized bit
      * vector.
@@ -1489,7 +1381,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetShort(int index, Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as an int sized bit
      * vector.
@@ -1498,7 +1389,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetInt(Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as an int sized bit
      * vector.
@@ -1508,7 +1398,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetInt(int index, Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as a long sized bit
      * vector.
@@ -1517,7 +1406,6 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetLong(Set<E> set);
-
     /**
      * Writes the specified {@link Set} to the buffer as a long sized bit
      * vector.
@@ -1527,4 +1415,49 @@ public abstract class IoBuffer implements Comparable<IoBuffer> {
      * @param set   the enum set to write to the buffer
      */
     public abstract <E extends Enum<E>> IoBuffer putEnumSetLong(int index, Set<E> set);
+
+
+
+
+    // getter and setter ...
+
+    /**
+     * Returns the allocator used by existing and new buffers
+     */
+    public static IoBufferAllocator getAllocator() {
+        return allocator;
+    }
+    /**
+     * Sets the allocator used by existing and new buffers
+     */
+    public static void setAllocator(IoBufferAllocator newAllocator) {
+        if (newAllocator == null) {
+            throw new NullPointerException("allocator");
+        }
+
+        IoBufferAllocator oldAllocator = allocator;
+
+        allocator = newAllocator;
+
+        if (null != oldAllocator) {
+            oldAllocator.dispose();
+        }
+    }
+    /**
+     * Returns <tt>true</tt> if and only if a direct buffer is allocated by
+     * default when the type of the new buffer is not specified. The default
+     * value is <tt>false</tt>.
+     */
+    public static boolean isUseDirectBuffer() {
+        return useDirectBuffer;
+    }
+    /**
+     * Sets if a direct buffer should be allocated by default when the type of
+     * the new buffer is not specified. The default value is <tt>false</tt>.
+     */
+    public static void setUseDirectBuffer(boolean useDirectBuffer) {
+        IoBuffer.useDirectBuffer = useDirectBuffer;
+    }
+
+
 }

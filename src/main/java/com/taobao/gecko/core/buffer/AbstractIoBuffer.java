@@ -72,46 +72,39 @@ import java.util.Set;
  * @see IoBufferAllocator
  */
 public abstract class AbstractIoBuffer extends IoBuffer {
+
     /**
      * Tells if a buffer has been created from an existing buffer
      */
     private final boolean derived;
-
     /**
      * A flag set to true if the buffer can extend automatically
      */
     private boolean autoExpand;
-
     /**
      * A flag set to true if the buffer can shrink automatically
      */
     private boolean autoShrink;
-
     /**
      * Tells if a buffer can be expanded
      */
     private boolean recapacityAllowed = true;
-
     /**
      * The minimum number of bytes the IoBuffer can hold
      */
     private int minimumCapacity;
-
     /**
      * A mask for a byte
      */
     private static final long BYTE_MASK = 0xFFL;
-
     /**
      * A mask for a short
      */
     private static final long SHORT_MASK = 0xFFFFL;
-
     /**
      * A mask for an int
      */
     private static final long INT_MASK = 0xFFFFFFFFL;
-
     /**
      * We don't have any access to Buffer.markValue(), so we need to track it
      * down, which will cause small extra overhead.
@@ -131,8 +124,6 @@ public abstract class AbstractIoBuffer extends IoBuffer {
         this.derived = false;
         this.minimumCapacity = initialCapacity;
     }
-
-
     /**
      * Creates a new derived buffer. A derived buffer uses an existing buffer
      * properties - the allocator and capacity -.

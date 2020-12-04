@@ -72,9 +72,14 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
             }
 
         }
+
+        // 分配内存大小
         final IoBuffer buffer =
-                IoBuffer.allocate(1 + 4 + 4 + this.beanName.length() + 4 + this.methodName.length() + 4
-                        + (argumentsData != null ? 4 : 0) + (argumentsData != null ? argumentsData.length : 0));
+                IoBuffer.allocate(
+                        1 + 4
+                                + 4 + this.beanName.length()
+                                + 4 + this.methodName.length()
+                                + 4 + (argumentsData != null ? 4 : 0) + (argumentsData != null ? argumentsData.length : 0));
         buffer.put(RpcCodecFactory.REQ_MAGIC);
         buffer.putInt(this.opaque);
         buffer.putInt(this.beanName.length());
@@ -86,6 +91,8 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
             buffer.putInt(argumentsData.length);
             buffer.put(argumentsData);
         }
+
+        // 将缓冲区转为读模式
         buffer.flip();
         return buffer;
     }
@@ -96,6 +103,7 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
      * @return
      */
     public boolean decode(final IoBuffer buffer) {
+        // 调用mark()来设置mark=position，再调用reset()可以让position恢复到标记的位置
         buffer.mark();
         if (buffer.remaining() >= 4) {
             this.setOpaque(buffer.getInt());
