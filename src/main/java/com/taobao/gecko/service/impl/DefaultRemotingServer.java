@@ -65,23 +65,26 @@ public class DefaultRemotingServer extends BaseRemotingController implements Rem
      * @return
      */
     public synchronized URI getConnectURI() {
+        // 获取服务绑定的地址
         final InetSocketAddress socketAddress = this.getInetSocketAddress();
         if (socketAddress == null) {
             throw new IllegalStateException("server未启动");
         }
+
         InetAddress inetAddress = null;
         try {
             inetAddress = RemotingUtils.getLocalHostAddress();
         } catch (final Exception e) {
             throw new IllegalStateException("获取IP地址失败", e);
         }
+
         try {
             if (inetAddress instanceof Inet4Address) {
-                return new URI(this.config.getWireFormatType().getScheme() + "://" + inetAddress.getHostAddress() + ":"
-                        + socketAddress.getPort());
+                return new URI(this.config.getWireFormatType().getScheme() + "://"
+                        + inetAddress.getHostAddress() + ":" + socketAddress.getPort());
             } else if (inetAddress instanceof Inet6Address) {
-                return new URI(this.config.getWireFormatType().getScheme() + "://[" + inetAddress.getHostAddress()
-                        + "]:" + socketAddress.getPort());
+                return new URI(this.config.getWireFormatType().getScheme() + "://["
+                        + inetAddress.getHostAddress() + "]:" + socketAddress.getPort());
             } else {
                 throw new IllegalStateException("Unknow InetAddress type " + inetAddress);
             }

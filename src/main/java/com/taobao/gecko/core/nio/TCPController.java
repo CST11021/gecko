@@ -97,6 +97,7 @@ public class TCPController extends SocketChannelController implements ServerCont
             this.serverSocketChannel.socket().setPerformancePreferences(this.connectionTime, this.latency, this.bandwidth);
         }
 
+        // 设置为非阻塞
         this.serverSocketChannel.configureBlocking(false);
 
         // 设置通道的so_reuseaddr属性
@@ -121,12 +122,12 @@ public class TCPController extends SocketChannelController implements ServerCont
 
         this.setLocalSocketAddress((InetSocketAddress) this.serverSocketChannel.socket().getLocalSocketAddress());
 
-        // 通过selectorManager注册通道到selector
+        // 通过selectorManager，将通道注册到selector
         this.selectorManager.registerChannel(this.serverSocketChannel, SelectionKey.OP_ACCEPT, null);
     }
 
     /**
-     * 当接收到来自客户端的建立连接请求时，会调用该方法
+     * 当接收到来自客户端的建立连接请求时，会调用该方法创建session，并通过selectorManager注册session
      *
      * @param selectionKey
      * @throws IOException
@@ -160,16 +161,32 @@ public class TCPController extends SocketChannelController implements ServerCont
         }
     }
 
+    /**
+     * 关闭serverSocketChannel
+     *
+     * @throws IOException
+     */
     @Override
     protected void stop0() throws IOException {
         this.closeServerChannel();
         super.stop0();
     }
 
+    /**
+     * 关闭通道
+     *
+     * @param selector
+     * @throws IOException
+     */
     public void closeChannel(final Selector selector) throws IOException {
         this.closeServerChannel();
     }
 
+    /**
+     * 停止服务
+     *
+     * @throws IOException
+     */
     public void unbind() throws IOException {
         this.stop();
     }
@@ -185,6 +202,11 @@ public class TCPController extends SocketChannelController implements ServerCont
         }
     }
 
+    /**
+     * 关闭serverSocketChannel
+     *
+     * @throws IOException
+     */
     private void closeServerChannel() throws IOException {
         if (this.serverSocketChannel != null && this.serverSocketChannel.isOpen()) {
             this.serverSocketChannel.close();

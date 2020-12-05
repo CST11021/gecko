@@ -26,15 +26,6 @@
  */
 package com.taobao.gecko.core.nio.impl;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.util.Queue;
-
 import com.taobao.gecko.core.config.Configuration;
 import com.taobao.gecko.core.core.CodecFactory;
 import com.taobao.gecko.core.core.EventType;
@@ -44,11 +35,18 @@ import com.taobao.gecko.core.core.impl.StandardSocketOption;
 import com.taobao.gecko.core.nio.NioSession;
 import com.taobao.gecko.core.util.SystemUtils;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Queue;
+
 
 /**
- * Nio的UDP实现
- *
- *
+ * Nio的UDP实现：基于Nio的java.nio.channels.DatagramChannel实现
  *
  * @author boyan
  *
@@ -65,7 +63,25 @@ public abstract class DatagramChannelController extends NioController {
         super();
         this.maxDatagramPacketLength = 4096;
     }
+    public DatagramChannelController(final Configuration configuration) {
+        super(configuration, null, null);
+        this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
+                .getSessionReadBufferSize());
+    }
+    public DatagramChannelController(final Configuration configuration, final CodecFactory codecFactory) {
+        super(configuration, null, codecFactory);
+        this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
+                .getSessionReadBufferSize());
+    }
+    public DatagramChannelController(final Configuration configuration, final Handler handler, final CodecFactory codecFactory) {
+        super(configuration, handler, codecFactory);
+        this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
+                .getSessionReadBufferSize());
+    }
 
+
+
+    // 扩展NioController
 
     @Override
     protected void doStart() throws IOException {
@@ -73,35 +89,6 @@ public abstract class DatagramChannelController extends NioController {
         this.initialSelectorManager();
         this.buildUDPSession();
     }
-
-
-    public DatagramChannelController(final Configuration configuration) {
-        super(configuration, null, null);
-        this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
-                .getSessionReadBufferSize());
-    }
-
-
-    public DatagramChannelController(final Configuration configuration, final CodecFactory codecFactory) {
-        super(configuration, null, codecFactory);
-        this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
-                .getSessionReadBufferSize());
-    }
-
-
-    public DatagramChannelController(final Configuration configuration, final Handler handler,
-                                     final CodecFactory codecFactory) {
-        super(configuration, handler, codecFactory);
-        this.setMaxDatagramPacketLength(configuration.getSessionReadBufferSize() > 9216 ? 4096 : configuration
-                .getSessionReadBufferSize());
-    }
-
-
-    public int getMaxDatagramPacketLength() {
-        return this.maxDatagramPacketLength;
-    }
-
-
     @Override
     public void setReadThreadCount(final int readThreadCount) {
         if (readThreadCount > 1) {
@@ -109,7 +96,44 @@ public abstract class DatagramChannelController extends NioController {
         }
         super.setReadThreadCount(readThreadCount);
     }
+    @Override
+    protected void stop0() throws IOException {
+        this.closeChannel0();
+        super.stop0();
+    }
+    @Override
+    protected void dispatchReadEvent(final SelectionKey key) {
+        if (this.udpSession != null) {
+            this.udpSession.onEvent(EventType.READABLE, key.selector());
+        } else {
+            log.warn("NO session to dispatch read event");
+        }
 
+    }
+
+    @Override
+    protected void dispatchWriteEvent(final SelectionKey key) {
+        if (this.udpSession != null) {
+            this.udpSession.onEvent(EventType.WRITEABLE, key.selector());
+        } else {
+            log.warn("NO session to dispatch write event");
+        }
+
+    }
+
+
+    // 实现SelectionKeyHandler接口
+
+    public void closeChannel(final Selector selector) throws IOException {
+        this.closeChannel0();
+        selector.selectNow();
+    }
+
+
+
+    public int getMaxDatagramPacketLength() {
+        return this.maxDatagramPacketLength;
+    }
 
     public void setMaxDatagramPacketLength(final int maxDatagramPacketLength) {
         if (this.isStarted()) {
@@ -124,32 +148,9 @@ public abstract class DatagramChannelController extends NioController {
         this.maxDatagramPacketLength = maxDatagramPacketLength;
     }
 
-
-    public void closeChannel(final Selector selector) throws IOException {
-        this.closeChannel0();
-        selector.selectNow();
-    }
-
-
-    private void closeChannel0() throws IOException {
-        if (this.udpSession != null && !this.udpSession.isClosed()) {
-            this.udpSession.close();
-            this.udpSession = null;
-        }
-        if (this.channel != null && this.channel.isOpen()) {
-            this.channel.close();
-            this.channel = null;
-        }
-    }
-
-
-    @Override
-    protected void stop0() throws IOException {
-        this.closeChannel0();
-        super.stop0();
-    }
-
-
+    /**
+     * 创建一个NioUDPSession实例
+     */
     protected void buildUDPSession() {
         final Queue<WriteMessage> queue = this.buildQueue();
         this.udpSession = new NioUDPSession(this.buildSessionConfig(this.channel, queue), this.maxDatagramPacketLength);
@@ -157,7 +158,13 @@ public abstract class DatagramChannelController extends NioController {
         this.udpSession.start();
     }
 
-
+    /**
+     * 开启一个基于DatagramChannel实现UDP协议的服务
+     *
+     * @throws IOException
+     * @throws SocketException
+     * @throws ClosedChannelException
+     */
     protected void buildDatagramChannel() throws IOException, SocketException, ClosedChannelException {
         this.channel = DatagramChannel.open();
         this.channel.socket().setSoTimeout(this.soTimeout);
@@ -167,45 +174,47 @@ public abstract class DatagramChannelController extends NioController {
                     StandardSocketOption.SO_REUSEADDR.type()
                             .cast(this.socketOptions.get(StandardSocketOption.SO_REUSEADDR)));
         }
+
+        // 设置socket的SO_RCVBUF选项
         if (this.socketOptions.get(StandardSocketOption.SO_RCVBUF) != null) {
             this.channel.socket().setReceiveBufferSize(
                     StandardSocketOption.SO_RCVBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_RCVBUF)));
 
         }
+
+        // 设置socket的SO_SNDBUF选线
         if (this.socketOptions.get(StandardSocketOption.SO_SNDBUF) != null) {
             this.channel.socket().setSendBufferSize(
                     StandardSocketOption.SO_SNDBUF.type().cast(this.socketOptions.get(StandardSocketOption.SO_SNDBUF)));
         }
+
+        // 设置为非阻塞
         this.channel.configureBlocking(false);
         if (this.localSocketAddress != null) {
             this.channel.socket().bind(this.localSocketAddress);
         } else {
             this.channel.socket().bind(new InetSocketAddress("localhost", 0));
         }
+
         this.setLocalSocketAddress((InetSocketAddress) this.channel.socket().getLocalSocketAddress());
-
     }
 
 
-    @Override
-    protected void dispatchReadEvent(final SelectionKey key) {
-        if (this.udpSession != null) {
-            this.udpSession.onEvent(EventType.READABLE, key.selector());
-        } else {
-            log.warn("NO session to dispatch read event");
+    /**
+     * 关闭通道
+     *
+     * @throws IOException
+     */
+    private void closeChannel0() throws IOException {
+        if (this.udpSession != null && !this.udpSession.isClosed()) {
+            this.udpSession.close();
+            this.udpSession = null;
         }
 
-    }
-
-
-    @Override
-    protected void dispatchWriteEvent(final SelectionKey key) {
-        if (this.udpSession != null) {
-            this.udpSession.onEvent(EventType.WRITEABLE, key.selector());
-        } else {
-            log.warn("NO session to dispatch write event");
+        if (this.channel != null && this.channel.isOpen()) {
+            this.channel.close();
+            this.channel = null;
         }
-
     }
 
 }

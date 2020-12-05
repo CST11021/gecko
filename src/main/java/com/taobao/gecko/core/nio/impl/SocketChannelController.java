@@ -58,6 +58,12 @@ public abstract class SocketChannelController extends NioController {
         this.socketOptions.put(StandardSocketOption.SO_LINGER, value);
     }
 
+    /**
+     * Dispatch read event
+     *
+     * @param key
+     * @return
+     */
     @Override
     protected final void dispatchReadEvent(final SelectionKey key) {
         final Session session = (Session) key.attachment();
@@ -69,6 +75,12 @@ public abstract class SocketChannelController extends NioController {
         }
     }
 
+    /**
+     * Dispatch write event
+     *
+     * @param key
+     * @return
+     */
     @Override
     protected final void dispatchWriteEvent(final SelectionKey key) {
         final Session session = (Session) key.attachment();

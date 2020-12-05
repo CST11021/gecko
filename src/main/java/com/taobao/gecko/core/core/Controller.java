@@ -21,16 +21,41 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 /**
- * 网络层IO主控接口
+ * Controller是网络层IO主控接口，其客户端连接器和服务端的实现都继承该接口
+ *
+ * 客户端网络IO实现：
+ *      GeckoTCPConnectorController
+ *      TCPConnectorController
+ *      UDPConnectorController
+ *
+ * 服务端网络IO实现：
+ *      TCPController
+ *      UDPController
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:57:49
  */
 public interface Controller {
 
+    /**
+     * 启动客户端或者服务端
+     *
+     * @throws IOException
+     */
     void start() throws IOException;
+
+    /**
+     * 返回客户端或服务端是否启动
+     *
+     * @return
+     */
     boolean isStarted();
 
+    /**
+     * 停止客户端或者服务端
+     *
+     * @throws IOException
+     */
     void stop() throws IOException;
 
 
@@ -53,8 +78,20 @@ public interface Controller {
      */
     void setLocalSocketAddress(InetSocketAddress inetAddress);
 
+    /**
+     * 获取统计器组件
+     *
+     * @return
+     */
     Statistics getStatistics();
 
+    /**
+     * 设置Socket选项
+     *
+     * @param socketOption
+     * @param value
+     * @param <T>
+     */
     <T> void setSocketOption(SocketOption<T> socketOption, T value);
 
     //
@@ -62,21 +99,32 @@ public interface Controller {
     long getSessionTimeout();
     void setSessionTimeout(long sessionTimeout);
 
-    public long getSessionIdleTimeout();
-    public void setSessionIdleTimeout(long sessionIdleTimeout);
+    long getSessionIdleTimeout();
+    void setSessionIdleTimeout(long sessionIdleTimeout);
 
     int getSoTimeout();
     void setSoTimeout(int timeout);
 
+    /**
+     * 添加Controller生命周期监听器
+     *
+     * @param listener
+     */
     void addStateListener(ControllerStateListener listener);
-    public void removeStateListener(ControllerStateListener listener);
+
+    /**
+     * 移除Controller生命周期监听器
+     *
+     * @param listener
+     */
+    void removeStateListener(ControllerStateListener listener);
 
     boolean isHandleReadWriteConcurrently();
     void setHandleReadWriteConcurrently(boolean handleReadWriteConcurrently);
 
 
 
-    /** 会话生命周期处理 */
+    /** 会话生命周期处理器 */
     Handler getHandler();
     void setHandler(Handler handler);
 
@@ -91,10 +139,32 @@ public interface Controller {
     int getDispatchMessageThreadCount();
     void setDispatchMessageThreadCount(int dispatchMessageThreadPoolSize);
 
+    /**
+     * readEventDispatcher派发器的线程数
+     *
+     * @return
+     */
     int getReadThreadCount();
+
+    /**
+     * readEventDispatcher派发器的线程数
+     *
+     * @param readThreadCount
+     */
     void setReadThreadCount(int readThreadCount);
 
+    /**
+     * writeEventDispatcher派发器的线程数
+     *
+     * @return
+     */
     int getWriteThreadCount();
+
+    /**
+     * writeEventDispatcher派发器的线程数
+     *
+     * @param writeThreadCount
+     */
     void setWriteThreadCount(int writeThreadCount);
 
 

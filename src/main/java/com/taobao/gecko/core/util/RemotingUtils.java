@@ -51,7 +51,13 @@ public class RemotingUtils {
     }
 
 
-    // 遍历网卡，查找一个非回路ip地址并返回，如果没有找到，则返回InetAddress.getLocalHost()
+    /**
+     * 遍历网卡，查找一个非回路ip地址并返回，如果没有找到，则返回InetAddress.getLocalHost()
+     *
+     * @return
+     * @throws UnknownHostException
+     * @throws SocketException
+     */
     public static InetAddress getLocalHostAddress() throws UnknownHostException, SocketException {
         final Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
         InetAddress ipv6Address = null;

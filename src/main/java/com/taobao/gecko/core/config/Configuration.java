@@ -27,7 +27,7 @@
 package com.taobao.gecko.core.config;
 
 /**
- * Yanf4j 配置对象
+ * 用于创建SocketChannelController对象的配置类
  *
  * @author dennis
  *
@@ -44,22 +44,27 @@ public class Configuration {
 
     private int soTimeout = 0;
 
-    private int writeThreadCount = 0;
-
-    private boolean statisticsServer = false;
-
     private boolean handleReadWriteConcurrently = true;
-
-    private int dispatchMessageThreadCount = 0;
 
     private int readThreadCount = 0;
 
-    private volatile long checkSessionTimeoutInterval = 1000L;
+    private int writeThreadCount = 0;
 
-    protected long statisticsInterval = 5 * 60 * 1000L;
+    private int dispatchMessageThreadCount = 0;
 
     /** session空闲超时时间，默认5秒 */
     private volatile long sessionIdleTimeout = 5000L;
+
+    /** 检查session是否超时的间隔时间，默认是1秒 */
+    private volatile long checkSessionTimeoutInterval = 1000L;
+
+    /** 是否开启统计组件 */
+    private boolean statisticsServer = false;
+
+    /** 统计周期：统计器的统计间隔时间，默认5分钟 */
+    protected long statisticsInterval = 5 * 60 * 1000L;
+
+
 
 
 
