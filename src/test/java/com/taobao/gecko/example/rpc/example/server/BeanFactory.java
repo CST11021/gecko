@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.taobao.gecko.example.rpc.registry;
+package com.taobao.gecko.example.rpc.example.server;
 
 /**
  * 服务查找器
@@ -21,7 +21,7 @@ package com.taobao.gecko.example.rpc.registry;
  * @author boyan
  * @Date 2011-2-17
  */
-public interface Registry {
+public class BeanFactory {
 
     /**
      * 根据服务名获取服务实现
@@ -29,6 +29,11 @@ public interface Registry {
      * @param name
      * @return
      */
-    Object findServer(String name);
+    public Object getBeanByName(String name) {
+        if (name.equals("hello")) {
+            return new HelloImpl();
+        }
+        return null;
+    }
 
 }

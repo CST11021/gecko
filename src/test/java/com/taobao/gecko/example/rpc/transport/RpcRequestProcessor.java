@@ -18,9 +18,8 @@ package com.taobao.gecko.example.rpc.transport;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 import com.taobao.gecko.example.rpc.command.RpcResponse;
-import com.taobao.gecko.example.rpc.registry.Registry;
+import com.taobao.gecko.example.rpc.example.server.BeanFactory;
 import com.taobao.gecko.example.rpc.server.InvokeUtil;
-import com.taobao.gecko.example.rpc.registry.RegistryImpl;
 import com.taobao.gecko.service.Connection;
 import com.taobao.gecko.service.RequestProcessor;
 
@@ -33,13 +32,13 @@ public class RpcRequestProcessor implements RequestProcessor<RpcRequest> {
 
     private final ThreadPoolExecutor executor;
 
-    private final Registry registry;
+    private final BeanFactory beanFactory;
 
 
     public RpcRequestProcessor(ThreadPoolExecutor executor) {
         super();
         this.executor = executor;
-        this.registry = new RegistryImpl();
+        this.beanFactory = new BeanFactory();
     }
 
 
@@ -56,7 +55,7 @@ public class RpcRequestProcessor implements RequestProcessor<RpcRequest> {
      * @param conn    请求来源的连接
      */
     public void handleRequest(RpcRequest request, Connection conn) {
-        Object bean = this.registry.findServer(request.getBeanName());
+        Object bean = this.beanFactory.getBeanByName(request.getBeanName());
         if (bean == null) {
             throw new RuntimeException("Could not find bean named " + request.getBeanName());
         }

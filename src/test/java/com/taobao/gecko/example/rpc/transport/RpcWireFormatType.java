@@ -19,7 +19,9 @@ import com.taobao.gecko.core.command.CommandFactory;
 import com.taobao.gecko.core.core.CodecFactory;
 import com.taobao.gecko.service.config.WireFormatType;
 
-
+/**
+ * 提供实现Rpc的一些协议，包括：编解码和请求/响应协议
+ */
 public class RpcWireFormatType extends WireFormatType {
 
     private static final String SCHEME = "rpc";
