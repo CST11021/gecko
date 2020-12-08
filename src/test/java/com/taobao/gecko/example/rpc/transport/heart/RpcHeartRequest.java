@@ -1,4 +1,4 @@
-package com.taobao.gecko.example.rpc.transport;
+package com.taobao.gecko.example.rpc.transport.heart;
 
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.command.CommandHeader;
@@ -6,7 +6,7 @@ import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
 import com.taobao.gecko.example.rpc.command.RpcCommand;
 import com.taobao.gecko.example.rpc.command.RpcRequest;
 
-public class RpcHeartBeatCommand implements HeartBeatRequestCommand, RpcCommand {
+public class RpcHeartRequest implements HeartBeatRequestCommand, RpcCommand {
 
     private RpcRequest request = new RpcRequest("heartBeat" + System.currentTimeMillis(), "heartBeat" + System.currentTimeMillis(), null);
 
