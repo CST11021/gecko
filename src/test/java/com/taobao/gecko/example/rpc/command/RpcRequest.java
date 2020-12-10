@@ -80,7 +80,9 @@ public class RpcRequest implements RequestCommand, CommandHeader, RpcCommand {
                                 + 4 + this.beanName.length()
                                 + 4 + this.methodName.length()
                                 + 4 + (argumentsData != null ? 4 : 0) + (argumentsData != null ? argumentsData.length : 0));
+        // 标记位：1个字节
         buffer.put(RpcCodecFactory.REQ_MAGIC);
+        // int占用4个字节
         buffer.putInt(this.opaque);
         buffer.putInt(this.beanName.length());
         buffer.put(this.beanName.getBytes());
