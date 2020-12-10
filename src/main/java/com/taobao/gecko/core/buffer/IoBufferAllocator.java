@@ -47,10 +47,12 @@ import java.nio.ByteBuffer;
 public interface IoBufferAllocator {
 
     /**
-     * 返回具有指定大小的缓冲区
+     * 返回具有指定大小的NIO缓冲区
      *
-     * @param capacity  缓冲区的容量
-     * @param direct    为true时，表示获取的是直接缓冲，否则获取的堆缓冲区
+     * @param capacity 缓冲区的容量
+     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区，直接缓冲区和堆缓冲区实现如下：
+     *                 直接缓冲区：ByteBuffer.allocateDirect(capacity)
+     *                 堆缓冲区：ByteBuffer.allocate(capacity);
      */
     IoBuffer allocate(int capacity, boolean direct);
 
@@ -58,7 +60,9 @@ public interface IoBufferAllocator {
      * 返回具有指定大小的NIO缓冲区
      *
      * @param capacity 缓冲区的容量
-     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区
+     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区，直接缓冲区和堆缓冲区实现如下：
+     *                 直接缓冲区：ByteBuffer.allocateDirect(capacity)
+     *                 堆缓冲区：ByteBuffer.allocate(capacity);
      */
     ByteBuffer allocateNioBuffer(int capacity, boolean direct);
 

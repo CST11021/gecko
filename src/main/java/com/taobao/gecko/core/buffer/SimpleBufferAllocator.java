@@ -47,20 +47,42 @@ import java.nio.ByteOrder;
  */
 public class SimpleBufferAllocator implements IoBufferAllocator {
 
+    /**
+     * 返回具有指定大小的NIO缓冲区
+     *
+     * @param capacity 缓冲区的容量
+     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区，直接缓冲区和堆缓冲区实现如下：
+     *                 直接缓冲区：ByteBuffer.allocateDirect(capacity)
+     *                 堆缓冲区：ByteBuffer.allocate(capacity);
+     */
     public IoBuffer allocate(int capacity, boolean direct) {
         return wrap(allocateNioBuffer(capacity, direct));
     }
-
+    /**
+     * 返回具有指定大小的NIO缓冲区
+     *
+     * @param capacity 缓冲区的容量
+     * @param direct   为true时，表示获取的是直接缓冲，否则获取的堆缓冲区，直接缓冲区和堆缓冲区实现如下：
+     *                 直接缓冲区：ByteBuffer.allocateDirect(capacity)
+     *                 堆缓冲区：ByteBuffer.allocate(capacity);
+     */
     public ByteBuffer allocateNioBuffer(int capacity, boolean direct) {
         ByteBuffer nioBuffer;
         if (direct) {
             nioBuffer = ByteBuffer.allocateDirect(capacity);
         } else {
+            // 这里分配的ByteBuffer都是用0填充的
             nioBuffer = ByteBuffer.allocate(capacity);
         }
         return nioBuffer;
     }
 
+    /**
+     * 将java.nio.ByteBuffer封装为IoBuffer返回
+     *
+     * @param nioBuffer
+     * @return
+     */
     public IoBuffer wrap(ByteBuffer nioBuffer) {
         return new SimpleBuffer(nioBuffer);
     }
@@ -84,54 +106,45 @@ public class SimpleBufferAllocator implements IoBufferAllocator {
             this.buf = buf;
         }
 
-
         @Override
         public ByteBuffer buf() {
             return buf;
         }
-
 
         @Override
         protected void buf(ByteBuffer buf) {
             this.buf = buf;
         }
 
-
         @Override
         protected IoBuffer duplicate0() {
             return new SimpleBuffer(this, this.buf.duplicate());
         }
-
 
         @Override
         protected IoBuffer slice0() {
             return new SimpleBuffer(this, this.buf.slice());
         }
 
-
         @Override
         protected IoBuffer asReadOnlyBuffer0() {
             return new SimpleBuffer(this, this.buf.asReadOnlyBuffer());
         }
-
 
         @Override
         public byte[] array() {
             return buf.array();
         }
 
-
         @Override
         public int arrayOffset() {
             return buf.arrayOffset();
         }
 
-
         @Override
         public boolean hasArray() {
             return buf.hasArray();
         }
-
 
         @Override
         public void free() {
