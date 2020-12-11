@@ -72,7 +72,6 @@ public class GeckoHandler implements Handler {
             this.processor.handleRequest(this.message, this.defaultConnection);
         }
     }
-
     /**
      * 心跳命令的异步监听器
      *
@@ -137,7 +136,6 @@ public class GeckoHandler implements Handler {
             }
         }
     }
-
     /** 重连管理器 */
     private ReconnectManager reconnectManager;
     /** 当前连接的上下文 */
@@ -169,42 +167,11 @@ public class GeckoHandler implements Handler {
     }
 
     /**
-     * 网络IO异常的时候会调用该方法
+     * 启动会话的时候调用
      *
      * @param session
-     * @param throwable
      */
-    public void onExceptionCaught(final Session session, final Throwable throwable) {
-        if (throwable.getCause() != null) {
-            ExceptionMonitor.getInstance().exceptionCaught(throwable.getCause());
-        } else {
-            ExceptionMonitor.getInstance().exceptionCaught(throwable);
-        }
-    }
-
-    /**
-     * 处理接收到的消息
-     *
-     * @param session
-     * @param message
-     */
-    public void onMessageReceived(final Session session, final Object message) {
-        final DefaultConnection defaultConnection = this.remotingContext.getConnectionBySession((NioSession) session);
-        if (defaultConnection == null) {
-            log.error("Connection[" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()) + "]已经被关闭，无法处理消息");
-            session.close();
-            return;
-        }
-
-        if (message instanceof RequestCommand) {
-            // 当消息是请求类型时，发送请求
-            this.processRequest(session, message, defaultConnection);
-        } else if (message instanceof ResponseCommand) {
-            // 当消息类型是响应类型时，触发回调逻辑
-            this.processResponse(message, defaultConnection);
-        } else {
-            throw new IllegalMessageException("未知的消息类型" + message);
-        }
+    public void onSessionStarted(final Session session) {
 
     }
 
@@ -241,32 +208,29 @@ public class GeckoHandler implements Handler {
         }
     }
 
-
-
-    public void onSessionExpired(final Session session) {
-
-    }
-
     /**
-     * 当客户端检测到session闲置的时候，会调用该方法，向服务端发送心跳包
+     * 处理接收到的消息
      *
      * @param session
+     * @param message
      */
-    public void onSessionIdle(final Session session) {
-        final Connection conn = this.remotingContext.getConnectionBySession((NioSession) session);
-        try {
-            conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(conn), 5000, TimeUnit.MILLISECONDS);
-        } catch (final NotifyRemotingException e) {
-            log.error("发送心跳命令失败", e);
+    public void onMessageReceived(final Session session, final Object message) {
+        final DefaultConnection defaultConnection = this.remotingContext.getConnectionBySession((NioSession) session);
+        if (defaultConnection == null) {
+            log.error("Connection[" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()) + "]已经被关闭，无法处理消息");
+            session.close();
+            return;
         }
 
-    }
-
-    public void onSessionStarted(final Session session) {
-
-    }
-
-    public void onMessageSent(final Session session, final Object msg) {
+        if (message instanceof RequestCommand) {
+            // 当消息是请求类型时，发送请求
+            this.processRequest(session, message, defaultConnection);
+        } else if (message instanceof ResponseCommand) {
+            // 当消息类型是响应类型时，触发回调逻辑
+            this.processResponse(message, defaultConnection);
+        } else {
+            throw new IllegalMessageException("未知的消息类型" + message);
+        }
 
     }
 
@@ -295,6 +259,49 @@ public class GeckoHandler implements Handler {
         this.adjustMaxScheduleWrittenBytes();
         this.remotingContext.notifyConnectionClosed(conn);
     }
+
+    /**
+     * 网络IO异常的时候会调用该方法
+     *
+     * @param session
+     * @param throwable
+     */
+    public void onExceptionCaught(final Session session, final Throwable throwable) {
+        if (throwable.getCause() != null) {
+            ExceptionMonitor.getInstance().exceptionCaught(throwable.getCause());
+        } else {
+            ExceptionMonitor.getInstance().exceptionCaught(throwable);
+        }
+    }
+
+    public void onSessionExpired(final Session session) {
+
+    }
+
+    /**
+     * 当客户端检测到session闲置的时候，会调用该方法，向服务端发送心跳包
+     *
+     * @param session
+     */
+    public void onSessionIdle(final Session session) {
+        final Connection conn = this.remotingContext.getConnectionBySession((NioSession) session);
+        try {
+            conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(conn), 5000, TimeUnit.MILLISECONDS);
+        } catch (final NotifyRemotingException e) {
+            log.error("发送心跳命令失败", e);
+        }
+
+    }
+
+    public void onMessageSent(final Session session, final Object msg) {
+
+    }
+
+
+
+
+
+
 
 
 
