@@ -53,7 +53,7 @@ public class BaseConfig {
      */
     private int readBufferSize = 128 * 1024;
     /**
-     * 认为连接Idle的间隔时间，单位秒
+     * 认为连接（会话）Idle的间隔时间，单位秒
      */
     private int idleTime;
     /**

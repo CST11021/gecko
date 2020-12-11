@@ -151,7 +151,12 @@ public class GeckoHandler implements Handler {
 
 
     /**
-     * 创建会话的时候调用
+     * 创建会话对象时（会话对象初始化的时候）调用该方法：
+     *
+     * 1、创建连接连接对象
+     * 2、将连接对象添加到上下文
+     * 3、保存session和连接的关系
+     * 4、触发所有的 ConnectionLifeCycleListener 监听器
      *
      * @param session
      */
@@ -162,7 +167,9 @@ public class GeckoHandler implements Handler {
         this.remotingContext.addConnection(connection);
         // 加入session到connection的映射
         this.remotingContext.addSession2ConnectionMapping((NioSession) session, connection);
+        // 触发所有的 ConnectionLifeCycleListener 监听器
         this.remotingContext.notifyConnectionCreated(connection);
+        // 根据连接数，设置服务端的发送缓冲队列最大字节数
         this.adjustMaxScheduleWrittenBytes();
     }
 
@@ -234,15 +241,23 @@ public class GeckoHandler implements Handler {
 
     }
 
+    /**
+     * 会话关闭（连接断开）的时候调用该方法：
+     * 1、关闭会话（添加毒丸，停止处理IO事件）
+     * 2、判断会话关联的连接是否允许重连，需要的时候创建一个重连任务
+     * 3、销毁连接对象，让异步为完成请求超时
+     * 4、从上下文中移除连接对象
+     * 5、触发所有的 ConnectionLifeCycleListener 监听器
+     *
+     * @param session
+     */
     public void onSessionClosed(final Session session) {
         final InetSocketAddress remoteSocketAddress = session.getRemoteSocketAddress();
         final DefaultConnection conn = this.remotingContext.getConnectionBySession((NioSession) session);
-
         if (conn == null) {
             session.close();
             return;
         }
-
         log.debug("远端连接" + RemotingUtils.getAddrString(remoteSocketAddress) + "断开,分组信息" + conn.getGroupSet());
 
         // 允许重连，并且是客户端，加入重连任务
@@ -252,16 +267,18 @@ public class GeckoHandler implements Handler {
         }
         // 从分组中移除
         this.removeFromGroups(conn);
-        // 处理剩余的callBack
+        // 释放资源，让callback超时
         conn.dispose();
         // 移除session到connection映射
         this.remotingContext.removeSession2ConnectionMapping((NioSession) session);
+        // 根据连接数，设置服务端的发送缓冲队列最大字节数
         this.adjustMaxScheduleWrittenBytes();
+        // 触发所有的 ConnectionLifeCycleListener 监听器
         this.remotingContext.notifyConnectionClosed(conn);
     }
 
     /**
-     * 网络IO异常的时候会调用该方法
+     * 网络IO异常的时候会调用该方法：通知全局的异常监听器
      *
      * @param session
      * @param throwable
@@ -272,10 +289,6 @@ public class GeckoHandler implements Handler {
         } else {
             ExceptionMonitor.getInstance().exceptionCaught(throwable);
         }
-    }
-
-    public void onSessionExpired(final Session session) {
-
     }
 
     /**
@@ -293,6 +306,21 @@ public class GeckoHandler implements Handler {
 
     }
 
+    /**
+     * 会话超时（即距离最近一次会话的网络IO处理时间超过了指定的时间）时调用该方法，该超时时间，不设置的话，默认为0，表示永不超时
+     *
+     * @param session
+     */
+    public void onSessionExpired(final Session session) {
+
+    }
+
+    /**
+     * 当消息发送出去之后，调用该方法
+     *
+     * @param session
+     * @param msg
+     */
     public void onMessageSent(final Session session, final Object msg) {
 
     }
@@ -414,11 +442,15 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /**
+     * 将连接对象从上下文移除
+     *
+     * @param conn
+     */
     private void removeFromGroups(final DefaultConnection conn) {
         // 从所有分组中移除
         for (final String group : conn.getGroupSet()) {
             this.remotingContext.removeConnectionFromGroup(group, conn);
-
         }
     }
 
@@ -577,14 +609,17 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /**
+     * 根据连接数，设置服务端的发送缓冲队列最大字节数
+     */
     private void adjustMaxScheduleWrittenBytes() {
         // Server根据连接数自动调整最大发送流量参数
         if (this.remotingController instanceof RemotingServer) {
             final List<Connection> connections = this.remotingContext.getConnectionsByGroup(Constants.DEFAULT_GROUP);
             final int connectionCount = connections != null ? connections.size() : 0;
             if (connectionCount > 0) {
-                this.remotingContext.getConfig().setMaxScheduleWrittenBytes(
-                        Runtime.getRuntime().maxMemory() / 3 / connectionCount);
+                // 发送缓冲队列最大字节数，默认为最大内存的1/3，假设连接数为1000
+                this.remotingContext.getConfig().setMaxScheduleWrittenBytes(Runtime.getRuntime().maxMemory() / 3 / connectionCount);
             }
         }
     }

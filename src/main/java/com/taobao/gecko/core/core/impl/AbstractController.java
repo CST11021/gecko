@@ -69,7 +69,7 @@ public abstract class AbstractController implements Controller, ControllerLifeCy
      * writeEventDispatcher：处理写消息到channel的派发器；
      */
     protected Dispatcher readEventDispatcher, dispatchMessageDispatcher, writeEventDispatcher;
-    /** 会话超时时间 */
+    /** 会话（连接）超时时间，不设置的话，默认为0，表示永不超时 */
     protected long sessionTimeout;
     protected volatile boolean handleReadWriteConcurrently = true;
     protected int soTimeout;

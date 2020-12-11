@@ -24,7 +24,7 @@ package com.taobao.gecko.core.core;
 public interface Handler {
 
     /**
-     * 创建会话的时候调用
+     * 创建会话对象时（会话对象初始化的时候）调用该方法
      *
      * @param session
      */
@@ -53,8 +53,19 @@ public interface Handler {
      */
     void onMessageReceived(Session session, Object msg);
 
+    /**
+     * 会话关闭（连接断开）的时候调用该方法
+     *
+     * @param session
+     */
     void onSessionClosed(Session session);
 
+    /**
+     * 当消息发送出去之后，调用该方法
+     *
+     * @param session
+     * @param msg
+     */
     void onMessageSent(Session session, Object msg);
 
     /**
@@ -65,6 +76,11 @@ public interface Handler {
      */
     void onExceptionCaught(Session session, Throwable throwable);
 
+    /**
+     * 会话超时（即距离最近一次会话的网络IO处理时间超过了指定的时间）时调用该方法
+     *
+     * @param session
+     */
     void onSessionExpired(Session session);
 
     void onSessionIdle(Session session);

@@ -49,8 +49,8 @@ import org.apache.commons.logging.LogFactory;
  * @author The Apache Directory Project (mina-dev@directory.apache.org)
  */
 public class DefaultExceptionMonitor extends ExceptionMonitor {
-    private final Log log = LogFactory.getLog(DefaultExceptionMonitor.class);
 
+    private final Log log = LogFactory.getLog(DefaultExceptionMonitor.class);
 
     @Override
     public void exceptionCaught(final Throwable cause) {

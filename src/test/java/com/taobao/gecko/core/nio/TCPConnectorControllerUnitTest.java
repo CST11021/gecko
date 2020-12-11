@@ -15,20 +15,19 @@
  */
 package com.taobao.gecko.core.nio;
 
+import com.taobao.gecko.core.buffer.IoBuffer;
+import com.taobao.gecko.core.core.Session;
+import com.taobao.gecko.core.core.impl.AbstractControllerUnitTest;
+import com.taobao.gecko.core.core.impl.HandlerAdapter;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.taobao.gecko.core.buffer.IoBuffer;
-import com.taobao.gecko.core.core.Session;
-import com.taobao.gecko.core.core.impl.AbstractControllerUnitTest;
-import com.taobao.gecko.core.core.impl.HandlerAdapter;
 
 
 /**
@@ -99,6 +98,11 @@ public class TCPConnectorControllerUnitTest extends AbstractControllerUnitTest {
             final AtomicInteger recvSize = new AtomicInteger();
             server.setHandler(new HandlerAdapter() {
 
+                /**
+                 * 创建会话对象时（会话对象初始化的时候）调用该方法
+                 *
+                 * @param session
+                 */
                 @Override
                 public void onSessionCreated(Session session) {
                     connectedCount.incrementAndGet();

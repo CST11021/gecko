@@ -110,6 +110,11 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         this.callBackSemaphore.release(n);
     }
 
+    /**
+     * 连接被创建后调用该方法：触发所有的 ConnectionLifeCycleListener 监听器
+     *
+     * @param conn
+     */
     void notifyConnectionCreated(final Connection conn) {
         for (final ConnectionLifeCycleListener listener : this.connectionLifeCycleListenerList) {
             try {
@@ -120,6 +125,11 @@ public class DefaultRemotingContext implements RemotingContext, DefaultRemotingC
         }
     }
 
+    /**
+     * 连接被关闭后调用该方法：触发所有的 ConnectionLifeCycleListener 监听器
+     *
+     * @param conn
+     */
     void notifyConnectionClosed(final Connection conn) {
         for (final ConnectionLifeCycleListener listener : this.connectionLifeCycleListenerList) {
             try {

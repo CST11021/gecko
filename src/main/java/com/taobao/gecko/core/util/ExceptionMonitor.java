@@ -48,8 +48,8 @@ package com.taobao.gecko.core.util;
  * @see DefaultExceptionMonitor
  */
 public abstract class ExceptionMonitor {
-    private static ExceptionMonitor instance = new DefaultExceptionMonitor();
 
+    private static ExceptionMonitor instance = new DefaultExceptionMonitor();
 
     /**
      * Returns the current exception monitor.
@@ -57,7 +57,6 @@ public abstract class ExceptionMonitor {
     public static ExceptionMonitor getInstance() {
         return instance;
     }
-
 
     /**
      * Sets the uncaught exception monitor. If <code>null</code> is specified,
@@ -72,7 +71,6 @@ public abstract class ExceptionMonitor {
         }
         instance = monitor;
     }
-
 
     /**
      * Invoked when there are any uncaught exceptions.

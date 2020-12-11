@@ -390,7 +390,9 @@ public class DefaultConnection implements Connection {
         this.groupSet.remove(group);
     }
 
-    // 释放资源，让callback超时
+    /**
+     * 释放资源，让callback超时
+     */
     void dispose() {
         for (final Integer opaque : this.requestCallBackMap.keySet()) {
             final RequestCallBack requestCallBack = this.requestCallBackMap.get(opaque);
