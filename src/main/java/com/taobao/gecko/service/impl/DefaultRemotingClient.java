@@ -77,7 +77,9 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         return notifyTCPConnectorController;
     }
     /**
-     * 启动
+     * 启动：
+     * 1、启动GeckoTCPConnectorController
+     * 2、启动重连管理器
      *
      * @throws NotifyRemotingException
      */
@@ -89,7 +91,9 @@ public class DefaultRemotingClient extends BaseRemotingController implements Rem
         this.startReconnectManager();
     }
     /**
-     * 停止
+     * 停止：
+     * 1、停止重连管理器
+     * 2、关闭所有连接
      *
      * @throws NotifyRemotingException
      */
