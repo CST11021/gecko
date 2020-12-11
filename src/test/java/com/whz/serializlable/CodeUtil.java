@@ -1,4 +1,4 @@
-package com.whz.gecko.code;
+package com.whz.serializlable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

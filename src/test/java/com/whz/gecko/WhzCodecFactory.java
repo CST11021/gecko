@@ -3,8 +3,8 @@ package com.whz.gecko;
 import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.core.CodecFactory;
 import com.taobao.gecko.core.core.Session;
-import com.whz.gecko.client.WhzRequest;
-import com.whz.gecko.code.CodeUtil;
+import com.whz.gecko.command.WhzRequest;
+import com.whz.serializlable.CodeUtil;
 
 /**
  * @Author: wanghz
@@ -24,43 +24,40 @@ public class WhzCodecFactory implements CodecFactory {
 
     class WhzEncoder implements Encoder {
 
-        @Override
+        /**
+         * 将消息对象进行编码（序列化），获取对应的字节缓冲区
+         *
+         * @param message
+         * @param session
+         * @return
+         */
         public IoBuffer encode(Object message, Session session) {
+            byte[] bytes = CodeUtil.objectToByteArray(message);
+            IoBuffer buffer = IoBuffer.allocate(bytes.length).setAutoExpand(true);
+            buffer.put(bytes);
+            buffer.flip();
 
-            // if (message instanceof WhzCommand) {
-            //     WhzRequest request = (WhzRequest) message;
-            //     return request.encode();
-            // } else {
-            //     throw new RuntimeException("编码异常");
-            // }
-
-            return IoBuffer.wrap(CodeUtil.objectToByteArray(message));
+            return buffer;
         }
-
     }
 
     class WhzDecoder implements Decoder {
 
-        @Override
-        public Object decode(IoBuffer buff, Session session) {
+        /**
+         * 对buffer进行解码（反序列化），并返回对应的对象
+         *
+         * @param buffer
+         * @param session
+         * @return
+         */
+        public Object decode(IoBuffer buffer, Session session) {
+            if (!buffer.hasRemaining()) {
+                return null;
+            }
 
-            // WhzCommand command = (WhzCommand) session.getAttribute(WhzWireFormatType.PARAM_TYPE);
-            // if (command != null) {
-            //     return command.decode(buff);
-            // }
-            //
-            // if (buff.equals(WhzCommand.heartBeat_request)) {
-            //     return new WhzHeartBeatRequestCommand();
-            // }
-            //
-            // if (buff.equals(WhzCommand.heartBeat_response)) {
-            //     return new WhzBooleanAckCommand();
-            // }
-            //
-            // throw new RuntimeException("解码异常");
-
-            return CodeUtil.byteArrayToObject(buff.array());
-
+            byte[] bytes = new byte[buffer.limit()];
+            buffer.get(bytes);
+            return CodeUtil.byteArrayToObject(bytes);
         }
 
     }

@@ -10,8 +10,6 @@ import com.taobao.gecko.service.config.WireFormatType;
  */
 public class WhzWireFormatType extends WireFormatType {
 
-    public static String PARAM_TYPE = "param_type";
-
     @Override
     public String getScheme() {
         return "test";

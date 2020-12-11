@@ -81,24 +81,22 @@ public class GeckoHandler implements Handler {
      * @author boyan
      */
     private final static class HeartBeatListener implements SingleRequestCallBackListener {
-        private final Connection conn;
+
         static final String HEARBEAT_FAIL_COUNT = "connection_heartbeat_fail_count";
 
+        private final Connection conn;
 
         public ThreadPoolExecutor getExecutor() {
             return null;
         }
 
-
         private HeartBeatListener(final Connection conn) {
             this.conn = conn;
         }
 
-
         public void onException(final Exception e) {
             this.innerCloseConnection(this.conn);
         }
-
 
         public void onResponse(final ResponseCommand responseCommand, final Connection conn) {
             if (responseCommand == null || responseCommand.getResponseStatus() != ResponseStatus.NO_ERROR) {
@@ -115,7 +113,6 @@ public class GeckoHandler implements Handler {
                 this.conn.removeAttribute(HEARBEAT_FAIL_COUNT);
             }
         }
-
 
         private void innerCloseConnection(final Connection conn) {
             log.info("心跳检测失败，关闭连接" + conn.getRemoteSocketAddress() + ",分组信息" + conn.getGroupSet());

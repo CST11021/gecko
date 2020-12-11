@@ -17,9 +17,8 @@ package com.taobao.gecko.core.command.kernel;
 
 import com.taobao.gecko.core.command.ResponseCommand;
 
-
 /**
- * 系统级的响应消息，返回应答成功或者失败，仅是标记接口
+ * gecko心跳的响应命令需要实现该接口，返回应答成功或者失败
  *
  * @author boyan
  */

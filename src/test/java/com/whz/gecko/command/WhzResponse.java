@@ -1,11 +1,8 @@
-package com.whz.gecko.server;
+package com.whz.gecko.command;
 
-import com.taobao.gecko.core.buffer.IoBuffer;
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.core.command.ResponseStatus;
 import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
-import com.whz.gecko.WhzCommand;
-import com.whz.gecko.code.CodeUtil;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
@@ -14,22 +11,22 @@ import java.net.InetSocketAddress;
  * @Author: wanghz
  * @Date: 2020/11/18 5:55 PM
  */
-public class WhzResponse implements ResponseCommand, BooleanAckCommand, WhzCommand, Serializable {
+public class WhzResponse implements ResponseCommand, BooleanAckCommand, Serializable {
 
     private static final long serialVersionUID = -4601915156778195626L;
 
     private String result;
+
     private Integer opaque;
     private InetSocketAddress responseHost;
-    private ResponseStatus responseStatus;
+    private ResponseStatus responseStatus = ResponseStatus.NO_ERROR;
     private long responseTime;
     private String errorMsg;
 
 
-    public WhzResponse(String result, Integer opaque, ResponseStatus responseStatus) {
+    public WhzResponse(String result, Integer opaque) {
         this.result = result;
         this.opaque = opaque;
-        this.responseStatus = responseStatus;
         this.responseTime = System.nanoTime();
     }
 
@@ -58,7 +55,7 @@ public class WhzResponse implements ResponseCommand, BooleanAckCommand, WhzComma
      */
     @Override
     public boolean isBoolean() {
-        return true;
+        return false;
     }
 
     @Override
@@ -93,34 +90,9 @@ public class WhzResponse implements ResponseCommand, BooleanAckCommand, WhzComma
     public String getErrorMsg() {
         return errorMsg;
     }
-
     @Override
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
     }
 
-    @Override
-    public Object decode(IoBuffer buffer) {
-        // String result;
-        // try {
-        //     result = buffer.getString(Charset.forName("UTF-8").newDecoder());
-        // } catch (CharacterCodingException e) {
-        //     throw new RuntimeException(e);
-        // }
-        // return new WhzRequest(result);
-
-        return CodeUtil.byteArrayToObject(buffer.array());
-    }
-
-    @Override
-    public IoBuffer encode() {
-        // final IoBuffer buffer = IoBuffer.allocate(1024);
-        // buffer.setAutoExpand(true);
-        // buffer.put(result.getBytes());
-        //
-        // buffer.flip();
-        // return buffer;
-
-        return IoBuffer.wrap(CodeUtil.objectToByteArray(this));
-    }
 }

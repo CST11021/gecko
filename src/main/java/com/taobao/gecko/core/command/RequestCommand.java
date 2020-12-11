@@ -16,7 +16,7 @@
 package com.taobao.gecko.core.command;
 
 /**
- * 请求命令公共接口
+ * 请求命令的接口，所有的客户端请求都需要实现该接口
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:55:07

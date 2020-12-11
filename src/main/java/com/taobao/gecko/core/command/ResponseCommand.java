@@ -17,9 +17,8 @@ package com.taobao.gecko.core.command;
 
 import java.net.InetSocketAddress;
 
-
 /**
- * 应答命令公共接口
+ * 应答命令的接口，所有的响应类都需要实现该接口
  *
  * @author boyan
  * @since 1.0, 2009-12-16 下午05:55:15
@@ -28,6 +27,19 @@ public interface ResponseCommand extends CommandHeader {
 
     static final long serialVersionUID = 77788812547386438L;
 
+    /**
+     * 是否为 BooleanAckCommand
+     *
+     * @return
+     */
+    public boolean isBoolean();
+
+    /**
+     * 设置响应的opaque
+     *
+     * @param opaque
+     */
+    public void setOpaque(Integer opaque);
 
     /**
      * 返回响应状态
@@ -42,13 +54,6 @@ public interface ResponseCommand extends CommandHeader {
      * @param responseStatus
      */
     public void setResponseStatus(ResponseStatus responseStatus);
-
-    /**
-     * 是否为BooleanAckCommand
-     *
-     * @return
-     */
-    public boolean isBoolean();
 
     /**
      * 返回响应的远端地址
@@ -78,10 +83,4 @@ public interface ResponseCommand extends CommandHeader {
      */
     public void setResponseTime(long time);
 
-    /**
-     * 设置响应的opaque
-     *
-     * @param opaque
-     */
-    public void setOpaque(Integer opaque);
 }

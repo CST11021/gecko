@@ -16,12 +16,11 @@
 package com.taobao.gecko.core.command;
 
 /**
- * 命令的标记接口
+ * 请求与响应类的顶级标记接口：CommandHeader 继承了该Command，然后 RequestCommand 和 ResponseCommand 继承了CommandHeader
  *
  * @author boyan
  * @since 1.0, 2009-12-18 上午11:28:14
  */
-
 public interface Command {
 
 }
