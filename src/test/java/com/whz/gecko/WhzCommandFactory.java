@@ -24,7 +24,7 @@ public class WhzCommandFactory implements CommandFactory {
     }
 
     /**
-     * 正常ACK请求的对象
+     * 心跳response对象
      *
      * @param request        请求头
      * @param responseStatus 响应状态
