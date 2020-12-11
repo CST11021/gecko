@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import com.taobao.gecko.core.core.Handler;
 import com.taobao.gecko.core.core.Session;
 
-
 /**
  * Handler适配器
  *
@@ -29,49 +28,33 @@ import com.taobao.gecko.core.core.Session;
  * @since 1.0, 2009-12-16 下午06:04:48
  */
 public class HandlerAdapter implements Handler {
-    private static final Log log = LogFactory.getLog(HandlerAdapter.class);
 
+    private static final Log log = LogFactory.getLog(HandlerAdapter.class);
 
     public void onExceptionCaught(final Session session, final Throwable throwable) {
 
     }
-
-
     public void onMessageSent(final Session session, final Object message) {
 
     }
-
-
     public void onSessionConnected(final Session session, final Object... args) {
 
     }
-
-
     public void onSessionStarted(final Session session) {
 
     }
-
-
     public void onSessionCreated(final Session session) {
 
     }
-
-
     public void onSessionClosed(final Session session) {
 
     }
-
-
     public void onMessageReceived(final Session session, final Object message) {
 
     }
-
-
     public void onSessionIdle(final Session session) {
 
     }
-
-
     public void onSessionExpired(final Session session) {
         log.warn("Session(" + session.getRemoteSocketAddress() + ") is expired.");
     }
