@@ -26,14 +26,12 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-
 /**
- * 心跳命令的处理器
+ * 服务端的心跳命令的处理器
  *
  * @author boyan
  * @since 1.0, 2009-12-18 下午03:50:17
  */
-
 public class HeartBeatCommandProecssor implements RequestProcessor<HeartBeatRequestCommand> {
 
     static final Log logger = LogFactory.getLog(HeartBeatCommandProecssor.class);
@@ -42,6 +40,12 @@ public class HeartBeatCommandProecssor implements RequestProcessor<HeartBeatRequ
         super();
     }
 
+    /**
+     * 服务端通过该方法处理心跳请求：通过CommandFactory#createBooleanAckCommand 方法创建一个响应命令，并通过Connect进行回写应答
+     *
+     * @param request 请求命令
+     * @param conn    请求来源的连接
+     */
     public void handleRequest(final HeartBeatRequestCommand request, final Connection conn) {
         try {
             conn.response(conn.getRemotingContext().getCommandFactory().createBooleanAckCommand(request.getRequestHeader(), ResponseStatus.NO_ERROR, null));

@@ -62,13 +62,11 @@ public class GeckoHandler implements Handler {
         private final T message;
 
 
-        private ProcessorRunner(final DefaultConnection defaultConnection, final RequestProcessor<T> processor,
-                                final T message) {
+        private ProcessorRunner(final DefaultConnection defaultConnection, final RequestProcessor<T> processor, final T message) {
             this.defaultConnection = defaultConnection;
             this.processor = processor;
             this.message = message;
         }
-
 
         public void run() {
             this.processor.handleRequest(this.message, this.defaultConnection);
@@ -84,6 +82,7 @@ public class GeckoHandler implements Handler {
 
         static final String HEARBEAT_FAIL_COUNT = "connection_heartbeat_fail_count";
 
+        /** 表示心跳监听的连接 */
         private final Connection conn;
 
         public ThreadPoolExecutor getExecutor() {
@@ -94,10 +93,20 @@ public class GeckoHandler implements Handler {
             this.conn = conn;
         }
 
+        /**
+         * 已处理：关闭连接
+         * @param e
+         */
         public void onException(final Exception e) {
             this.innerCloseConnection(this.conn);
         }
 
+        /**
+         * 客户端收到超过2次的心跳失败后，会关闭连接，然后重连
+         *
+         * @param responseCommand 应答命令
+         * @param conn            应答连接
+         */
         public void onResponse(final ResponseCommand responseCommand, final Connection conn) {
             if (responseCommand == null || responseCommand.getResponseStatus() != ResponseStatus.NO_ERROR) {
                 Integer count = (Integer) this.conn.setAttributeIfAbsent(HEARBEAT_FAIL_COUNT, 1);
@@ -114,6 +123,11 @@ public class GeckoHandler implements Handler {
             }
         }
 
+        /**
+         * 关闭连接
+         *
+         * @param conn
+         */
         private void innerCloseConnection(final Connection conn) {
             log.info("心跳检测失败，关闭连接" + conn.getRemoteSocketAddress() + ",分组信息" + conn.getGroupSet());
             try {
@@ -124,8 +138,11 @@ public class GeckoHandler implements Handler {
         }
     }
 
+    /** 重连管理器 */
     private ReconnectManager reconnectManager;
+    /** 当前连接的上下文 */
     private final DefaultRemotingContext remotingContext;
+    /** 客户端和服务端的基础服务接口 */
     private final RemotingController remotingController;
 
 
@@ -135,6 +152,28 @@ public class GeckoHandler implements Handler {
     }
 
 
+    /**
+     * 创建会话的时候调用
+     *
+     * @param session
+     */
+    public void onSessionCreated(final Session session) {
+        log.debug("连接建立，远端信息:" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()));
+        final DefaultConnection connection = new DefaultConnection((NioSession) session, this.remotingContext);
+        // 加入默认分组
+        this.remotingContext.addConnection(connection);
+        // 加入session到connection的映射
+        this.remotingContext.addSession2ConnectionMapping((NioSession) session, connection);
+        this.remotingContext.notifyConnectionCreated(connection);
+        this.adjustMaxScheduleWrittenBytes();
+    }
+
+    /**
+     * 网络IO异常的时候会调用该方法
+     *
+     * @param session
+     * @param throwable
+     */
     public void onExceptionCaught(final Session session, final Throwable throwable) {
         if (throwable.getCause() != null) {
             ExceptionMonitor.getInstance().exceptionCaught(throwable.getCause());
@@ -202,26 +241,21 @@ public class GeckoHandler implements Handler {
         }
     }
 
-    public void onSessionCreated(final Session session) {
-        log.debug("连接建立，远端信息:" + RemotingUtils.getAddrString(session.getRemoteSocketAddress()));
-        final DefaultConnection connection = new DefaultConnection((NioSession) session, this.remotingContext);
-        // 加入默认分组
-        this.remotingContext.addConnection(connection);
-        // 加入session到connection的映射
-        this.remotingContext.addSession2ConnectionMapping((NioSession) session, connection);
-        this.remotingContext.notifyConnectionCreated(connection);
-        this.adjustMaxScheduleWrittenBytes();
-    }
+
 
     public void onSessionExpired(final Session session) {
 
     }
 
+    /**
+     * 当客户端检测到session闲置的时候，会调用该方法，向服务端发送心跳包
+     *
+     * @param session
+     */
     public void onSessionIdle(final Session session) {
         final Connection conn = this.remotingContext.getConnectionBySession((NioSession) session);
         try {
-            conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(
-                    conn), 5000, TimeUnit.MILLISECONDS);
+            conn.send(conn.getRemotingContext().getCommandFactory().createHeartBeatCommand(), new HeartBeatListener(conn), 5000, TimeUnit.MILLISECONDS);
         } catch (final NotifyRemotingException e) {
             log.error("发送心跳命令失败", e);
         }

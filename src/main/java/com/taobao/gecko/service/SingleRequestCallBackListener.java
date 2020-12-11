@@ -15,10 +15,8 @@
  */
 package com.taobao.gecko.service;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
 import com.taobao.gecko.core.command.ResponseCommand;
-
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 单个分组的单个连接的应答回调监听器
@@ -26,7 +24,6 @@ import com.taobao.gecko.core.command.ResponseCommand;
  * @author boyan
  * @since 1.0, 2009-12-15 下午04:13:17
  */
-
 public interface SingleRequestCallBackListener {
 
     /**
@@ -37,14 +34,12 @@ public interface SingleRequestCallBackListener {
      */
     public void onResponse(ResponseCommand responseCommand, Connection conn);
 
-
     /**
      * 异常发生的时候回调
      *
      * @param e
      */
     public void onException(Exception e);
-
 
     /**
      * onResponse回调执行的线程池

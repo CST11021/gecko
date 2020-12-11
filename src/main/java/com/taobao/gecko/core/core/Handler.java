@@ -57,6 +57,12 @@ public interface Handler {
 
     void onMessageSent(Session session, Object msg);
 
+    /**
+     * 网络IO异常的时候会调用该方法
+     *
+     * @param session
+     * @param throwable
+     */
     void onExceptionCaught(Session session, Throwable throwable);
 
     void onSessionExpired(Session session);

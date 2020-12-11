@@ -188,8 +188,11 @@ public class DefaultConnection implements Connection {
     /**
      * 异步发送，指定回调监听器和超时时间，超时将返回一个超时应答给回调监听器
      *
-     * @param requestCommand
-     * @param listener
+     * @param requestCommand    发送的请求
+     * @param listener          异步的响应回调监听器
+     * @param time              请求超时时间
+     * @param timeUnit          请求超时时间的单位
+     * @throws NotifyRemotingException
      */
     public void send(final RequestCommand requestCommand, final SingleRequestCallBackListener listener, final long time, final TimeUnit timeUnit) throws NotifyRemotingException {
         if (requestCommand == null) {
