@@ -36,7 +36,7 @@ package com.taobao.gecko.core.util;
 
 import java.nio.ByteBuffer;
 
-import com.taobao.gecko.core.config.Configuration;
+import com.taobao.gecko.service.config.Configuration;
 
 
 public class ByteBufferUtils {

@@ -16,11 +16,10 @@
 package com.taobao.gecko.service.processor;
 
 import com.taobao.gecko.core.command.ResponseStatus;
-import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
+import com.taobao.gecko.core.command.heartbeat.HeartBeatRequestCommand;
 import com.taobao.gecko.core.util.RemotingUtils;
-import com.taobao.gecko.service.Connection;
-import com.taobao.gecko.service.RequestProcessor;
-import com.taobao.gecko.service.exception.NotifyRemotingException;
+import com.taobao.gecko.service.connection.Connection;
+import com.taobao.gecko.exception.NotifyRemotingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

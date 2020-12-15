@@ -1,8 +1,8 @@
 package com.whz.gecko;
 
 import com.taobao.gecko.core.buffer.IoBuffer;
-import com.taobao.gecko.core.core.CodecFactory;
-import com.taobao.gecko.core.core.Session;
+import com.taobao.gecko.core.codec.CodecFactory;
+import com.taobao.gecko.service.session.Session;
 import com.whz.gecko.command.WhzRequest;
 import com.whz.serializlable.CodeUtil;
 

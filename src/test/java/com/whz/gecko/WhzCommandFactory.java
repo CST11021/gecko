@@ -3,8 +3,8 @@ package com.whz.gecko;
 import com.taobao.gecko.core.command.CommandFactory;
 import com.taobao.gecko.core.command.CommandHeader;
 import com.taobao.gecko.core.command.ResponseStatus;
-import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
-import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
+import com.taobao.gecko.core.command.heartbeat.BooleanAckCommand;
+import com.taobao.gecko.core.command.heartbeat.HeartBeatRequestCommand;
 import com.whz.gecko.command.HeartResponse;
 import com.whz.gecko.command.HeartRequest;
 

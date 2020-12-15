@@ -1,7 +1,7 @@
 package com.whz.gecko.example;
 
-import com.taobao.gecko.service.RemotingClient;
-import com.taobao.gecko.service.RemotingFactory;
+import com.taobao.gecko.remoting.RemotingClient;
+import com.taobao.gecko.remoting.RemotingFactory;
 import com.taobao.gecko.service.config.ClientConfig;
 import com.whz.gecko.WhzWireFormatType;
 import com.whz.gecko.command.WhzRequest;
@@ -23,8 +23,7 @@ public class WhzClientTest {
         final ClientConfig clientConfig = new ClientConfig();
         clientConfig.setWireFormatType(new WhzWireFormatType());
 
-        RemotingClient remotingClient = RemotingFactory.newRemotingClient(clientConfig);
-        remotingClient.start();
+        RemotingClient remotingClient = RemotingFactory.connect(clientConfig);
 
         remotingClient.connect(uri);
         remotingClient.awaitReadyInterrupt(uri);

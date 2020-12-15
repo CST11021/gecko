@@ -16,7 +16,7 @@
 package com.taobao.gecko.service.config;
 
 import com.taobao.gecko.core.command.CommandFactory;
-import com.taobao.gecko.core.core.CodecFactory;
+import com.taobao.gecko.core.codec.CodecFactory;
 
 import java.util.HashMap;
 import java.util.Map;

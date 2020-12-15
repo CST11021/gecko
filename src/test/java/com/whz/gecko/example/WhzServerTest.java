@@ -1,11 +1,11 @@
 package com.whz.gecko.example;
 
-import com.taobao.gecko.service.Connection;
-import com.taobao.gecko.service.RemotingFactory;
-import com.taobao.gecko.service.RemotingServer;
-import com.taobao.gecko.service.RequestProcessor;
+import com.taobao.gecko.service.connection.Connection;
+import com.taobao.gecko.remoting.RemotingFactory;
+import com.taobao.gecko.remoting.RemotingServer;
+import com.taobao.gecko.service.processor.RequestProcessor;
 import com.taobao.gecko.service.config.ServerConfig;
-import com.taobao.gecko.service.exception.NotifyRemotingException;
+import com.taobao.gecko.exception.NotifyRemotingException;
 import com.whz.gecko.WhzWireFormatType;
 import com.whz.gecko.command.WhzRequest;
 import com.whz.gecko.command.WhzResponse;

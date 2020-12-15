@@ -1,7 +1,7 @@
 package com.whz.gecko;
 
 import com.taobao.gecko.core.command.CommandFactory;
-import com.taobao.gecko.core.core.CodecFactory;
+import com.taobao.gecko.core.codec.CodecFactory;
 import com.taobao.gecko.service.config.WireFormatType;
 
 /**

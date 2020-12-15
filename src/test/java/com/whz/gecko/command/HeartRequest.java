@@ -1,7 +1,7 @@
 package com.whz.gecko.command;
 
 import com.taobao.gecko.core.command.CommandHeader;
-import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
+import com.taobao.gecko.core.command.heartbeat.HeartBeatRequestCommand;
 import com.taobao.gecko.core.util.OpaqueGenerator;
 
 import java.io.Serializable;

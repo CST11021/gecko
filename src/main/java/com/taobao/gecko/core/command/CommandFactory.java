@@ -15,8 +15,8 @@
  */
 package com.taobao.gecko.core.command;
 
-import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
-import com.taobao.gecko.core.command.kernel.HeartBeatRequestCommand;
+import com.taobao.gecko.core.command.heartbeat.BooleanAckCommand;
+import com.taobao.gecko.core.command.heartbeat.HeartBeatRequestCommand;
 
 
 /**

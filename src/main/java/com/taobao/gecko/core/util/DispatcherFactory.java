@@ -15,8 +15,8 @@
  */
 package com.taobao.gecko.core.util;
 
-import com.taobao.gecko.core.core.Dispatcher;
-import com.taobao.gecko.core.core.impl.PoolDispatcher;
+import com.taobao.gecko.service.Dispatcher;
+import com.taobao.gecko.service.PoolDispatcher;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.TimeUnit;

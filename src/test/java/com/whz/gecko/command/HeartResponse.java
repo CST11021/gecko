@@ -1,7 +1,7 @@
 package com.whz.gecko.command;
 
 import com.taobao.gecko.core.command.ResponseStatus;
-import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
+import com.taobao.gecko.core.command.heartbeat.BooleanAckCommand;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;

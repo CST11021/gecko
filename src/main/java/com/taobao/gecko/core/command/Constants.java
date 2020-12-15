@@ -15,9 +15,9 @@
  */
 package com.taobao.gecko.core.command;
 
-import com.taobao.gecko.service.impl.DefaultConnection;
-import com.taobao.gecko.service.impl.DefaultRemotingClient;
-import com.taobao.gecko.service.impl.DefaultRemotingContext;
+import com.taobao.gecko.service.connection.impl.DefaultConnection;
+import com.taobao.gecko.remoting.DefaultRemotingClient;
+import com.taobao.gecko.remoting.DefaultRemotingContext;
 
 
 /**

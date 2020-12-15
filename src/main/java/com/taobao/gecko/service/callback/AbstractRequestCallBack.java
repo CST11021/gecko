@@ -18,11 +18,10 @@ package com.taobao.gecko.service.callback;
 import com.taobao.gecko.core.command.RequestCommand;
 import com.taobao.gecko.core.command.ResponseCommand;
 import com.taobao.gecko.core.command.ResponseStatus;
-import com.taobao.gecko.core.command.kernel.BooleanAckCommand;
-import com.taobao.gecko.core.nio.impl.TimerRef;
-import com.taobao.gecko.service.Connection;
-import com.taobao.gecko.service.impl.DefaultConnection;
-import com.taobao.gecko.service.impl.RequestCallBack;
+import com.taobao.gecko.core.command.heartbeat.BooleanAckCommand;
+import com.taobao.gecko.service.nio.TimerRef;
+import com.taobao.gecko.service.connection.Connection;
+import com.taobao.gecko.service.connection.impl.DefaultConnection;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
