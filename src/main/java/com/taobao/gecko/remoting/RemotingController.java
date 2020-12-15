@@ -187,6 +187,8 @@ public interface RemotingController {
      * @param group    分组名称
      * @param command  请求命令
      * @param listener 响应处理器
+     * @param time
+     * @param timeunut
      */
     public void sendToGroup(String group, RequestCommand command, SingleRequestCallBackListener listener, long time, TimeUnit timeunut) throws NotifyRemotingException;
 

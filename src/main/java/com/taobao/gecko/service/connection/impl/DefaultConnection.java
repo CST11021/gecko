@@ -167,7 +167,8 @@ public class DefaultConnection implements Connection {
         this.addRequestCallBack(requestCommand.getOpaque(), requestCallBack);
         try {
             // 调用session异步写入请求包
-            requestCallBack.addWriteFuture(this, this.asyncWriteToSession(requestCommand));
+            Future<Boolean> future = this.asyncWriteToSession(requestCommand);
+            requestCallBack.addWriteFuture(this, future);
         } catch (final Throwable t) {
             this.removeRequestCallBack(requestCommand.getOpaque());
             throw new NotifyRemotingException(t);

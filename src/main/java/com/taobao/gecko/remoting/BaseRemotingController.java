@@ -265,6 +265,12 @@ public abstract class BaseRemotingController implements RemotingController {
 
     // 服务调用
 
+    /**
+     * 异步单向发送给指定分组中的一个连接，默认是随机策略
+     *
+     * @param group
+     * @param command
+     */
     public void sendToGroup(final String group, final RequestCommand command) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
@@ -279,9 +285,26 @@ public abstract class BaseRemotingController implements RemotingController {
             throw new NotifyRemotingException("分组" + group + "没有可用的连接");
         }
     }
+    /**
+     * 异步发送给指定分组中的一个连接，指定回调监听器RequestCallBackListener，默认策略是随机，默认超时为1秒,
+     * 超过超时时间将返回一个超时应答给回调监听器
+     *
+     * @param group    分组名称
+     * @param command  请求命令
+     * @param listener 响应处理器
+     */
     public void sendToGroup(final String group, final RequestCommand command, final SingleRequestCallBackListener listener) throws NotifyRemotingException {
         this.sendToGroup(group, command, listener, this.opTimeout, TimeUnit.MILLISECONDS);
     }
+    /**
+     * 异步发送给指定分组中的一个连接，默认策略是随机，指定超时,超过超时时间将返回一个超时应答给回调监听器
+     *
+     * @param group    分组名称
+     * @param request  请求命令
+     * @param listener 响应处理器
+     * @param time
+     * @param timeunut
+     */
     public void sendToGroup(final String group, final RequestCommand request, final SingleRequestCallBackListener listener, final long time, final TimeUnit timeunut) throws NotifyRemotingException {
         if (group == null) {
             throw new NotifyRemotingException("Null group");
