@@ -10,13 +10,15 @@ import com.whz.gecko.command.WhzResponse;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import static com.whz.gecko.WhzWireFormatType.SCHEME;
+
 /**
  * @Author: wanghz
  * @Date: 2020/11/18 5:48 PM
  */
 public class WhzClientTest {
 
-    private static String uri = "test://localhost:8080";
+    private static String uri = SCHEME + "://localhost:8080";
 
 
     public static void main(String[] args) throws Exception {
